@@ -1,10 +1,16 @@
 import React from 'react'
 import { Button, DateRangePicker, Select, SelectItem } from "@nextui-org/react";
 import { parseZonedDateTime } from "@internationalized/date";
+import { cn } from '../../utils/Utils';
+import { useNavigate } from 'react-router-dom';
 
-function Header(props) {
+function Header({ showText }) {
+	const navigate = useNavigate();
+	function handleSearch() {
+		navigate('/search')
+	}
 	return (
-		<div className='bg-blue-800 rounded-es-xl rounded-ee-xl'>
+		<div className='relative bg-blue-800 rounded-es-xl rounded-ee-xl'>
 			<div className='m-auto  w-full xl:max-w-[80%]'>
 				<header className="pt-5 text-white">
 					<div className="container mx-auto flex items-center justify-between">
@@ -19,14 +25,15 @@ function Header(props) {
 					</div>
 				</header>
 
-				<main className="bg-blue-800 py-16 text-left text-white">
-					<h1 className="text-4xl font-bold">Tìm chỗ nghỉ tiếp theo</h1>
-					<p className="mt-2 text-lg">Tìm ưu đãi khách sạn, chỗ nghỉ dạng nhà và nhiều hơn nữa...</p>
-					<div className="mt-8">
-						<div className="w-full flex items-center justify-center gap-1 rounded-xl bg-ye p-1 bg-accent shadow-lg flex-col xl:flex-row">
+				<main className={cn("bg-blue-800 text-left text-white", !showText && 'py-7')}>
+					{showText &&
+						<><h1 className="pt-8 pb-2 text-4xl font-bold">Tìm chỗ nghỉ tiếp theo</h1><p className="pb-16 mt-2 text-lg">Tìm ưu đãi khách sạn, chỗ nghỉ dạng nhà và nhiều hơn nữa...</p></>
+					}
+					<div className="xl:absolute w-full xl:w-[80vw] bottom-[-20px]">
+						<div className="w-full flex items-center justify-center gap-1 rounded-xl bg-ye p-2 bg-accent shadow-lg flex-col xl:flex-row">
 
 							<Select
-								className="border-none flex-5 xl:flex-3 "
+								className="border-none flex-5 xl:flex-3"
 								variant='flat'
 								radius='sm'
 								defaultSelectedKeys={[1]}
@@ -40,7 +47,6 @@ function Header(props) {
 
 							<DateRangePicker
 								radius='sm'
-								placeholder="Ngày nhận - trả phòng"
 								hideTimeZone
 								variant='flat'
 								visibleMonths={2}
@@ -51,7 +57,7 @@ function Header(props) {
 								}}
 							/>
 
-							<Button variant='solid' radius='sm' className="w-full min-w-[200px] xl:w-fit  bg-blue-600 px-4 py-2 text-white">Tìm kiếm</Button>
+							<Button onClick={handleSearch} variant='solid' radius='sm' className="w-full min-w-[200px] xl:w-fit  bg-blue-600 px-4 py-2 text-white">Tìm kiếm</Button>
 						</div>
 					</div>
 				</main>

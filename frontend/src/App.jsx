@@ -1,18 +1,26 @@
 import React from 'react'
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import {AuthProvider} from './context/AuthContext'
-import routes from './router/routes'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import routesConfig from './router/routes.config'
 
 const App = () => {
 	return (
 		<AuthProvider>
 			<Router>
 				<Routes>
-					{routes.map((route, index) => (
+					{routesConfig.map(({ layout: LayoutComponent, layoutProps, element: PageComponent, ...route }, index) => (
 						<Route
 							key={index}
-							path={route.path}
-							element={route.element}
+							{...route}
+							element={
+								LayoutComponent ? (
+									<LayoutComponent {...layoutProps}>
+										<PageComponent />
+									</LayoutComponent>
+								) : (
+									<PageComponent />
+								)
+							}
 						/>
 					))}
 				</Routes>

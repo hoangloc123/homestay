@@ -5,9 +5,11 @@ import regex from './regex'
 // import { db } from '../firebase'
 import { toast } from 'react-toastify'
 import dayjs from 'dayjs'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-import { storage } from '../firebase'
+// import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+// import { storage } from '../firebase'
 import { v4 } from 'uuid'
+import { twMerge } from 'tailwind-merge';
+import clsx from 'clsx'
 
 export const convertStringToNumber = (value, delimiter = '.') => {
     if (value || value === 0) {
@@ -182,4 +184,8 @@ export function uploadFirebase(file) {
             reject(error);
         });
     });
+}
+
+export function cn(...args) {
+    return twMerge(clsx(args));
 }
