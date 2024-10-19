@@ -20,7 +20,7 @@ import SuggestionByCategories from '../../components/homepage/SuggestionByCatego
 import TopDestination from '../../components/homepage/TopDestination'
 export default function HomePage() {
 	return (
-		<div className='mx-auto max-w-[80%]'>
+		<div className='mx-auto max-w-[80%] 2xl:max-w-[60%] '>
 			<SuggestionAI />
 			<SuggestionByCategories />
 			<TopDestination />

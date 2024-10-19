@@ -9,7 +9,7 @@ function TopDestination() {
             <img src="https://cf.bstatic.com/xdata/images/city/800x400/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o=" alt="TP. Hồ Chí Minh" className="flex-1 w-['50%']  aspect-[2/1]" />
             <div className="absolute inset-0 bg-black opacity-5"></div>
             <div className="absolute top-2 left-2 text-white text-xl font-bold">
-              TP. Hồ Chí Minh <span className="ml-1">🇻🇳</span>
+              TP. Hồ Chí Minh<span className="ml-1">🇻🇳</span>
             </div>
           </div>
           <div className="w-full relative rounded-lg overflow-hidden">
@@ -26,21 +26,21 @@ function TopDestination() {
             <img src="https://cf.bstatic.com/xdata/images/city/600x600/688844.jpg?k=02892d4252c5e4272ca29db5faf12104004f81d13ff9db724371de0c526e1e15&o=" alt="Đà Nẵng" className=" aspect-[4/3]" />
             <div className="absolute inset-0 bg-black opacity-5"></div>
             <div className="absolute top-2 left-2 text-white text-xl font-bold">
-              Đà Nẵng <span className="ml-1">🇻🇳</span>
+              Đà Nẵng<span className="ml-1">🇻🇳</span>
             </div>
           </div>
           <div className="relative">
             <img src="https://cf.bstatic.com/xdata/images/city/600x600/688853.jpg?k=f6427c8fccdf777e4bbc75fcd245e7c66204280181bea23350388c76c57348d1&o=" alt="Hà Nội" className="rounded-lg aspect-[4/3]" />
             <div className="absolute inset-0 bg-black opacity-5"></div>
             <div className="absolute top-2 left-2 text-white text-xl font-bold">
-              Hà Nội <span className="ml-1">🇻🇳</span>
+              Hà Nội<span className="ml-1">🇻🇳</span>
             </div>
           </div>
           <div className="relative">
             <img src="https://cf.bstatic.com/xdata/images/city/600x600/688831.jpg?k=7b999c7babe3487598fc4dd89365db2c4778827eac8cb2a47d48505c97959a78&o=" alt="Đà Lạt" className="rounded-lg aspect-[4/3]" />
             <div className="absolute inset-0 bg-black opacity-5"></div>
             <div className="absolute top-2 left-2 text-white text-xl font-bold">
-              Đà Lạt <span className="ml-1">🇻🇳</span>
+              Đà Lạt<span className="ml-1">🇻🇳</span>
             </div>
           </div>
         </div>
