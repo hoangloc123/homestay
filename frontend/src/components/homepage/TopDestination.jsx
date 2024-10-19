@@ -4,16 +4,16 @@ function TopDestination() {
       <h2 className="text-2xl font-bold mb-2">Điểm đến đang thịnh hành</h2>
       <p className="mb-4 font-semibold text-content-secondary">Các lựa chọn phổ biến nhất cho du khách từ Việt Nam</p>
       <div className="flex flex-col gap-4">
-        <div className="flex flex-row gap-4">
-          <div className="relative rounded-lg overflow-hidden">
-            <img src="https://cf.bstatic.com/xdata/images/city/600x600/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o=" alt="TP. Hồ Chí Minh" className=" flex-1 aspect-[2/1]" />
+        <div className="w-full flex flex-row gap-4">
+          <div className="w-full relative rounded-lg overflow-hidden">
+            <img src="https://cf.bstatic.com/xdata/images/city/800x400/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o=" alt="TP. Hồ Chí Minh" className="flex-1 w-['50%']  aspect-[2/1]" />
             <div className="absolute inset-0 bg-black opacity-5"></div>
             <div className="absolute top-2 left-2 text-white text-xl font-bold">
               TP. Hồ Chí Minh <span className="ml-1">🇻🇳</span>
             </div>
           </div>
-          <div className="relative rounded-lg overflow-hidden">
-            <img src="https://cf.bstatic.com/xdata/images/city/600x600/688956.jpg?k=fc88c6ab5434042ebe73d94991e011866b18ee486476e475a9ac596c79dce818&o=" alt="Vũng Tàu" className=" flex-1 aspect-[2/1]" />
+          <div className="w-full relative rounded-lg overflow-hidden">
+            <img src="https://cf.bstatic.com/xdata/images/city/800x400/688956.jpg?k=fc88c6ab5434042ebe73d94991e011866b18ee486476e475a9ac596c79dce818&o=" alt="Vũng Tàu" className=" flex-1   w-['50%'] aspect-[2/1]" />
             <div className="absolute inset-0 bg-black opacity-5"></div>
             <div className="absolute top-2 left-2 text-white text-xl font-bold">
               Vũng Tàu<span className="ml-1">🇻🇳</span>

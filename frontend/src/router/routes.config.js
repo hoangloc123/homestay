@@ -4,7 +4,7 @@ import LoginPage from '@pages/login/Login';
 import NotFoundPage from '@pages/not-found/NotFoundPage';
 import { RouterPath } from './RouterPath';
 import PrivateRoute from '@components/private-router/PrivateRoute';
-import SearchPage from '@pages/search/SearchPage';
+import DetailPage from '@pages/detail/DetailPage';
 
 const routesConfig = [
   {
@@ -14,8 +14,8 @@ const routesConfig = [
     layoutProps: { showText: true },
   },
   {
-    path: RouterPath.SEARCH,
-    element: SearchPage,
+    path: RouterPath.DETAIL,
+    element: DetailPage,
     layout: Layout,
   },
   {

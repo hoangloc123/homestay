@@ -1,8 +1,45 @@
-import { Button } from "@nextui-org/react"
+import { Button, DateRangePicker, Input } from "@nextui-org/react"
 import { cn } from "@utils/Utils"
 import { useRef, useState } from "react"
+import { parseZonedDateTime } from "@internationalized/date";
+import { NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper } from "@chakra-ui/react";
 
-export default function SearchPage() {
+const reviews = [
+  {
+    id: 1,
+    name: "My",
+    country: "Việt Nam",
+    avatar: "https://placehold.co/50x50",
+    stayDetails: "Căn Hộ 1 Phòng Ngủ Có Ban Công",
+    stayDuration: "4 đêm · tháng 8/2024",
+    stayType: "Cặp đôi",
+    reviewDate: "Ngày đánh giá: ngày 27 tháng 8 năm 2024",
+    title: "Rẻ bất ngờ",
+    rating: 9.0,
+    pros: "Giá rẻ bất ngờ nên mình phải hỏi đi hỏi lại, tiện ích đầy đủ nhưng hơi ngại vì mình phải đổi căn giữa chừng 1 tẹo. Đặt studio 1 phòng ngủ mà bên home toàn đưa căn 2 phòng ngủ nên bị dư ko làm gì luôn. Có karaoke miễn phí và bơi thoải mái, giải trí nữa nên cũng thích, gần trung tâm",
+    cons: "Dụng cụ bếp mình thấy còn hơi chưa sạch sẽ và đầy đủ tiện nghi lắm thôi, còn lại quá okeee",
+    response: "cảm ơn quý khách rất nhiều.hẹn gặp lại quý khách lần sau ạk",
+    helpfulCount: 1
+  },
+  {
+    id: 2,
+    name: "Ngọc",
+    country: "Việt Nam",
+    avatar: "https://placehold.co/50x50",
+    stayDetails: "Căn Hộ 3 Phòng Ngủ Nhìn Ra Biển",
+    stayDuration: "1 đêm · tháng 10/2024",
+    reviewDate: "Ngày đánh giá: ngày 9 tháng 10 năm 2024",
+    title: "ok",
+    rating: 10,
+    pros: "ok",
+    helpfulCount: 0
+  }
+];
+
+
+
+
+export default function DetailPage() {
   const overview = useRef()
   const info = useRef()
   const conform = useRef()
@@ -154,15 +191,22 @@ export default function SearchPage() {
         <header className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Phòng trống</h1>
           <div className="flex items-center space-x-2">
-            <input type="text" className="border p-2" value="T5, 10 tháng 10 — T6, 11 tháng 10" readOnly />
-            <select className="border p-2">
-              <option>2 người lớn · 1 trẻ em · 1 phòng</option>
-            </select>
-            <button className="bg-blue-600 text-white p-2 rounded">Thay đổi tìm kiếm</button>
+            <DateRangePicker
+              radius='sm'
+              hideTimeZone
+              variant='flat'
+              visibleMonths={2}
+              className="border-none flex-5"
+              defaultValue={{
+                start: parseZonedDateTime("2024-04-01T00:45[America/Los_Angeles]"),
+                end: parseZonedDateTime("2024-04-08T11:15[America/Los_Angeles]"),
+              }}
+            />
+            <Button onClick={() => { }} variant='solid' radius='sm' className="w-full min-w-[200px] xl:w-fit  bg-blue-600 px-4 py-2 text-white">Thay đổi tìm kiếm</Button>
           </div>
         </header>
         <div className="flex justify-end mb-4">
-          <a href="#" className="text-blue-600">Chúng Tôi Luôn Khớp Giá!</a>
+          <a href="#" className="text-grey-500 font-bold">Chúng Tôi Luôn Khớp Giá!</a>
         </div>
         <table className="w-full border-collapse">
           <thead>
@@ -324,9 +368,15 @@ export default function SearchPage() {
                 </td>
                 <td className="border p-2 text-center">
                   {room.select && (
-                    <div className="flex justify-center items-center">
-                      <input type="checkbox" className="mr-2" />
-                      <button className="bg-blue-600 text-white p-2 rounded">Tôi sẽ đặt</button>
+                    <div className="flex justify-center items-center gap-5">
+                      <NumberInput className="flex-1 max-w-[140px]" defaultValue={15} max={30} clampValueOnBlur={false}>
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                      <Button variant="shadow" color="success" className="p-2 min-w-[150px] rounded text-white">Tôi sẽ đặt</Button>
                     </div>
                   )}
                 </td>
@@ -337,12 +387,70 @@ export default function SearchPage() {
       </div>
     )
   }
+
+  function Review({ review }) {
+    return (
+      <div className="w-full bg-white p-4 rounded-lg shadow mb-4 flex flex-row">
+        <div className="w-1/4 flex items-start">
+          <img src={review.avatar} alt="User avatar" className="w-12 h-12 rounded-full mr-4" />
+          <div>
+            <div className="flex items-center mb-1">
+              <h3 className="font-bold mr-2">{review.name}</h3>
+              <span className="text-sm text-gray-500">{review.country}</span>
+            </div>
+            <div className="text-sm text-gray-500 mb-1">{review.stayDetails}</div>
+            <div className="text-sm text-gray-500 mb-1">{review.stayDuration}</div>
+            <div className="text-sm text-gray-500">{review.stayType}</div>
+          </div>
+        </div>
+        <div className="mt- flex-1">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">{review.reviewDate}</div>
+            <div className="bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded">{review.rating}</div>
+          </div>
+          <h4 className="font-bold mt-2">{review.title}</h4>
+          <div className="mt-2 flex flex-col">
+            <p className="flex items-center text-green-600"><i className="fas fa-smile mr-2"></i>{review.pros}</p>
+            {review.cons && <p className="flex items-center text-red-600 mt-2"><i className="fas fa-frown mr-2"></i>{review.cons}</p>}
+          </div>
+          {/* {review.response && (
+            <div className="bg-gray-100 p-2 rounded mt-4">
+              <p className="flex items-center text-gray-700"><i className="fas fa-comment-dots mr-2"></i>Phản hồi của chỗ nghỉ:</p>
+              <p className="text-gray-700 mt-1">{review.response}</p>
+            </div>
+          )} */}
+          {/* <div className="flex items-center mt-4 text-sm text-gray-500">
+            <span>{review.helpfulCount} người thấy đánh giá này có ích.</span>
+            <button className="ml-4 text-blue-600 flex items-center"><i className="fas fa-thumbs-up mr-1"></i>Hữu ích</button>
+            <button className="ml-4 text-blue-600 flex items-center"><i className="fas fa-thumbs-down mr-1"></i>Không hữu ích</button>
+          </div> */}
+        </div>
+      </div>
+    );
+  }
+
+  function CommentList() {
+    return (
+      <div className="mx-auto w-full mt-20">
+        <h1 className="text-2xl font-bold mb-4">Đánh giá của khách</h1>
+        <div className="w-full flex justify-end mb-4">
+          <select className="border border-gray-300 rounded p-2">
+            <option>Phù hợp nhất</option>
+          </select>
+        </div>
+        {reviews.map(review => (
+          <Review key={review.id} review={review} />
+        ))}
+      </div>
+    )
+  }
   return (
-    <div className='mx-auto max-w-[80%] pt-10'>
+    <div className='mx-auto max-w-[80%] pt-10 pb-24'>
       {/* navigator */}
       <SectionNavigator />
       <Overview />
       <InfoPrice />
+      <CommentList/>
     </div>
   )
 }
