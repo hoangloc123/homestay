@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const { nextui } = require('@nextui-org/react')
+const {nextui} = require('@nextui-org/react')
 export default {
 	darkMode: 'class',
 	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'],
@@ -67,7 +67,9 @@ export default {
 					400: '#7E68E5', // color-purple-400
 					500: '#715AD4', // color-purple-500
 				},
-
+				blue: {
+					base: '#3758F9',
+				},
 				// Status Colors
 				error: '#FF0000', // error
 				success: '#09A04F', // success
@@ -96,7 +98,6 @@ export default {
 				'red-dark': '#E10E0E',
 				'red-dark-shade': '#FEEBEB',
 				'neutral-content': '#E6E6E6',
-				'accent': '#FFB700',
 				snow: '#FFF9FC',
 				red: '#F23030',
 			},
