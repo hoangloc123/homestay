@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import {checkFirestoreConnection} from "./firebase/firestore/test.firestore.js";
 
+import accomodationRoutes from "./routes/accomodation.route.js";
+
 dotenv.config();
 const port = process.env.PORT || 5000;
 
@@ -16,6 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/accomodations', accomodationRoutes);
 app.use(cookieParser());
 
 app.listen(port, () => {console.log(`Server running on port ${port}`)});
