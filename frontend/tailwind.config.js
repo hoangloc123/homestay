@@ -52,12 +52,6 @@ export default {
 					DEFAULT: '#9CA3AF', // border-default
 					subtle: '#E5E7EB', // border-subtle
 				},
-				// Primary Colors
-				primary: {
-					DEFAULT: '#060D23', // primary-default
-					hover: '#374151', // primary-hover
-					pressed: '#4B5563', // primary-pressed
-				},
 				grey: {
 					200: '#D4D6DB', // color-grey-200
 					500: '#696F7A', // color-grey-500

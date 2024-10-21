@@ -34,7 +34,7 @@ function Header({showText}) {
 
 	return (
 		<div className="relative rounded-ee-xl rounded-es-xl bg-blue-800">
-			<div className="m-auto w-full max-w-[80%] 2xl:max-w-[60%]">
+			<div className="m-auto w-full max-w-[80%] 2xl:max-w-[80%]">
 				<header className="pt-5 text-white">
 					<div className="container mx-auto flex items-center justify-between">
 						<div className="flex items-center space-x-4">
@@ -78,7 +78,7 @@ function Header({showText}) {
 							<p className="mt-2 pb-16 text-lg">Tìm ưu đãi khách sạn, chỗ nghỉ dạng nhà và nhiều hơn nữa...</p>
 						</>
 					)}
-					<div className="bottom-[-20px] w-full xl:absolute xl:w-[80%] 2xl:w-[60%]">
+					<div className="bottom-[-20px] w-full xl:absolute xl:w-[80%] 2xl:w-[80%]">
 						<div className="bg-ye flex w-full flex-col items-center justify-center gap-1 rounded-xl bg-accent p-1 shadow-lg xl:flex-row">
 							<Select
 								className="flex-4 xl:flex-3 border-none"
@@ -111,7 +111,10 @@ function Header({showText}) {
 							>
 								<PopoverTrigger>
 									<Button
-										className={cn('flex-3 min-w-[250px] rounded-lg border-none bg-white', havePet && 'min-w-[300px]')}
+										className={cn(
+											'flex-3 w-full rounded-lg border-none bg-white xl:min-w-[250px]',
+											havePet && 'min-w-[300px]',
+										)}
 									>
 										Phòng {personCount} người · {roomCount} phòng {havePet && '· Vật nuôi'}
 										<i
