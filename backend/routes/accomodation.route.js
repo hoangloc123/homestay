@@ -4,8 +4,8 @@ const router = express.Router();
 import Accomodation from "../models/schemas/Accomodation.schema.js";
 import Amenity from "../models/schemas/Amenity.schema.js";
 import Policy from "../models/schemas/Policy.schema.js";
+import Room from "../models/schemas/Room.schema.js";
 
-// POST /accomodation
 router.post('/', async (req, res) => {
     try {
         const {
@@ -15,8 +15,10 @@ router.post('/', async (req, res) => {
             address,
             pricePerNight,
             policyId,
-            amenityIds = [], // Danh sách các amenityId có sẵn
-            amenities = [], // Danh sách các amenity mới cần tạo
+            // Danh sách các amenityId có sẵn
+            amenityIds = [],
+            // Danh sách các amenity mới cần tạo
+            amenities = [],
             isAvailable,
             roomIds,
             lat,
@@ -63,6 +65,25 @@ router.post('/', async (req, res) => {
 }
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find accomodation by ID and populate Policy
+        const accomodation = await Accomodation.findById(id)
+            .populate('policyId')
+
+        if (!accomodation) {
+            return res.status(404).json({ message: 'Accomodation not found' });
+        }
+
+        res.status(200).json(accomodation);
+    } catch (error) {
+        console.error('Error fetching accomodation details:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 router.post('/:id/policy', async (req, res) => {
     try {
         const { id } = req.params;
@@ -98,6 +119,84 @@ router.post('/:id/policy', async (req, res) => {
         console.error('Error adding policy:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
-})
+});
+
+router.post('/:id/rooms', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rooms } = req.body;
+
+        const accomodation = await Accomodation.findById(id);
+        if (!accomodation) {
+            return res.status(404).json({ message: 'Accomodation not found' });
+        }
+
+        if (!rooms || rooms.length === 0) {
+            return res.status(400).json({ message: 'No rooms provided' });
+        }
+
+        // Duyệt qua từng room để xử lý tạo Amenity nếu cần và sau đó tạo room
+        const createdRooms = [];
+
+        for (let roomData of rooms) {
+            const {
+                name,
+                capacity,
+                pricePerNight,
+                amenityIds = [],
+                amenities = [],
+                quantity
+            } = roomData;
+
+            if (amenities.length > 0) {
+                const newAmenities = await Amenity.insertMany(amenities.map(amenity => ({ name: amenity })));
+                const newAmenityIds = newAmenities.map(amenity => amenity._id);
+                amenityIds.push(...newAmenityIds);
+            }
+
+            const newRoom = new Room({
+                name,
+                capacity,
+                pricePerNight,
+                amenityIds,
+                quantity,
+            });
+            // NOTE: propety 'available' is not defined in Room schema, it's a computed props.
+
+            const savedRoom = await newRoom.save();
+            createdRooms.push(savedRoom);
+        }
+
+        accomodation.roomIds.push(...createdRooms.map(room => room._id));
+        await accomodation.save();
+
+        res.status(201).json({
+            message: `${createdRooms.length} rooms created successfully`,
+            rooms: createdRooms
+        });
+    } catch (error) {
+        console.error('Error creating rooms:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.get('/:id/rooms', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const accomodation = await Accomodation.findById(id);
+        if (!accomodation) {
+            return res.status(404).json({ message: 'Accomodation not found' });
+        }
+        console.log(accomodation.roomIds);
+
+        const rooms = await Room.find({ _id: { $in: accomodation.roomIds } });
+
+        res.status(200).json(rooms);
+    } catch (error) {
+        console.error('Error retrieving rooms:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 export default router;
