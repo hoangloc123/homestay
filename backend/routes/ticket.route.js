@@ -66,6 +66,10 @@ router.post('/', async (req, res) => {
             totalPrice
         });
 
+        if (!newTicket.rooms?.length) {
+            newTicket.bookedQuantity = 1;
+        }
+
         const savedTicket = await newTicket.save();
 
         res.status(201).json({
