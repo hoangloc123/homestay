@@ -1,7 +1,12 @@
 import {
+	Avatar,
 	Button,
 	DateRangePicker,
 	Divider,
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
@@ -10,7 +15,7 @@ import {
 	Switch,
 } from '@nextui-org/react'
 import {parseZonedDateTime} from '@internationalized/date'
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, NavLink, useNavigate} from 'react-router-dom'
 import {useState} from 'react'
 import {
 	NumberDecrementStepper,
@@ -20,16 +25,38 @@ import {
 	NumberInputStepper,
 } from '@chakra-ui/react'
 import {cn} from '@utils/Utils'
+import {useModalCommon} from '../../context/ModalContext'
+import RegisterModal from './Register'
+import LoginModal from './Login'
+import {useAuth} from '../../context/AuthContext'
 
 function Header({showText}) {
 	const navigate = useNavigate()
+	const {auth} = useAuth()
 
 	const [roomCount, setRoomCount] = useState(1)
 	const [personCount, setPersonCount] = useState(2)
 	const [havePet, setHavePet] = useState(false)
+	const {onOpen} = useModalCommon()
 
 	function handleSearch() {
 		navigate('/search')
+	}
+
+	const openLogin = () => {
+		onOpen({
+			view: <LoginModal />,
+			title: 'Đăng nhập',
+			showFooter: false,
+		})
+	}
+
+	function openRegister() {
+		onOpen({
+			view: <RegisterModal />,
+			title: 'Đăng ký',
+			showFooter: false,
+		})
 	}
 
 	return (
@@ -53,20 +80,68 @@ function Header({showText}) {
 							>
 								Đăng chỗ nghỉ của quý vị
 							</Button>
-							<Button
-								variant="bordered"
-								color="primary"
-								className="rounded-xl bg-slate-50 font-bold"
-							>
-								Đăng ký
-							</Button>
-							<Button
-								variant="bordered"
-								color="primary"
-								className="rounded-xl bg-slate-50 font-bold"
-							>
-								Đăng nhập
-							</Button>
+
+							{auth ? (
+								<>
+									<Dropdown>
+										<DropdownTrigger>
+											<Button
+												variant="light"
+												className="border-none hover:bg-transparent"
+											>
+												<Avatar
+													src={auth.src}
+													className="h-6 w-6 bg-gray-200"
+												/>
+												<p className="text-white">{auth.name} </p>
+												<i className="fa fa-caret-down text-white"></i>
+											</Button>
+										</DropdownTrigger>
+										<DropdownMenu aria-label="Static Actions">
+											<DropdownItem
+												key="profile"
+												as={NavLink}
+												to="/profile"
+											>
+												<i className="fas fa-user mr-2"></i>
+												<span>Thông tin tài khoản</span>
+											</DropdownItem>
+											<DropdownItem key="ticket">
+												<i className="fas fa-ticket-alt mr-2"></i>
+												<span>Vé của tôi</span>
+											</DropdownItem>
+											<DropdownItem key="review">
+												<i className="fas fa-comment-dots mr-2"></i>
+												<span>Nhận xét chuyến đi</span>
+											</DropdownItem>
+											<DropdownItem color="danger">
+												<i className="fas fa-power-off mr-2"></i>
+												<span>Đăng xuất</span>
+											</DropdownItem>
+										</DropdownMenu>
+									</Dropdown>
+								</>
+							) : (
+								<>
+									{' '}
+									<Button
+										variant="bordered"
+										color="primary"
+										onClick={() => openRegister()}
+										className="rounded-xl bg-slate-50 font-bold"
+									>
+										Đăng ký
+									</Button>
+									<Button
+										variant="bordered"
+										color="primary"
+										className="rounded-xl bg-slate-50 font-bold"
+										onClick={() => openLogin()}
+									>
+										Đăng nhập
+									</Button>
+								</>
+							)}
 						</div>
 					</div>
 				</header>

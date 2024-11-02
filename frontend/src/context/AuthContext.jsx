@@ -1,23 +1,29 @@
-import React, { createContext, useState, useContext } from 'react';
+import Cookies from 'js-cookie'
+import React, {createContext, useContext, useEffect, useState} from 'react'
+const AuthContext = createContext()
 
-const AuthContext = createContext();
+export const AuthProvider = ({children}) => {
+	const [auth, setAuth] = useState(null)
+	const [loading, setIsLoading] = useState(true)
 
-export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(null);
+	const login = user => {
+		Cookies.set('auth', JSON.stringify(user), {expires: 7})
+		setAuth(user)
+	}
 
-  const login = (user) => {
-    setAuth(user);
-  };
+	const logout = () => {
+		setAuth(null)
+	}
 
-  const logout = () => {
-    setAuth(null);
-  };
+	useEffect(() => {
+		setIsLoading(true)
+		const storedAuth = Cookies.get('auth')
+		if (storedAuth) {
+			setAuth(JSON.parse(storedAuth))
+			setIsLoading(false)
+		}
+	}, [])
+	return <AuthContext.Provider value={{auth, login, logout, loading}}>{children}</AuthContext.Provider>
+}
 
-  return (
-    <AuthContext.Provider value={{ auth, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext)
