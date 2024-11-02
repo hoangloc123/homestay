@@ -12,7 +12,7 @@ import {
 import 'leaflet/dist/leaflet.css'
 import MapView from '@components/map/MapView'
 import GoogleMapLink from '@components/map/GoogleMapLink'
-import {roomList} from './mock'
+import {roomList} from '../mock'
 import {amenitiesConst} from '@utils/constData'
 
 const reviews = [

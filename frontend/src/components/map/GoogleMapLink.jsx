@@ -1,5 +1,8 @@
+import {getGGMapLink} from '@utils/Utils'
+
 export default function GoogleMapLink({lat, lng}) {
-	const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`
+	const mapUrl = getGGMapLink(lat, lng)
+	// `https://www.google.com/maps?q=${lat},${lng}`
 	return (
 		<a
 			href={mapUrl}

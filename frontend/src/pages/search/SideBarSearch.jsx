@@ -1,188 +1,121 @@
-import MapView from '@components/map/MapView'
-import {Checkbox, Slider} from '@nextui-org/react'
+import StarIcon from '@assets/base/icon/Star'
+import {
+	Accordion,
+	AccordionItem,
+	Button,
+	Checkbox,
+	CheckboxGroup,
+	Radio,
+	RadioGroup,
+	Slider,
+	TimeInput,
+} from '@nextui-org/react'
+import {TYPE_HOST} from '@utils/constants'
+import {amenitiesSearchConst} from '@utils/constData'
 import React from 'react'
-
 export default function SideBarSearch() {
 	return (
 		<div className="px-2">
-			<MapView
-				isMine
-				zoomIn={10}
-				height="140px"
-				width="100%"
-			/>
-			<div className="w-64 rounded-lg border p-4">
-				<div className="mb-4">
-					<h2 className="mb-2 font-bold">Chọn lọc theo:</h2>
-					<div className="mb-4">
-						<h3 className="mb-2 font-semibold">Dùng các bộ lọc cũ</h3>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Cho phép mang theo vật nuôi 165</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Resort 43</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Nhà hàng 380</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Chỗ đỗ xe 791</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Bãi biển Mỹ Khê 379</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Nhìn ra biển 314</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Biệt thự 80</label>
-						</div>
+			<div className="w-64">
+				<div className="flex flex-col rounded-t-lg border border-b-0 p-4">
+					<h2 className="mb-2 font-bold">Sắp xếp:</h2>
+					<div className="mb-0">
+						<RadioGroup>
+							<Radio value="S1">Mặc định</Radio>
+							<Radio value="S4"> Đánh giá cao nhất</Radio>
+							<Radio value="S5"> Giá tăng dần</Radio>
+							<Radio value="S6"> Giá giảm dần</Radio>
+						</RadioGroup>
 					</div>
-					<div className="mb-4">
-						<h3 className="mb-2 font-semibold">Ngân sách của bạn (mỗi đêm)</h3>
-						<Slider
-							label="Giá:"
-							step={50}
-							minValue={100000}
-							maxValue={30000000}
-							defaultValue={[100000, 500000]}
-							formatOptions={{style: 'currency', currency: 'VND'}}
-							className="max-w-md"
-						/>
-					</div>
-					<div className="mb-4">
-						<h3 className="mb-2 font-semibold">Các bộ lọc phổ biến</h3>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Đặt phòng không cần thẻ tín dụng 469</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Căn hộ 239</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Không cần thanh toán trước 613</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Biệt thự 80</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Khách sạn 511</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Bãi biển 529</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Tuyệt hảo: 9 điểm trở lên 223</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Miễn phí hủy 212</label>
-						</div>
-					</div>
-					<div className="mb-4">
-						<h3 className="mb-2 font-semibold">Tiện nghi</h3>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Chỗ đỗ xe 791</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Nhà hàng 380</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Cho phép mang theo vật nuôi 165</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Dịch vụ phòng 626</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Lễ tân 24 giờ 676</label>
-						</div>
-						<div className="mb-2 flex items-center">
-							<Checkbox
-								type="checkbox"
-								className="mr-2"
-							/>
-							<label>Khách sạn 511</label>
-						</div>
-					</div>
-					<div className="cursor-pointer text-blue-500">Hiển thị tất cả 15 loại</div>
+				</div>
+				<div className="border border-b-0 p-4">
+					<h3 className="mb-4 font-semibold">Ngân sách của bạn:</h3>
+					<Slider
+						step={50}
+						label="Giá"
+						minValue={100000}
+						maxValue={2000000}
+						defaultValue={[100000, 2000000]}
+						formatOptions={{style: 'currency', currency: 'VND'}}
+						className="max-w-md"
+					/>
+				</div>
+				<div className="mb-4 rounded-b-lg border px-4 py-4">
+					<h3 className="font-semibold">Bộ lọc:</h3>
+					<Accordion
+						className="px-0"
+						variant="light"
+						open
+					>
+						<AccordionItem
+							key="1.1"
+							title="Loại chỗ nghỉ"
+						>
+							<div className="flex flex-col gap-1">
+								<CheckboxGroup label="">
+									{TYPE_HOST.map(x => (
+										<Checkbox value={x.id}>{x.name}</Checkbox>
+									))}
+								</CheckboxGroup>
+							</div>
+						</AccordionItem>
+						<AccordionItem
+							key="3.3"
+							title="Tiêu chí phổ biến"
+						>
+							<div className="flex flex-col gap-1">
+								<CheckboxGroup label="">
+									{amenitiesSearchConst.map(x => (
+										<Checkbox value={x.id}>{x.title}</Checkbox>
+									))}
+								</CheckboxGroup>
+							</div>
+						</AccordionItem>
+						{/* <AccordionItem
+							key="2"
+							aria-label="Giá vé"
+							title="Giá vé"
+						>
+							<div className="">
+								<Slider
+									step={50}
+									label="Giá"
+									minValue={100000}
+									maxValue={2000000}
+									defaultValue={[100000, 2000000]}
+									formatOptions={{style: 'currency', currency: 'VND'}}
+									className="max-w-md"
+								/>
+							</div>
+						</AccordionItem> */}
+
+						<AccordionItem
+							key="5"
+							title="Đánh giá"
+						>
+							<div className="flex w-3/4 flex-col gap-1">
+								<Button
+									variant="ghost flex-start"
+									className="flex-start"
+								>
+									<StarIcon />
+									<StarIcon />
+									<StarIcon />
+									<StarIcon />
+									trở lên
+								</Button>
+								<Button
+									variant="ghost flex-start"
+									className="flex-start"
+								>
+									<StarIcon />
+									<StarIcon />
+									<StarIcon />
+									trở lên
+								</Button>
+							</div>
+						</AccordionItem>
+					</Accordion>
 				</div>
 			</div>
 		</div>
