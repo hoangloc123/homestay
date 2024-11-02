@@ -15,7 +15,6 @@ const AccomodationSchema = new mongoose.Schema({
     images: [{ type: String }],
     description: { type: String, required: true },
     noteAccomodation: { type: String },
-    isVerified: { type: Boolean, default: false },
 });
 
 export default mongoose.model("Accomodation", AccomodationSchema);
