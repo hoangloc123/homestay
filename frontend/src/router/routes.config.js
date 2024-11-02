@@ -15,7 +15,7 @@ const routesConfig = [
 		layoutProps: {showText: true},
 	},
 	{
-		path: RouterPath.DETAIL,
+		path: `${RouterPath.DETAIL}/:id`,
 		element: DetailPage,
 		layout: Layout,
 	},
