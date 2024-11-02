@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const { nextui } = require('@nextui-org/react')
+const {nextui} = require('@nextui-org/react')
 export default {
 	darkMode: 'class',
 	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'],
@@ -52,12 +52,6 @@ export default {
 					DEFAULT: '#9CA3AF', // border-default
 					subtle: '#E5E7EB', // border-subtle
 				},
-				// Primary Colors
-				primary: {
-					DEFAULT: '#060D23', // primary-default
-					hover: '#374151', // primary-hover
-					pressed: '#4B5563', // primary-pressed
-				},
 				grey: {
 					200: '#D4D6DB', // color-grey-200
 					500: '#696F7A', // color-grey-500
@@ -67,7 +61,9 @@ export default {
 					400: '#7E68E5', // color-purple-400
 					500: '#715AD4', // color-purple-500
 				},
-
+				blue: {
+					base: '#3758F9',
+				},
 				// Status Colors
 				error: '#FF0000', // error
 				success: '#09A04F', // success
@@ -96,7 +92,6 @@ export default {
 				'red-dark': '#E10E0E',
 				'red-dark-shade': '#FEEBEB',
 				'neutral-content': '#E6E6E6',
-				'accent': '#FFB700',
 				snow: '#FFF9FC',
 				red: '#F23030',
 			},
