@@ -6,6 +6,7 @@ import {RouterPath} from './RouterPath'
 import PrivateRoute from '@components/private-router/PrivateRoute'
 import DetailPage from '@pages/detail/DetailPage'
 import SearchPage from '@pages/search/SearchPage'
+import AdminPage from '@pages/admin'
 
 const routesConfig = [
 	{
@@ -15,7 +16,7 @@ const routesConfig = [
 		layoutProps: {showText: true},
 	},
 	{
-		path: RouterPath.DETAIL,
+		path: `${RouterPath.DETAIL}/:id`,
 		element: DetailPage,
 		layout: Layout,
 	},
@@ -23,6 +24,10 @@ const routesConfig = [
 		path: RouterPath.SEARCH,
 		element: SearchPage,
 		layout: Layout,
+	},
+	{
+		path: RouterPath.ADMIN,
+		element: AdminPage,
 	},
 	{
 		path: '/about',

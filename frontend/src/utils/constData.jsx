@@ -99,13 +99,13 @@ export const amenitiesConst = [
 		id: '9',
 		title: 'Internet',
 		icon: () => <i className="fas fa-wifi"></i>,
-		items: [{id: '9.1', title: 'Wi-fi có ở toàn bộ khách sạn và miễn phí'}],
+		items: [{id: '9.1', title: 'Wi-fi miễn phí'}],
 	},
 	{
 		id: '10',
 		title: 'Chỗ đậu xe',
 		icon: () => <i className="fas fa-product-hunt"></i>,
-		items: [{id: '10.1', title: 'Không có chỗ đỗ xe'}],
+		items: [{id: '10.1', title: 'Có chỗ đỗ xe'}],
 	},
 	{
 		id: '11',
@@ -157,4 +157,33 @@ export const amenitiesConst = [
 			{id: '13.10', title: 'Màn chống muỗi'},
 		],
 	},
+	{
+		id: '14',
+		title: 'Thanh toán',
+		icon: () => <i className="fas fa-atm"></i>,
+		items: [{id: '14.1', title: 'Không cần thanh toán trước'}],
+		items: [{id: '14.2', title: 'Thanh toán qua MOMO'}],
+	},
+]
+
+export const amenitiesSearchConst = [
+	{id: '3.1', title: 'Nhìn ra thành phố'},
+	{id: '3.2', title: 'Nhìn ra địa danh nổi tiếng'},
+	{id: '4.1', title: 'Bàn ghế ngoài trời'},
+	{id: '4.3', title: 'Hồ bơi riêng'},
+	{id: '8.7', title: 'Minibar'},
+	{id: '8.8', title: 'Nhà hàng'},
+	{id: '8.9', title: 'Máy pha trà/cà phê'},
+	{id: '10.1', title: 'Có chỗ đỗ xe'},
+	{
+		id: '12.1',
+		title: 'Có xuất hóa đơn',
+	},
+	{id: '13.1', title: 'Dịch vụ đưa đón (Phụ phí)'},
+	{id: '13.3', title: 'Chỗ ngủ cho vật nuôi'},
+	{
+		id: '12.4',
+		title: 'Lễ tân 24 giờ',
+	},
+	{id: '9.1', title: 'Wi-fi miễn phí'},
 ]
