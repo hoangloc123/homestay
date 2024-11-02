@@ -8,7 +8,6 @@ const AccomodationSchema = new mongoose.Schema({
     pricePerNight: { type: Number },
     policyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Policy' },
     amenityIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Amenity' }],
-    isAvailable: { type: Boolean },
     roomIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room' }],
     lat: { type: String },
     lng: { type: String },

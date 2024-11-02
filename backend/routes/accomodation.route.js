@@ -15,9 +15,9 @@ router.post('/', async (req, res) => {
             address,
             pricePerNight,
             policyId,
-            // Danh sách các amenityId có sẵn
+            // already created amenities
             amenityIds = [],
-            // Danh sách các amenity mới cần tạo
+            // new amenities that need to be created
             amenities = [],
             isAvailable,
             roomIds,
@@ -69,7 +69,6 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Find accomodation by ID and populate Policy
         const accomodation = await Accomodation.findById(id)
             .populate('policyId')
 
@@ -135,7 +134,6 @@ router.post('/:id/rooms', async (req, res) => {
             return res.status(400).json({ message: 'No rooms provided' });
         }
 
-        // Duyệt qua từng room để xử lý tạo Amenity nếu cần và sau đó tạo room
         const createdRooms = [];
 
         for (let roomData of rooms) {
@@ -188,7 +186,6 @@ router.get('/:id/rooms', async (req, res) => {
         if (!accomodation) {
             return res.status(404).json({ message: 'Accomodation not found' });
         }
-        console.log(accomodation.roomIds);
 
         const rooms = await Room.find({ _id: { $in: accomodation.roomIds } });
 
