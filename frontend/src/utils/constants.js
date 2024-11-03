@@ -1,10 +1,9 @@
 export default class Constants {
 	static optionsStatusBooking = [
-		{label: 'Chưa xác nhận', value: 1},
-		{label: 'Đã xác nhận', value: 2},
-		{label: 'Đã khám', value: 3},
-		{label: 'BS Đã đánh giá', value: 4},
-		// { label: "BN Đã đánh giá", value: 5 },
+		{label: 'Chưa xác nhận', value: 1, color: 'warning'},
+		{label: 'Đã xác nhận', value: 2, color: 'primary'},
+		{label: 'Đã hoàn thành', value: 3, color: 'success'},
+		{label: 'Đã đánh giá', value: 4, color: 'secondary'},
 	]
 	static vietnamProvinces = [
 		{label: 'Hà Nội', value: 1},

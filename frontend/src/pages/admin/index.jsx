@@ -10,7 +10,7 @@ import AdminUser from '../../section/admin/AdminUser'
 import AdminBusList from '../../section/admin/AdminBusList'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
 import AdminSideBar from '../../section/admin/AdminSideBar'
-import TicketListPage from '../../section/admin/AdminTicketList'
+import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
 
 export default function AdminPage() {
 	const [selectedItem, setSelectedItem] = useState('users')
@@ -55,10 +55,10 @@ export default function AdminPage() {
 				return <AdminUser />
 			case 'buses':
 				return <AdminBusList />
-			case 'ticketAll':
-				return <TicketListPage />
-			case 'tickets':
-				return <TicketListPage />
+			case 'bookingAll':
+				return <AdminBookingListSection isAdmin />
+			case 'booking':
+				return <AdminBookingListSection />
 			default:
 				return 'Not Found'
 		}

@@ -40,7 +40,7 @@ const sidebarItems = [
 		roles: ['admin'],
 	},
 	{
-		id: 'ticketAll',
+		id: 'bookingAll',
 		icon: 'fa-tasks',
 		label: 'Đặt phòng',
 		title: 'Danh sách lượt đặt phòng',
@@ -76,7 +76,7 @@ const sidebarItems = [
 		roles: ['chuNhaXe', 'taiXe', 'phuXe'],
 	},
 	{
-		id: 'tickets',
+		id: 'booking',
 		icon: 'fa-clipboard-list',
 		label: 'Đặt phòng',
 		title: 'Danh sách lượt đặt phòng',
