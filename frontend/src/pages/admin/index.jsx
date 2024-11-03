@@ -10,12 +10,12 @@ import AdminUser from '../../section/admin/AdminUser'
 import AdminBusList from '../../section/admin/AdminBusList'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
 import AdminSideBar from '../../section/admin/AdminSideBar'
+import TicketListPage from '../../section/admin/AdminTicketList'
 
 export default function AdminPage() {
 	const [selectedItem, setSelectedItem] = useState('users')
 	const [selectedName, setSelectedName] = useState('')
 	const {auth, loading} = useAuth()
-	console.log('🚀 ~ AdminPage ~ auth:', auth)
 	const {onOpen} = useModalCommon()
 	const navigator = useNavigate()
 	const handleItemClick = (itemId, name) => {
@@ -56,11 +56,11 @@ export default function AdminPage() {
 			case 'buses':
 				return <AdminBusList />
 			case 'ticketAll':
-				return <AdminTicketList />
+				return <TicketListPage />
 			case 'tickets':
-				return <AdminTicketList />
+				return <TicketListPage />
 			default:
-				return null
+				return 'Not Found'
 		}
 	}
 
