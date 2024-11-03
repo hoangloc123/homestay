@@ -7,9 +7,9 @@ const RoomBookingSchema = new mongoose.Schema({
 
 const TicketSchema = new mongoose.Schema({
     userId: { type: String, required: true },
-    accomodationId: { type: String, required: true },
+    accomodationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Accomodation'},
     rooms: { type: [RoomBookingSchema] },
-    bookedQuantity: { type: Number, default: 1 },
+    bookedQuantity: { type: Number },
     fromDate: { type: String, required: true },
     toDate: { type: String, required: true },
     isPaid: { type: Boolean, default: false },

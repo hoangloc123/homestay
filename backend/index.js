@@ -8,6 +8,7 @@ import {checkFirestoreConnection} from "./firebase/firestore/test.firestore.js";
 import accomodationRoutes from "./routes/accomodation.route.js";
 import amenityRoutes from "./routes/amenity.route.js";
 import ticketRoutes from "./routes/ticket.route.js";
+import userRoutes from "./routes/user.route.js";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/accomodations', accomodationRoutes);
 app.use('/amenities', amenityRoutes);
 app.use('/tickets', ticketRoutes);
+app.use('/users', userRoutes);
 app.use(cookieParser());
 
 app.listen(port, () => {console.log(`Server running on port ${port}`)});

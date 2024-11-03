@@ -1,4 +1,5 @@
 import express from "express";
+import removeAccents from "remove-accents";
 const router = express.Router();
 
 import Accomodation from "../models/schemas/Accomodation.schema.js";
@@ -63,6 +64,44 @@ router.post('/', async (req, res) => {
 } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
 }
+});
+
+router.get('/', async (req, res) => {
+    try {
+        const { city, page = 1, limit = 10 } = req.query;
+
+        if (!city) {
+            return res.status(400).json({ message: 'City is required for search' });
+        }
+
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+
+        const accomodations = await Accomodation
+            .find({
+                city: { $regex: city.toLowerCase(), $options: 'i' }
+            })
+            .skip((pageNumber - 1) * limitNumber)
+            .limit(limitNumber)
+            .populate('amenityIds');
+
+        const total = await Accomodation.countDocuments({
+            city: { $regex: city.toLowerCase(), $options: 'i' }
+        });
+
+        res.status(200).json({
+            accomodations,
+            pagination: {
+                total: total,
+                pages: Math.ceil(total / limitNumber),
+                pageSize: limitNumber,
+                current: pageNumber
+            }
+        });
+    } catch (error) {
+        console.error('Error searching accomodations by name:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
 router.get('/:id', async (req, res) => {
