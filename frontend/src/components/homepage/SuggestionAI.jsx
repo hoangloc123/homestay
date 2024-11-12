@@ -64,7 +64,7 @@ export default SuggestionAI
 function CardDestination({name, src, rate = 8.9, province, comments = 0}) {
 	return (
 		<Link
-			to={`${RouterPath.DETAIL}`}
+			to={`${RouterPath.DETAIL}/1`}
 			className="overflow-hidden rounded-lg bg-white shadow-lg transition-all duration-100 ease-in-out hover:scale-105 hover:shadow-2xl"
 		>
 			<img

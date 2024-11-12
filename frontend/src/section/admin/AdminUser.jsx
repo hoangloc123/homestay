@@ -17,9 +17,9 @@ const data2 = [
 	},
 	{
 		name: 'Nguyễn Văn A',
-		role: 'Tài xế',
+		role: 'Chủ chỗ nghỉ',
 		account: 'nguyen.vxr',
-		accountType: 'Tài xế',
+		accountType: 'Khách hàng',
 		phone: '0987 654 321',
 		email: 'nguyenvana@gmail.com',
 		gender: 'Nữ',
@@ -29,9 +29,9 @@ const data2 = [
 	},
 	{
 		name: 'Nguyễn Văn A',
-		role: 'Phụ xe',
+		role: 'Khách hàng',
 		account: 'nguyen.vxr',
-		accountType: 'Phụ xe',
+		accountType: 'Khách hàng',
 		phone: '0987 654 321',
 		email: 'nguyenvana@gmail.com',
 		gender: 'Nam',
@@ -41,7 +41,7 @@ const data2 = [
 	},
 	{
 		name: 'Nguyễn Văn A',
-		role: 'Hướng dẫn viên',
+		role: 'Nhân viên',
 		account: 'nguyen.vxr',
 		accountType: 'Nhóm quyền',
 		phone: '0987 654 321',
@@ -83,15 +83,6 @@ const columns = [
 		id: 'dob',
 		label: 'Ngày sinh',
 		renderCell: row => <span>{row.dob}</span>,
-	},
-	{
-		id: 'status',
-		label: 'Trạng thái',
-		renderCell: row => (
-			<div className="w-36">
-				<Chip color={row.status === 'Đang làm việc' ? 'primary' : 'default'}>{row.status}</Chip>
-			</div>
-		),
 	},
 	{
 		id: 'action',

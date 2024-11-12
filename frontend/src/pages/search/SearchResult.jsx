@@ -15,13 +15,19 @@ export default function SearchResult() {
 					color="success"
 					className="text-white"
 				>
-					12:00 - 24:00
+					Căn hộ
 				</Chip>
 				<Chip
 					color="success"
 					className="text-white"
 				>
-					Giá vé: 120.000 - 500000
+					Minibar
+				</Chip>
+				<Chip
+					color="success"
+					className="text-white"
+				>
+					Giá: 120.000 - 500000
 				</Chip>
 			</div>
 			<div className="flex w-full flex-col gap-5">
@@ -80,10 +86,10 @@ function CardSearch({item}) {
 
 					<div className="mt-2">
 						<div className="flex items-center justify-between">
-							<p className="w-fit rounded-lg border p-2 py-0 text-sm">Phòng được đề xuất cho bạn</p>
+							<p className="mt-4 w-fit rounded-lg border p-2 py-0 text-sm">Phòng được đề xuất cho bạn</p>
 							<p className="w-fit py-0 text-[10px]">1 đêm, 4 người lớn</p>
 						</div>
-						<div className="mt-2 flex h-full items-center gap-4">
+						<div className="flex h-full items-center gap-4">
 							<hr className="h-16 w-1 bg-gray-200" />
 							<div className="flex min-h-[130px]">
 								<div className="flex flex-col justify-center text-sm">

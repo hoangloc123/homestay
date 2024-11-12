@@ -29,10 +29,11 @@ import {useModalCommon} from '../../context/ModalContext'
 import RegisterModal from './Register'
 import LoginModal from './Login'
 import {useAuth} from '../../context/AuthContext'
+import {RouterPath} from '@router/RouterPath'
 
 function Header({showText}) {
 	const navigate = useNavigate()
-	const {auth} = useAuth()
+	const {auth, logout} = useAuth()
 
 	const [roomCount, setRoomCount] = useState(1)
 	const [personCount, setPersonCount] = useState(2)
@@ -50,7 +51,9 @@ function Header({showText}) {
 			showFooter: false,
 		})
 	}
-
+	function handleLogout() {
+		logout()
+	}
 	function openRegister() {
 		onOpen({
 			view: <RegisterModal />,
@@ -100,8 +103,7 @@ function Header({showText}) {
 										<DropdownMenu aria-label="Static Actions">
 											<DropdownItem
 												key="profile"
-												as={NavLink}
-												to="/profile"
+												onClick={() => navigate(RouterPath.PROFILE)}
 											>
 												<i className="fas fa-user mr-2"></i>
 												<span>Thông tin tài khoản</span>
@@ -114,7 +116,10 @@ function Header({showText}) {
 												<i className="fas fa-comment-dots mr-2"></i>
 												<span>Nhận xét chuyến đi</span>
 											</DropdownItem>
-											<DropdownItem color="danger">
+											<DropdownItem
+												color="danger"
+												onClick={handleLogout}
+											>
 												<i className="fas fa-power-off mr-2"></i>
 												<span>Đăng xuất</span>
 											</DropdownItem>

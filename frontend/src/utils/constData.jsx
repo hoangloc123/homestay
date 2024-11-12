@@ -161,8 +161,10 @@ export const amenitiesConst = [
 		id: '14',
 		title: 'Thanh toán',
 		icon: () => <i className="fas fa-atm"></i>,
-		items: [{id: '14.1', title: 'Không cần thanh toán trước'}],
-		items: [{id: '14.2', title: 'Thanh toán qua MOMO'}],
+		items: [
+			{id: '14.1', title: 'Không cần thanh toán trước'},
+			{id: '14.2', title: 'Thanh toán qua MOMO'},
+		],
 	},
 ]
 

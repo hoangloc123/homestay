@@ -20,7 +20,7 @@ export default function SideBarSearch() {
 				<div className="flex flex-col rounded-t-lg border border-b-0 p-4">
 					<h2 className="mb-2 font-bold">Sắp xếp:</h2>
 					<div className="mb-0">
-						<RadioGroup>
+						<RadioGroup defaultValue="S1">
 							<Radio value="S1">Mặc định</Radio>
 							<Radio value="S4"> Đánh giá cao nhất</Radio>
 							<Radio value="S5"> Giá tăng dần</Radio>

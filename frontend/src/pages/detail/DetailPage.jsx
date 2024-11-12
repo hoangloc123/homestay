@@ -1,5 +1,5 @@
 import {Button, DateRangePicker} from '@nextui-org/react'
-import {cn} from '@utils/Utils'
+import {cn, convertStringToNumber} from '@utils/Utils'
 import {useRef, useState} from 'react'
 import {parseZonedDateTime} from '@internationalized/date'
 import {
@@ -184,13 +184,6 @@ export default function DetailPage() {
 							</div>
 						</div>
 						<p className="mb-4">
-							Bạn có thể đủ điều kiện hưởng giảm giá Genius tại Temple Da Nang Resort. Để biết giảm giá Genius có áp
-							dụng cho ngày bạn chọn hay không, hãy <span className="text-blue-600 underline">đăng nhập</span>.
-						</p>
-						<p className="mb-4">
-							Giảm giá Genius tại chỗ nghỉ này chỉ thuộc vào ngày đặt phòng, ngày lưu trú và các ưu đãi có sẵn khác.
-						</p>
-						<p className="mb-4">
 							Nằm trên Bãi biển Mỹ Khê, Temple Da Nang Resort cung cấp chỗ nghỉ với Wi-Fi miễn phí và tầm nhìn ra biển.
 							Tại đây cũng có hồ bơi ngoài trời và nhà hàng.
 						</p>
@@ -221,11 +214,6 @@ export default function DetailPage() {
 								<i className="fas fa-star text-yellow-500"></i>
 							</div>
 						</div>
-						<img
-							src="https://placehold.co/200x150"
-							alt="Map"
-							className="mb-4 h-auto w-full"
-						/>
 						<h2 className="mb-2 text-lg font-bold">Điểm nổi bật của chỗ nghỉ</h2>
 						<ul className="mb-4 list-inside list-disc">
 							<li>Hoàn hảo cho kỳ nghỉ 1 đêm!</li>
@@ -250,7 +238,7 @@ export default function DetailPage() {
 				</div>
 				<div className="flex w-full flex-row justify-between">
 					<div className="flex-grow">
-						<h2 className="mb-2 text-xl font-bold">Các tiện nghi được ưa chuộng nhất</h2>
+						<h2 className="mb-2 text-xl font-bold">Các tiện nghi</h2>
 						<div className="grid grid-cols-2 gap-2">
 							<div className="flex items-center">
 								<i className="fas fa-swimming-pool text-green-600"></i>
@@ -385,9 +373,7 @@ export default function DetailPage() {
 										</div>
 									</td>
 									<td className="border p-2 text-center">
-										<div className="text-red-600 line-through">{room.originalPrice}</div>
-										<div className="font-bold">{room.price}</div>
-										<div className="text-green-600">{room.discount}</div>
+										<div className="font-bold text-green-600">{convertStringToNumber(room.price)}</div>
 									</td>
 									<td className="border p-2">
 										<ul className="text-sm">
@@ -430,8 +416,8 @@ export default function DetailPage() {
 						</div>
 						<div className="sticky right-0 top-0 p-2">
 							<div className="mx-auto max-w-xs rounded-lg bg-blue-50 p-4 shadow-md">
-								<div className="mb-2 text-sm text-gray-700">2 phòng tổng giá</div>
-								<div className="text-2xl font-bold text-gray-900">VND 25.200.000</div>
+								<div className="mb-2 text-sm text-gray-700">2 phòng tổng tiền</div>
+								<div className="text-2xl font-bold text-gray-900">VND 1.200.000</div>
 								<div className="my-2 flex justify-end">
 									<Button
 										color="primary"
@@ -600,8 +586,8 @@ export default function DetailPage() {
 						</div>
 					</div>
 
-					<div className="mb-4 flex">
-						<div className="flex w-72">
+					<div className="mb-4 flex flex-row">
+						<div className="flex min-w-72">
 							<i className="fas fa-ban mr-2 text-xl"></i>
 							<h2 className="font-bold">Hủy đặt phòng/ Trả trước</h2>
 						</div>
@@ -619,7 +605,7 @@ export default function DetailPage() {
 						</div>
 					</div>
 					<div className="mb-4 flex">
-						<div className="flex w-72">
+						<div className="flex min-w-72">
 							<i className="fas fa-child mr-2 text-xl"></i>
 							<h2 className="font-bold">Trẻ em và giường</h2>
 						</div>
@@ -634,7 +620,7 @@ export default function DetailPage() {
 						</div>
 					</div>
 					<div className="mb-4 flex">
-						<div className="flex w-72">
+						<div className="flex min-w-72">
 							<i className="fas fa-ban mr-2 text-xl"></i>
 							<h2 className="font-bold">Không giới hạn độ tuổi</h2>
 						</div>
@@ -643,7 +629,7 @@ export default function DetailPage() {
 						</div>
 					</div>
 					<div className="mb-4 flex">
-						<div className="flex w-72">
+						<div className="flex min-w-72">
 							<i className="fas fa-paw mr-2 text-xl"></i>
 							<h2 className="font-bold">Vật nuôi</h2>
 						</div>
@@ -652,9 +638,9 @@ export default function DetailPage() {
 						</div>
 					</div>
 					<div className="flex">
-						<div className="flex w-72">
+						<div className="flex min-w-72">
 							<i className="fas fa-credit-card mr-2 text-xl"></i>
-							<h2 className="font-bold">Các phương thức thanh toán được chấp nhận</h2>
+							<h2 className="font-bold">Các phương thức thanh toán</h2>
 						</div>
 						<div>
 							<div className="mt-2 flex space-x-2">

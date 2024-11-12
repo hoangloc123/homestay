@@ -7,7 +7,7 @@ import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import Dashboard from '../../section/admin/Dashboard'
 import AdminUser from '../../section/admin/AdminUser'
-import AdminBusList from '../../section/admin/AdminBusList'
+import AdminHostList from '../../section/admin/AdminHostList'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
 import AdminSideBar from '../../section/admin/AdminSideBar'
 import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
@@ -46,7 +46,7 @@ export default function AdminPage() {
 			case 'usersAll':
 				return <AdminUser isAdmin />
 			case 'busAll':
-				return <AdminBusList isAdmin />
+				return <AdminHostList isAdmin />
 			case 'request':
 				return <AdminRequestHost isAdmin />
 			case 'dashboard':
@@ -54,7 +54,7 @@ export default function AdminPage() {
 			case 'users':
 				return <AdminUser />
 			case 'buses':
-				return <AdminBusList />
+				return <AdminHostList />
 			case 'bookingAll':
 				return <AdminBookingListSection isAdmin />
 			case 'booking':

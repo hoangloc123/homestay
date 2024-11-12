@@ -16,6 +16,12 @@ const routesConfig = [
 		layoutProps: {showText: true},
 	},
 	{
+		path: RouterPath.PROFILE,
+		element: HomePage,
+		layout: Layout,
+		layoutProps: {showText: false, showSearch: false},
+	},
+	{
 		path: `${RouterPath.DETAIL}/:id`,
 		element: DetailPage,
 		layout: Layout,

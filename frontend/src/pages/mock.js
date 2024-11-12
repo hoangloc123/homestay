@@ -206,7 +206,7 @@ export const topDestination = [
 export const searchCar = [
 	{
 		id: '122',
-		branchName: 'Chuyến Xe Sài Gòn - Quảng Ngãi',
+		branchName: 'Homestay Vinh Linh',
 		busImage:
 			'https://cf.bstatic.com/xdata/images/hotel/square600/599701002.webp?k=3042d157da313ac207477de28094d0d2fb2a8be6230b15f25f46ccfe4a210bc6&o=',
 		rating: '3.6',
@@ -276,7 +276,7 @@ Gửi xe đạp/xe máy
 Quý khách vui lòng liên hệ tổng đài VeXeRe để được hỗ trợ bảng giá cước gửi xe và xác nhận còn chỗ trống để gửi kèm xe (trong trường hợp nhà xe không còn hầm trống sẽ không hỗ trợ nhận gửi kèm xe đạp/xe máy)`,
 	},
 	{
-		branchName: 'Chuyến Xe Hà Nội - Đà Nẵng',
+		branchName: 'Khách sạn NightTown',
 		rating: '4.6',
 		ratingCount: '222',
 		busImage:
