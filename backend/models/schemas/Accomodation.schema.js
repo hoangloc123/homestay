@@ -14,6 +14,7 @@ const AccomodationSchema = new mongoose.Schema({
     images: [{ type: String }],
     description: { type: String, required: true },
     noteAccomodation: { type: String },
+    type: {type: String}
 });
 
 export default mongoose.model("Accomodation", AccomodationSchema);
