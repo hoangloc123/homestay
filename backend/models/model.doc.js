@@ -63,7 +63,7 @@
  * @property {string} [lng] - longitude of accomodation.
  * @property {string[]} [images] - image URLs of accomodation.
  * @property {string} description - the host id of accomodation.
- * @property {string} noteAccomodation - the note of accomodation.
+ * @property {string} noteAccommodation - the note of accomodation.
  * 
  * @global
  * @typedef {Base & AccomodationDocument} Accomodation - the accomodation model.
@@ -72,7 +72,7 @@
 /**
  * @typedef TicketDocument - ticket document model.
  * @property {string} userId - guest who booked the accomodation.
- * @property {string} accomodationId - accomodation booked.
+ * @property {string} accommodationId - accomodation booked.
  * @property {string} roomId - room booked.
  * @property {number} bookedQuantity - Number of booked room (Only when user book a hotel).
  * @property {string} fromDate - Date start of booking information (In YYYY-MM-DD format).

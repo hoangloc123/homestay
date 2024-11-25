@@ -14,15 +14,13 @@ router.post('/', async (req, res) => {
             city,
             address,
             pricePerNight,
-            policyId,
             amenities = [],
-            isAvailable,
-            roomIds,
             lat,
             lng,
             images,
             description,
-            noteAccommodation
+            noteAccommodation,
+            type = 0
         } = req.body;
 
     // Validate required field
@@ -36,20 +34,18 @@ router.post('/', async (req, res) => {
         city,
         address,
         pricePerNight,
-        policyId,
         amenities,
-        isAvailable,
-        roomIds,
         lat,
         lng,
         images,
         description,
-        noteAccommodation
+        noteAccommodation,
+        type
     });
 
     const savedAccommodation = await newAccommodation.save();
 
-    res.status(201).json({ message: 'Accommodation created successfully', accommodation: savedAccommodation });
+    res.status(201).json({ accommodationId: savedAccommodation.id });
 } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
 }
@@ -72,7 +68,7 @@ router.get('/', async (req, res) => {
             })
             .skip((pageNumber - 1) * limitNumber)
             .limit(limitNumber)
-            .populate('amenityIds');
+            .populate('policy', ['checkIn', 'checkOut', 'cancellationPolicy', 'additionalPolicy', 'allowPetPolicy', 'paymentMethod']);
 
         const total = await Accommodation.countDocuments({
             city: { $regex: city.toLowerCase(), $options: 'i' }
@@ -98,7 +94,7 @@ router.get('/:id', async (req, res) => {
         const { id } = req.params;
 
         const accommodation = await Accommodation.findById(id)
-            .populate('policyId')
+            .populate('policy', ['checkIn', 'checkOut', 'cancellationPolicy', 'additionalPolicy', 'allowPetPolicy', 'paymentMethod'])
 
         if (!accommodation) {
             return res.status(404).json({ message: 'Accommodation not found' });
@@ -114,7 +110,7 @@ router.get('/:id', async (req, res) => {
 router.post('/:id/policy', async (req, res) => {
     try {
         const { id } = req.params;
-        const { checkIn, checkOut, cancellationPolicy, additionalPolicy } = req.body;
+        const { checkIn, checkOut, cancellationPolicy, additionalPolicy, allowPetPolicy, ageLimitPolicy, paymentMethod = [] } = req.body;
 
         // Validate required fields for policy
         if (!checkIn || !checkOut) {
@@ -132,16 +128,19 @@ router.post('/:id/policy', async (req, res) => {
             checkIn,
             checkOut,
             cancellationPolicy,
-            additionalPolicy
+            additionalPolicy,
+            allowPetPolicy,
+            ageLimitPolicy,
+            paymentMethod
         });
 
         const savedPolicy = await newPolicy.save();
 
         // Update Accommodation with new Policy ID
-        accommodation.policyId = savedPolicy._id;
+        accommodation.policy = savedPolicy._id;
         await accommodation.save();
 
-        res.status(201).json({ message: 'Policy created and added to accommodation successfully', policy: savedPolicy });
+        res.status(201).json({ policyId: savedPolicy.id });
     } catch (error) {
         console.error('Error adding policy:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -169,36 +168,28 @@ router.post('/:id/rooms', async (req, res) => {
                 name,
                 capacity,
                 pricePerNight,
-                amenityIds = [],
                 amenities = [],
                 quantity
             } = roomData;
-
-            if (amenities.length > 0) {
-                const newAmenities = await Amenity.insertMany(amenities.map(amenity => ({ name: amenity })));
-                const newAmenityIds = newAmenities.map(amenity => amenity._id);
-                amenityIds.push(...newAmenityIds);
-            }
 
             const newRoom = new Room({
                 name,
                 capacity,
                 pricePerNight,
-                amenityIds,
+                amenities,
                 quantity,
             });
-            // NOTE: propety 'available' is not defined in Room schema, it's a computed props.
+            // NOTE: property 'available' is not defined in Room schema, it's a computed props.
 
             const savedRoom = await newRoom.save();
             createdRooms.push(savedRoom);
         }
 
-        accommodation.roomIds.push(...createdRooms.map(room => room._id));
+        accommodation.rooms.push(...createdRooms.map(room => room._id));
         await accommodation.save();
 
         res.status(201).json({
-            message: `${createdRooms.length} rooms created successfully`,
-            rooms: createdRooms
+            message: `${createdRooms.length} rooms created successfully for accommodation with id: ${id}`,
         });
     } catch (error) {
         console.error('Error creating rooms:', error);
@@ -215,7 +206,7 @@ router.get('/:id/rooms', async (req, res) => {
             return res.status(404).json({ message: 'Accommodation not found' });
         }
 
-        const rooms = await Room.find({ _id: { $in: accommodation.roomIds } });
+        const rooms = await Room.find({ _id: { $in: accommodation.rooms } });
 
         res.status(200).json(rooms);
     } catch (error) {

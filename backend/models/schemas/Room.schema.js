@@ -4,7 +4,7 @@ const RoomSchema = new mongoose.Schema({
     name: { type: String, required: true },
     capacity: { type: Number, required: true },
     pricePerNight: { type: Number, required: true },
-    amenityIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Amenity' }],
+    amenities: [{ type: String }],
     quantity: { type: Number, required: true },
 });
 

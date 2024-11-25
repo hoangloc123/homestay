@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
             return res.status(404).json({ message: 'Accommodation not found' });
         }
 
-        const hasRoomIds = accommodation.roomIds?.length > 0;
+        const hasRoomIds = accommodation.rooms?.length > 0;
 
         if (!hasRoomIds && rooms?.length > 0) {
             return res.status(400).json({
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
                 const bookedRoom = rooms?.map(room => room.roomId);
 
                 if (hasRoomIds) {
-                    const isValidRooms = bookedRoom.every(roomId => accommodation.roomIds.includes(roomId));
+                    const isValidRooms = bookedRoom.every(roomId => accommodation.rooms.includes(roomId));
                     if (!isValidRooms) {
                         return res.status(400).json({
                             message: 'Invalid booking information: All rooms must be valid for the selected accommodation'

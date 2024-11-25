@@ -6,15 +6,15 @@ const AccommodationSchema = new mongoose.Schema({
     city: { type: String, required: true },
     address: { type: String, required: true },
     pricePerNight: { type: Number },
-    policyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Policy' },
+    policy: { type: mongoose.Schema.Types.ObjectId, ref: 'Policy' },
     amenities: [{type: String}],
-    roomIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room' }],
+    rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room' }],
     lat: { type: String },
     lng: { type: String },
     images: [{ type: String }],
     description: { type: String, required: true },
-    noteAccomodation: { type: String },
-    type: {type: String}
+    noteAccommodation: { type: String },
+    type: {type: Number}
 });
 
 export default mongoose.model("Accommodation", AccommodationSchema);
