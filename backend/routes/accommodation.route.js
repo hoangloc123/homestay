@@ -2,8 +2,7 @@ import express from "express";
 import removeAccents from "remove-accents";
 const router = express.Router();
 
-import Accomodation from "../models/schemas/Accomodation.schema.js";
-import Amenity from "../models/schemas/Amenity.schema.js";
+import Accommodation from "../models/schemas/Accommodation.schema.js";
 import Policy from "../models/schemas/Policy.schema.js";
 import Room from "../models/schemas/Room.schema.js";
 
@@ -16,9 +15,6 @@ router.post('/', async (req, res) => {
             address,
             pricePerNight,
             policyId,
-            // already created amenities
-            amenityIds = [],
-            // new amenities that need to be created
             amenities = [],
             isAvailable,
             roomIds,
@@ -26,7 +22,7 @@ router.post('/', async (req, res) => {
             lng,
             images,
             description,
-            noteAccomodation
+            noteAccommodation
         } = req.body;
 
     // Validate required field
@@ -34,33 +30,26 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ message: 'Some required field are missing' });
     }
 
-    // Check if there's any new amenity.
-    if (amenities.length > 0) {
-    const newAmenities = await Amenity.insertMany(amenities.map(amenity => ({ name: amenity })));
-    const newAmenityIds = newAmenities.map(amenity => amenity._id);
-    amenityIds.push(...newAmenityIds);
-    }
-
-    const newAccomodation = new Accomodation({
+    const newAccommodation = new Accommodation({
         ownerId,
         name,
         city,
         address,
         pricePerNight,
         policyId,
-        amenityIds,
+        amenities,
         isAvailable,
         roomIds,
         lat,
         lng,
         images,
         description,
-        noteAccomodation
+        noteAccommodation
     });
 
-    const savedAccomodation = await newAccomodation.save();
+    const savedAccommodation = await newAccommodation.save();
 
-    res.status(201).json({ message: 'Accomodation created successfully', accomodation: savedAccomodation });
+    res.status(201).json({ message: 'Accommodation created successfully', accommodation: savedAccommodation });
 } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
 }
@@ -77,7 +66,7 @@ router.get('/', async (req, res) => {
         const pageNumber = parseInt(page, 10);
         const limitNumber = parseInt(limit, 10);
 
-        const accomodations = await Accomodation
+        const accommodations = await Accommodation
             .find({
                 city: { $regex: city.toLowerCase(), $options: 'i' }
             })
@@ -85,12 +74,12 @@ router.get('/', async (req, res) => {
             .limit(limitNumber)
             .populate('amenityIds');
 
-        const total = await Accomodation.countDocuments({
+        const total = await Accommodation.countDocuments({
             city: { $regex: city.toLowerCase(), $options: 'i' }
         });
 
         res.status(200).json({
-            accomodations,
+            accommodations,
             pagination: {
                 total: total,
                 pages: Math.ceil(total / limitNumber),
@@ -99,7 +88,7 @@ router.get('/', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error searching accomodations by name:', error);
+        console.error('Error searching accommodations by name:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -108,16 +97,16 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const accomodation = await Accomodation.findById(id)
+        const accommodation = await Accommodation.findById(id)
             .populate('policyId')
 
-        if (!accomodation) {
-            return res.status(404).json({ message: 'Accomodation not found' });
+        if (!accommodation) {
+            return res.status(404).json({ message: 'Accommodation not found' });
         }
 
-        res.status(200).json(accomodation);
+        res.status(200).json(accommodation);
     } catch (error) {
-        console.error('Error fetching accomodation details:', error);
+        console.error('Error fetching accommodation details:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -132,10 +121,10 @@ router.post('/:id/policy', async (req, res) => {
             return res.status(400).json({ message: 'Check-in and Check-out are required fields' });
         }
 
-        // Find the accomodation by ID
-        const accomodation = await Accomodation.findById(id);
-        if (!accomodation) {
-            return res.status(404).json({ message: 'Accomodation not found' });
+        // Find the accommodation by ID
+        const accommodation = await Accommodation.findById(id);
+        if (!accommodation) {
+            return res.status(404).json({ message: 'Accommodation not found' });
         }
 
         // Create new Policy document
@@ -148,11 +137,11 @@ router.post('/:id/policy', async (req, res) => {
 
         const savedPolicy = await newPolicy.save();
 
-        // Update Accomodation with new Policy ID
-        accomodation.policyId = savedPolicy._id;
-        await accomodation.save();
+        // Update Accommodation with new Policy ID
+        accommodation.policyId = savedPolicy._id;
+        await accommodation.save();
 
-        res.status(201).json({ message: 'Policy created and added to accomodation successfully', policy: savedPolicy });
+        res.status(201).json({ message: 'Policy created and added to accommodation successfully', policy: savedPolicy });
     } catch (error) {
         console.error('Error adding policy:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -164,9 +153,9 @@ router.post('/:id/rooms', async (req, res) => {
         const { id } = req.params;
         const { rooms } = req.body;
 
-        const accomodation = await Accomodation.findById(id);
-        if (!accomodation) {
-            return res.status(404).json({ message: 'Accomodation not found' });
+        const accommodation = await Accommodation.findById(id);
+        if (!accommodation) {
+            return res.status(404).json({ message: 'Accommodation not found' });
         }
 
         if (!rooms || rooms.length === 0) {
@@ -204,8 +193,8 @@ router.post('/:id/rooms', async (req, res) => {
             createdRooms.push(savedRoom);
         }
 
-        accomodation.roomIds.push(...createdRooms.map(room => room._id));
-        await accomodation.save();
+        accommodation.roomIds.push(...createdRooms.map(room => room._id));
+        await accommodation.save();
 
         res.status(201).json({
             message: `${createdRooms.length} rooms created successfully`,
@@ -221,12 +210,12 @@ router.get('/:id/rooms', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const accomodation = await Accomodation.findById(id);
-        if (!accomodation) {
-            return res.status(404).json({ message: 'Accomodation not found' });
+        const accommodation = await Accommodation.findById(id);
+        if (!accommodation) {
+            return res.status(404).json({ message: 'Accommodation not found' });
         }
 
-        const rooms = await Room.find({ _id: { $in: accomodation.roomIds } });
+        const rooms = await Room.find({ _id: { $in: accommodation.roomIds } });
 
         res.status(200).json(rooms);
     } catch (error) {

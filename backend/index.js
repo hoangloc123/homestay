@@ -5,8 +5,7 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import {checkFirestoreConnection} from "./firebase/firestore/test.firestore.js";
 
-import accomodationRoutes from "./routes/accomodation.route.js";
-import amenityRoutes from "./routes/amenity.route.js";
+import accommodationRoutes from "./routes/accommodation.route.js";
 import ticketRoutes from "./routes/ticket.route.js";
 import userRoutes from "./routes/user.route.js";
 
@@ -21,8 +20,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/accomodations', accomodationRoutes);
-app.use('/amenities', amenityRoutes);
+app.use('/accommodations', accommodationRoutes);
 app.use('/tickets', ticketRoutes);
 app.use('/users', userRoutes);
 app.use(cookieParser());
