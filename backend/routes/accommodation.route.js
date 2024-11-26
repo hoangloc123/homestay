@@ -54,21 +54,18 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const { city, fromDate, toDate, capacity, roomQuantity, isWithPet, amenities = '', page = 1, limit = 10 } = req.query;
+        const { city, fromDate, toDate, capacity, roomQuantity, isWithPet, amenities = '', pricePerNight, page = 1, limit = 10 } = req.query;
 
-        if (!city) {
-            return res.status(400).json({ message: 'City is required for search' });
-        }
-
-        if (!fromDate || !toDate || !roomQuantity) {
-            return res.status(400).json({ message: 'Missing required fields: fromDate, toDate, or roomQuantity' });
+        if (!city || !fromDate || !toDate || !roomQuantity || !pricePerNight) {
+            return res.status(400).json({ message: 'Missing required fields: city, fromDate, toDate, roomQuantity, pricePerNight' });
         }
 
         const pageNumber = parseInt(page, 10);
         const limitNumber = parseInt(limit, 10);
+        const capacityNumber = capacity ? parseInt(capacity, 10) : 2;
         const amenitiesArray = amenities ? amenities.split(',').map(a => a.trim()) : [];
-        console.log(amenities, amenitiesArray)
         const isWithPetBool = isWithPet.toLowerCase() === 'true';
+        const pricePerNightRange = pricePerNight.split(',').map(price => parseInt(price.trim(), 10));
 
         const accommodations = await Accommodation
             .find({
@@ -76,10 +73,12 @@ router.get('/', async (req, res) => {
                 ...(isWithPetBool && { 'policy.allowPetPolicy': true }),
                 ...(amenitiesArray.length > 0 && {
                     amenities: { $all: amenitiesArray }
-                })
+                }),
+                $or: [
+                    { pricePerNight: 0 },
+                    { pricePerNight: {$gte: pricePerNightRange[0], $lte: pricePerNightRange[1] } },
+                ]
             })
-            // .skip((pageNumber - 1) * limitNumber)
-            // .limit(limitNumber)
             .populate({
                 path: 'rooms',
                 select: 'name capacity quantity pricePerNight amenities',
@@ -88,9 +87,18 @@ router.get('/', async (req, res) => {
                         if ([0, 1, 2].includes(doc.type)) {
                             return {};
                         }
-                        return amenitiesArray.length > 0
+
+                        const capacityMatch = { capacity: { $gte: capacityNumber } };
+
+                        const amenitiesMatch = amenitiesArray.length > 0
                             ? { amenities: { $all: amenitiesArray } }
                             : {};
+
+                        const priceMatch = {
+                            pricePerNight: { $gte: pricePerNightRange[0], $lte: pricePerNightRange[1] }
+                        };
+
+                        return { ...amenitiesMatch, ...capacityMatch, ...priceMatch };
                     };
                 }(),
             })
