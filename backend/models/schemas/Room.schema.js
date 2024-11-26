@@ -8,4 +8,7 @@ const RoomSchema = new mongoose.Schema({
     quantity: { type: Number, required: true },
 });
 
+RoomSchema.index({ pricePerNight: 1 });
+RoomSchema.index({ capacity: 1 });
+
 export default mongoose.model("Room", RoomSchema);

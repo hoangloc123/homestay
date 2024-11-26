@@ -17,4 +17,6 @@ const AccommodationSchema = new mongoose.Schema({
     type: {type: Number}
 });
 
+AccommodationSchema.index({ city: 1, pricePerNight: 1 });
+
 export default mongoose.model("Accommodation", AccommodationSchema);
