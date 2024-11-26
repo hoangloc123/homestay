@@ -22,42 +22,43 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
+        // TODO: VALIDATE DATE from -> to
         const accommodation = await Accommodation.findById(accommodationId);
         if (!accommodation) {
             return res.status(404).json({ message: 'Accommodation not found' });
         }
 
-        const hasRoomIds = accommodation.rooms?.length > 0;
-
-        if (!hasRoomIds && rooms?.length > 0) {
-            return res.status(400).json({
-                message: 'Invalid booking information: Homestay bookings should not contain rooms information'
-            });
-        }
-
-        if (hasRoomIds) {
-            if (!rooms?.length) {
-                return res.status(400).json({
-                    message: 'Invalid booking information: Hotel bookings must include rooms information'
-                });
-            }
-            else {
-                const bookedRoom = rooms?.map(room => room.roomId);
-
-                if (hasRoomIds) {
-                    const isValidRooms = bookedRoom.every(roomId => accommodation.rooms.includes(roomId));
-                    if (!isValidRooms) {
-                        return res.status(400).json({
-                            message: 'Invalid booking information: All rooms must be valid for the selected accommodation'
-                        });
-                    }
-                }
-            }
-        }
+        // const hasRoomIds = accommodation.rooms?.length > 0;
+        //
+        // if (!hasRoomIds && rooms?.length > 0) {
+        //     return res.status(400).json({
+        //         message: 'Invalid booking information: Homestay bookings should not contain rooms information'
+        //     });
+        // }
+        //
+        // if (hasRoomIds) {
+        //     if (!rooms?.length) {
+        //         return res.status(400).json({
+        //             message: 'Invalid booking information: Hotel bookings must include rooms information'
+        //         });
+        //     }
+        //     else {
+        //         const bookedRoom = rooms?.map(room => room.roomId);
+        //
+        //         if (hasRoomIds) {
+        //             const isValidRooms = bookedRoom.every(roomId => accommodation.rooms.includes(roomId));
+        //             if (!isValidRooms) {
+        //                 return res.status(400).json({
+        //                     message: 'Invalid booking information: All rooms must be valid for the selected accommodation'
+        //                 });
+        //             }
+        //         }
+        //     }
+        // }
 
         const newTicket = new Ticket({
             userId,
-            accommodationId,
+            accommodation: accommodationId,
             rooms: rooms,
             fromDate,
             toDate,
@@ -72,10 +73,7 @@ router.post('/', async (req, res) => {
 
         const savedTicket = await newTicket.save();
 
-        res.status(201).json({
-            message: 'Ticket created successfully',
-            ticket: savedTicket
-        });
+        res.status(201).json({ ticket: savedTicket });
     } catch (error) {
         console.error('Error creating ticket:', error);
         res.status(500).json({ message: 'Internal server error' });

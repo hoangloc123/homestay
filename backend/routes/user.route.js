@@ -11,7 +11,7 @@ router.get('/:id/tickets', async (req, res) => {
         const tickets = await Ticket
             .find({ userId: id })
             .populate({
-                path: 'accommodationId',
+                path: 'accommodation',
                 select: 'name city address'
             });
 
