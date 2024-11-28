@@ -8,6 +8,8 @@ import {checkFirestoreConnection} from "./firebase/firestore/test.firestore.js";
 import accommodationRoutes from "./routes/accommodation.route.js";
 import ticketRoutes from "./routes/ticket.route.js";
 import userRoutes from "./routes/user.route.js";
+import authRoutes from "./routes/authentication.route.js";
+import requestRoute from "./routes/request.route.js";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -20,9 +22,11 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/auth', authRoutes);
 app.use('/accommodations', accommodationRoutes);
 app.use('/tickets', ticketRoutes);
 app.use('/users', userRoutes);
+app.use('/requests', requestRoute);
 app.use(cookieParser());
 
 app.listen(port, () => {console.log(`Server running on port ${port}`)});
