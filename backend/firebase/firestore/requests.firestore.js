@@ -1,10 +1,22 @@
-import {addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where} from 'firebase/firestore';
-import {database} from '../../config/firebaseDb.js';
-import {RequestAction} from "../../constants/requestAction.constant.js";
-import {removeUserHostRole, updateUserRequestingHost} from "./users.firestore.js";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { database } from "../../config/firebaseDb.js";
+import { RequestAction } from "../../constants/requestAction.constant.js";
+import {
+  removeUserHostRole,
+  updateUserRequestingHost,
+} from "./users.firestore.js";
 
-const COLLECTION_USERS = 'users';
-const COLLECTION_REQUESTS = 'requests';
+const COLLECTION_USERS = "users";
+const COLLECTION_REQUESTS = "requests";
 
 /**
  * Add a new request to the Firestore requests collection.
@@ -17,8 +29,8 @@ const COLLECTION_REQUESTS = 'requests';
  * @returns {Promise<void>}
  */
 async function addRequest(request) {
-    const requestsCollectionRef = collection(database, COLLECTION_REQUESTS);
-    await addDoc(requestsCollectionRef, request);
+  const requestsCollectionRef = collection(database, COLLECTION_REQUESTS);
+  await addDoc(requestsCollectionRef, request);
 }
 
 /**
@@ -28,38 +40,41 @@ async function addRequest(request) {
  * @returns {Promise<void>}
  */
 async function approveRequest(requestId, isApprove) {
-    const requestRef = doc(database, COLLECTION_REQUESTS, requestId);
-    const requestSnap = await getDoc(requestRef);
+  const requestRef = doc(database, COLLECTION_REQUESTS, requestId);
+  const requestSnap = await getDoc(requestRef);
 
-    if (!requestSnap.exists()) {
-        throw new Error('Request not found');
+  if (!requestSnap.exists()) {
+    throw new Error("Request not found");
+  }
+
+  const request = requestSnap.data();
+
+  if (
+    request.target === "user" &&
+    request.actionNeeded === RequestAction.HOST_REQUEST_APPROVAL
+  ) {
+    const userRef = doc(database, COLLECTION_USERS, request.targetId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      throw new Error("User not found");
     }
 
-    const request = requestSnap.data();
+    const userData = userSnap.data();
 
-    if (request.target === 'user' && request.actionNeeded === RequestAction.HOST_REQUEST_APPROVAL) {
-        const userRef = doc(database, COLLECTION_USERS, request.targetId);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists()) {
-            throw new Error('User not found');
-        }
-
-        const userData = userSnap.data();
-
-        if (isApprove) {
-            // Approve the request: Update `isRequestingHost` to false
-            await updateUserRequestingHost(request.targetId);
-        } else {
-            // Reject the request: Remove `host` from `roles`
-            if (Array.isArray(userData.roles)) {
-                await removeUserHostRole(request.targetId);
-            }
-        }
-
-        // Update request as resolved
-        await updateDoc(requestRef, { isResolved: true });
+    if (isApprove) {
+      // Approve the request: Update `isRequestingHost` to false
+      await updateUserRequestingHost(request.targetId);
+    } else {
+      // Reject the request: Remove `host` from `roles`
+      if (Array.isArray(userData.roles)) {
+        await removeUserHostRole(request.targetId);
+      }
     }
+
+    // Update request as resolved
+    await updateDoc(requestRef, { isResolved: true });
+  }
 }
 
 /**
@@ -70,24 +85,23 @@ async function approveRequest(requestId, isApprove) {
  * @return {Promise<Array>} - Array of matching requests.
  */
 async function getRequests(isResolved = false, target, actionNeeded) {
-    const requestsRef = collection(database, COLLECTION_REQUESTS);
+  const requestsRef = collection(database, COLLECTION_REQUESTS);
 
-    const conditions = [where('isResolved', '==', isResolved)];
-    if (target) {
-        conditions.push(where('target', '==', target));
-    }
-    if (actionNeeded) {
-        conditions.push(where('actionNeeded', '==', actionNeeded));
-    }
+  const conditions = [where("isResolved", "==", isResolved)];
+  if (target) {
+    conditions.push(where("target", "==", target));
+  }
+  if (actionNeeded) {
+    conditions.push(where("actionNeeded", "==", actionNeeded));
+  }
 
-    const q = query(requestsRef, ...conditions);
-    const querySnapshot = await getDocs(q);
+  const q = query(requestsRef, ...conditions);
+  const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-    }));
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 }
-
 
 export { addRequest, approveRequest, getRequests };

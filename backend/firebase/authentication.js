@@ -1,13 +1,13 @@
 import {
-    createUserWithEmailAndPassword,
-    sendEmailVerification,
-    signInWithEmailAndPassword,
-    signOut,
-    updateProfile
-} from 'firebase/auth';
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 
-import { auth } from '../config/firebaseDb.js';
-import { createUser } from './firestore/users.firestore.js';
+import { auth } from "../config/firebaseDb.js";
+import { createUser } from "./firestore/users.firestore.js";
 
 /**
  * Log in with email and password.
@@ -16,7 +16,7 @@ import { createUser } from './firestore/users.firestore.js';
  * @returns {Promise<UserCredential>}
  */
 function logIn(email, password) {
-    return signInWithEmailAndPassword(auth, email, password);
+  return signInWithEmailAndPassword(auth, email, password);
 }
 
 // /**
@@ -37,21 +37,21 @@ function logIn(email, password) {
  * @param {string[]} metadata.roles - roles of user.
  */
 async function signUp(email, password, metadata) {
-    const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-    );
+  const userCredential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password,
+  );
 
-    // update user display name
-    await updateProfile(userCredential.user, {
-        displayName: metadata.name
-    });
+  // update user display name
+  await updateProfile(userCredential.user, {
+    displayName: metadata.name,
+  });
 
-    await createUser(userCredential.user, metadata);
+  await createUser(userCredential.user, metadata);
 
-    // send verification email
-    await sendEmailVerification(userCredential.user);
+  // send verification email
+  await sendEmailVerification(userCredential.user);
 }
 
 export { signUp, logIn };
