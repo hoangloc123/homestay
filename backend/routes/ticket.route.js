@@ -162,12 +162,10 @@ router.patch("/:ticketId", async (req, res) => {
     }
 
     const updatedTicket = await ticket.save();
-    res
-      .status(200)
-      .json({
-        message: `Ticket updated successfully: ${msg}`,
-        ticket: updatedTicket,
-      });
+    res.status(200).json({
+      message: `Ticket updated successfully: ${msg}`,
+      ticket: updatedTicket,
+    });
   } catch (error) {
     console.error("Error updating ticket:", error);
     res.status(500).json({ message: "Internal server error" });

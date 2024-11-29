@@ -72,23 +72,32 @@ router.get("/monthly-revenue", async (req, res) => {
 
 router.get("/trending-destination", async (req, res) => {
   try {
-    const tickets = await Ticket.find().populate({
-      path: "accommodation",
-      select: "city",
-    });
-
-    const cityCount = {};
-    tickets.forEach((ticket) => {
-      const city = ticket.accommodation?.city;
-      if (city) {
-        cityCount[city] = (cityCount[city] || 0) + 1;
-      }
-    });
-
-    const trendingCities = Object.entries(cityCount)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([city, count]) => ({ city, ticketCount: count }));
+    const trendingCities = await Ticket.aggregate([
+      {
+        $lookup: {
+          from: "accommodations", // Tên collection của Accommodation
+          localField: "accommodation",
+          foreignField: "_id",
+          as: "accommodation",
+        },
+      },
+      { $unwind: "$accommodation" },
+      {
+        $group: {
+          _id: "$accommodation.city",
+          ticketCount: { $sum: 1 },
+        },
+      },
+      { $sort: { ticketCount: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          city: "$_id",
+          ticketCount: 1,
+          _id: 0,
+        },
+      },
+    ]);
 
     res.status(200).json({ trendingCities });
   } catch (error) {
