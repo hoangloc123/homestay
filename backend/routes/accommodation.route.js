@@ -70,12 +70,10 @@ router.get("/", async (req, res) => {
     } = req.query;
 
     if (!city || !fromDate || !toDate || !roomQuantity || !pricePerNight) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Missing required fields: city, fromDate, toDate, roomQuantity, pricePerNight",
-        });
+      return res.status(400).json({
+        message:
+          "Missing required fields: city, fromDate, toDate, roomQuantity, pricePerNight",
+      });
     }
 
     const pageNumber = parseInt(page, 10);
