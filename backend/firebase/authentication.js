@@ -49,7 +49,7 @@ async function signUp(email, password, metadata) {
     displayName: metadata.name,
   });
 
-  await createUser(userCredential.user, {...metadata, createdAt: new Date()});
+  await createUser(userCredential.user, { ...metadata, createdAt: new Date() });
 
   // send verification email
   await sendEmailVerification(userCredential.user);

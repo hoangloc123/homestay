@@ -88,6 +88,7 @@ router.get("/", async (req, res) => {
       .map((price) => parseInt(price.trim(), 10));
 
     const accommodations = await Accommodation.find({
+      isVerified: true,
       city: { $regex: city.toLowerCase(), $options: "i" },
       ...(isWithPetBool && { "policy.allowPetPolicy": true }),
       ...(amenitiesArray.length > 0 && {
@@ -192,6 +193,40 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/unverified", async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const total = await Accommodation.countDocuments({ isVerified: false });
+    const accommodations = await Accommodation.find({ isVerified: false })
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .populate(
+        "policy",
+        "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod",
+      )
+      .populate("rooms", "name capacity quantity pricePerNight amenities");
+
+    const pagination = {
+      total,
+      pages: Math.ceil(total / limitNumber),
+      pageSize: limitNumber,
+      current: pageNumber,
+    };
+
+    res.status(200).json({
+      accommodations,
+      pagination,
+    });
+  } catch (error) {
+    console.error("Error fetching unverified accommodations:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -212,6 +247,27 @@ router.get("/:id", async (req, res) => {
     res.status(200).json(accommodation);
   } catch (error) {
     console.error("Error fetching accommodation details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.patch("/:id/verify", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const accommodation = await Accommodation.findById(id);
+    if (!accommodation) {
+      return res.status(404).json({ message: "Accommodation not found" });
+    }
+
+    accommodation.isVerified = true;
+    await accommodation.save();
+
+    res
+      .status(200)
+      .json({ message: "Accommodation verified successfully", accommodation });
+  } catch (error) {
+    console.error("Error verifying accommodation:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

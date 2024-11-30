@@ -15,6 +15,7 @@ const AccommodationSchema = new mongoose.Schema({
   description: { type: String, required: true },
   noteAccommodation: { type: String },
   type: { type: Number },
+  isVerified: { type: Boolean, default: false },
 });
 
 AccommodationSchema.index({ city: 1, pricePerNight: 1 });
