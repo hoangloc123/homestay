@@ -104,6 +104,7 @@ router.get("/", async (req, res) => {
         },
       ],
     })
+      .sort({ rating: -1 })
       .populate({
         path: "rooms",
         select: "name capacity quantity pricePerNight amenities",
@@ -135,6 +136,8 @@ router.get("/", async (req, res) => {
         "policy",
         "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod -_id",
       );
+
+    console.log(accommodations, pricePerNightRange);
 
     let filteredAccommodations = [];
 
