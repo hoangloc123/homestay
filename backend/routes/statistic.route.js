@@ -75,7 +75,7 @@ router.get("/trending-destination", async (req, res) => {
     const trendingCities = await Ticket.aggregate([
       {
         $lookup: {
-          from: "accommodations", // Tên collection của Accommodation
+          from: "accommodations",
           localField: "accommodation",
           foreignField: "_id",
           as: "accommodation",

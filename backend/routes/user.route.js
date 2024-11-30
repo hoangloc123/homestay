@@ -1,7 +1,7 @@
 import express from "express";
 
 import Ticket from "../models/schemas/Ticket.schema.js";
-import { getUserById } from "../firebase/firestore/users.firestore.js";
+import {getUserById, getUsers, updateUser} from "../firebase/firestore/users.firestore.js";
 
 const router = express.Router();
 
@@ -41,6 +41,53 @@ router.get("/:id/tickets", async (req, res) => {
   } catch (error) {
     console.error("Error retrieving tickets:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  if (!id || !updates) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const user = await getUserById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { id: _, ...userWithoutId } = user;
+
+    await updateUser(id, { ...userWithoutId, ...updates });
+
+    res.status(200).json({ message: "User information updated successfully." });
+  } catch (error) {
+    console.error("Error updating user information:", error);
+    res
+        .status(500)
+        .json({ message: "Failed to update user information.", error: error.message });
+  }
+});
+
+router.get("/", async (req, res) => {
+  const { role = "", page = 1, pageSize = 10 } = req.query;
+
+  try {
+    const parsedPage = parseInt(page, 10);
+    const parsedPageSize = parseInt(pageSize, 10);
+
+    if (isNaN(parsedPage) || isNaN(parsedPageSize) || parsedPage <= 0 || parsedPageSize <= 0) {
+      return res.status(400).json({ message: "Invalid page or pageSize" });
+    }
+
+    const { users, total } = await getUsers(role, parsedPage, parsedPageSize);
+
+    res.status(200).json({ users, total, page: parsedPage, pageSize: parsedPageSize });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Failed to fetch users.", error: error.message });
   }
 });
 

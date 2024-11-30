@@ -1,5 +1,5 @@
 import express from "express";
-import { logIn, signUp } from "../firebase/authentication.js";
+import {changePassword, logIn, signUp} from "../firebase/authentication.js";
 import { Role } from "../constants/role.constant.js";
 
 const router = express.Router();
@@ -61,6 +61,28 @@ router.post("/login", async (req, res) => {
     res
       .status(401)
       .json({ message: "Failed to log in.", error: error.message });
+  }
+});
+
+router.post("/change-password", async (req, res) => {
+  const { email, oldPassword, newPassword } = req.body;
+
+  if (!email || !oldPassword || !newPassword) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  try {
+    const userCredential = await logIn(email, oldPassword);
+
+    const user = userCredential.user;
+    await changePassword(user, newPassword);
+
+    res.status(200).json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res
+        .status(500)
+        .json({ message: "Failed to update password.", error: error.message });
   }
 });
 

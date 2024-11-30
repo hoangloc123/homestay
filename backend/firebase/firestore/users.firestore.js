@@ -6,6 +6,7 @@ import {
   getDocs,
   orderBy,
   query,
+  where,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
@@ -93,9 +94,58 @@ async function removeUserHostRole(userId) {
   });
 }
 
+/**
+ * Update user information by ID.
+ * @param {string} userId - ID of the user
+ * @param {Object} updates - Object containing updates for the user
+ * @returns {Promise<void>}
+ */
+async function updateUser(userId, updates) {
+  const docRef = doc(database, COLLECTION_USERS, userId);
+
+  await updateDoc(docRef, updates);
+}
+
+/**
+ * Get a paginated list of users sorted by creation date, filtered by role.
+ * @param {string} role - Role to filter users by. Accepts an empty string for no filtering.
+ * @param {number} page - Page number (1-indexed).
+ * @param {number} pageSize - Number of users per page.
+ * @returns {Promise<{users: Array, total: number}>} - Paginated users and total count.
+ */
+async function getUsers(role, page = 1, pageSize = 10) {
+  const usersRef = collection(database, COLLECTION_USERS);
+
+  let usersQuery = query(usersRef, orderBy("createdAt", "desc"));
+
+  if (role) {
+    usersQuery = query(usersQuery, where("roles", "array-contains", role));
+  }
+
+  const querySnapshot = await getDocs(usersQuery);
+
+  const allUsers = [];
+  querySnapshot.forEach((doc) => {
+    allUsers.push({
+      id: doc.id,
+      ...doc.data(),
+    });
+  });
+
+  const startIndex = (page - 1) * pageSize;
+  const paginatedUsers = allUsers.slice(startIndex, startIndex + pageSize);
+
+  return {
+    users: paginatedUsers,
+    total: allUsers.length,
+  };
+}
+
 export {
   createUser,
   getUserById,
+  getUsers,
+  updateUser,
   updateUserRequestingHost,
   removeUserHostRole,
 };
