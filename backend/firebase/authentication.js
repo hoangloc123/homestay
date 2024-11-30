@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  updatePassword,
   sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
@@ -48,10 +49,19 @@ async function signUp(email, password, metadata) {
     displayName: metadata.name,
   });
 
-  await createUser(userCredential.user, metadata);
+  await createUser(userCredential.user, {...metadata, createdAt: new Date()});
 
   // send verification email
   await sendEmailVerification(userCredential.user);
 }
 
-export { signUp, logIn };
+async function changePassword(user, newPassword) {
+  try {
+    await updatePassword(user, newPassword);
+  } catch (error) {
+    console.error("Error updating password:", error);
+    throw error;
+  }
+}
+
+export { changePassword, signUp, logIn };
