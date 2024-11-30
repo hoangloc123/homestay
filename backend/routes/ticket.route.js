@@ -2,6 +2,7 @@ import express from "express";
 
 import Ticket from "../models/schemas/Ticket.schema.js";
 import Accommodation from "../models/schemas/Accommodation.schema.js";
+import Review from "../models/schemas/Review.schema.js";
 
 const router = express.Router();
 
@@ -169,6 +170,51 @@ router.patch("/:ticketId", async (req, res) => {
   } catch (error) {
     console.error("Error updating ticket:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.post("/:id/review", async (req, res) => {
+  const { id } = req.params; // Ticket ID from route
+  const { rating, comment } = req.body; // Rating and comment from body
+
+  try {
+    if (typeof rating !== "number" || rating < 0 || rating > 5) {
+      return res
+        .status(400)
+        .json({ message: "Rating must be a number between 0 and 5." });
+    }
+
+    const ticket = await Ticket.findById(id);
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found." });
+    }
+
+    const accommodation = await Accommodation.findById(ticket.accommodation);
+    if (!accommodation) {
+      return res.status(404).json({ message: "Accommodation not found." });
+    }
+
+    const review = await Review.create({
+      ticket: id,
+      accommodation: ticket.accommodation,
+      creatorId: ticket.userId,
+      rating,
+      comment,
+    });
+
+    const oldRating = accommodation.rating;
+    const oldRatingCount = accommodation.ratingCount;
+    const newRatingCount = oldRatingCount + 1;
+    accommodation.rating =
+      (oldRating * oldRatingCount + rating) / newRatingCount;
+    accommodation.ratingCount = newRatingCount;
+
+    await accommodation.save();
+
+    res.status(201).json({ review });
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 });
 
