@@ -1,5 +1,5 @@
 import express from "express";
-import {changePassword, logIn, signUp} from "../firebase/authentication.js";
+import { changePassword, logIn, signUp } from "../firebase/authentication.js";
 import { Role } from "../constants/role.constant.js";
 
 const router = express.Router();
@@ -81,8 +81,8 @@ router.post("/change-password", async (req, res) => {
   } catch (error) {
     console.error("Error changing password:", error);
     res
-        .status(500)
-        .json({ message: "Failed to update password.", error: error.message });
+      .status(500)
+      .json({ message: "Failed to update password.", error: error.message });
   }
 });
 

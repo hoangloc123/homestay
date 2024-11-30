@@ -1,7 +1,11 @@
 import express from "express";
 
 import Ticket from "../models/schemas/Ticket.schema.js";
-import {getUserById, getUsers, updateUser} from "../firebase/firestore/users.firestore.js";
+import {
+  getUserById,
+  getUsers,
+  updateUser,
+} from "../firebase/firestore/users.firestore.js";
 
 const router = express.Router();
 
@@ -66,8 +70,11 @@ router.put("/:id", async (req, res) => {
   } catch (error) {
     console.error("Error updating user information:", error);
     res
-        .status(500)
-        .json({ message: "Failed to update user information.", error: error.message });
+      .status(500)
+      .json({
+        message: "Failed to update user information.",
+        error: error.message,
+      });
   }
 });
 
@@ -78,16 +85,34 @@ router.get("/", async (req, res) => {
     const parsedPage = parseInt(page, 10);
     const parsedPageSize = parseInt(pageSize, 10);
 
-    if (isNaN(parsedPage) || isNaN(parsedPageSize) || parsedPage <= 0 || parsedPageSize <= 0) {
+    if (
+      isNaN(parsedPage) ||
+      isNaN(parsedPageSize) ||
+      parsedPage <= 0 ||
+      parsedPageSize <= 0
+    ) {
       return res.status(400).json({ message: "Invalid page or pageSize" });
     }
 
     const { users, total } = await getUsers(role, parsedPage, parsedPageSize);
 
-    res.status(200).json({ users, total, page: parsedPage, pageSize: parsedPageSize });
+    const totalPages = Math.ceil(total / parsedPageSize);
+
+    res.status(200).json({
+      users,
+      pagination: {
+        total,
+        pages: totalPages,
+        pageSize: parsedPageSize,
+        current: parsedPage,
+      },
+    });
   } catch (error) {
     console.error("Error fetching users:", error);
-    res.status(500).json({ message: "Failed to fetch users.", error: error.message });
+    res.status(500).json({
+      message: "Failed to fetch users.",
+      error: error.message,
+    });
   }
 });
 
