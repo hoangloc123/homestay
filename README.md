@@ -105,3 +105,11 @@ yarn test
 - Branches: 80%
 - Functions: 70%
 - Lines & Statements: 80%
+
+## /!\ Before commit
+
+Make sure to run the command bellow:
+
+```shell
+yarn format
+```
