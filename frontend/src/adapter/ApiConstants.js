@@ -3,6 +3,7 @@ const ApiConstants = {
 	ACCOMMODATIONS: `/accommodations`,
 	TICKETS: 'tickets',
 	USERS: 'users',
+	AUTH: 'auth',
 	PAYMENT: 'payments',
 }
 

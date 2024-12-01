@@ -15,4 +15,25 @@ export const factories = {
 			method: 'GET',
 		})
 	},
+	getLoginEmail: (email, pass) => {
+		return ApiOperation.request({
+			url: ApiConstants.AUTH + '/login',
+			method: 'POST',
+			data: {
+				email: email,
+				password: pass,
+			},
+		})
+	},
+	getSignUpEmail: (email, pass, metadata) => {
+		return ApiOperation.request({
+			url: ApiConstants.AUTH + '/signup',
+			method: 'POST',
+			data: {
+				email: email,
+				password: pass,
+				metadata: metadata,
+			},
+		})
+	},
 }
