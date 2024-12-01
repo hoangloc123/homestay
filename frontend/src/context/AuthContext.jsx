@@ -12,6 +12,7 @@ export const AuthProvider = ({children}) => {
 	}
 
 	const logout = () => {
+		Cookies.remove('auth')
 		setAuth(null)
 	}
 

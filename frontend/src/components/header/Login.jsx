@@ -1,8 +1,6 @@
 import {Button, Input} from '@nextui-org/react'
-import {signInWithPopup} from 'firebase/auth'
 import React, {useState} from 'react'
 import {useAuth} from '../..//context/AuthContext'
-import {auth, googleProvider} from '../../config/firebaseConfig'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import {ToastNotiError} from '../../utils/Utils'
@@ -11,6 +9,7 @@ import RegisterModal from './Register'
 const LoginModal = () => {
 	const {onOpen, onClose} = useModalCommon()
 	const [isVisible, setIsVisible] = useState(false)
+	const [loading, setIsLoading] = useState(false)
 
 	const toggleVisibility = () => setIsVisible(!isVisible)
 
@@ -23,40 +22,44 @@ const LoginModal = () => {
 		})
 	}
 
-	function handleLogin(user) {
-		const userInfo = {
-			id: user.uid,
-			name: user.displayName,
-			avatar: user.photoUrl,
-			email: user.email,
-			phone: user?.phoneNumber,
-			accessToken: user.accessToken,
-			role: '1',
-			emailVerified: user.emailVerified,
-		}
-		login(userInfo)
-		onClose()
-	}
+	// const handleGoogleLogin = async () => {
+	// 	try {
+	// 		setIsLoading(true)
+	// 		const result = await signInWithPopup(auth, googleProvider)
+	// 		const user = result.user
+	// 		if (user) {
+	// 			handleLoginEmail(user.email, user.uid)
+	// 			setIsLoading(false)
+	// 			return
+	// 		}
+	// 		setIsLoading(false)
+	// 		ToastNotiError('Đăng nhập thất bại, vui lòng thử lại.')
+	// 	} catch (error) {
+	// 		setIsLoading(false)
+	// 		ToastNotiError('Đăng nhập thất bại, vui lòng thử lại.')
+	// 	}
+	// }
 
-	const handleGoogleLogin = async () => {
-		try {
-			const result = await signInWithPopup(auth, googleProvider)
-			const user = result.user
-			handleLogin(user)
-		} catch (error) {
-			console.error('Error during Google login:', error.message)
-			alert('Đăng nhập thất bại, vui lòng thử lại.')
-		}
-	}
-
-	const handleLoginEmail = () => {
-		const email = document.getElementById('email').value
-		const password = document.getElementById('password').value
+	function getUserInfo(id) {
 		factories
-			.getLoginEmail(email, password)
+			.getUserInfo(id)
 			.then(data => {
 				login(data)
 				onClose()
+			})
+			.catch(err => {
+				ToastNotiError(err.response?.data?.message)
+			})
+	}
+
+	const handleLoginEmail = (email, password) => {
+		setIsLoading(true)
+		factories
+			.getLoginEmail(email, password)
+			.then(data => {
+				const newData = data.user
+				getUserInfo(newData.uid)
+				setIsLoading(false)
 			})
 			.catch(error => {
 				if (error.response.data.error === 'Firebase: Error (auth/invalid-credential).') {
@@ -64,6 +67,7 @@ const LoginModal = () => {
 				} else {
 					ToastNotiError(`Lỗi không xác định: ${error.message || 'Vui lòng thử lại sau!'}`)
 				}
+				setIsLoading(false)
 			})
 	}
 
@@ -106,9 +110,11 @@ const LoginModal = () => {
 
 			<Button
 				className="mt-8 w-full rounded-lg"
-				onClick={handleLoginEmail}
+				isLoading={loading}
+				color="primary"
+				onClick={() => handleLoginEmail(document.getElementById('email').value, document.getElementById('password').value)}
 			>
-				Tiếp tục
+				Đăng nhập
 			</Button>
 
 			<div className="mt-4 flex w-full items-center">
@@ -118,14 +124,14 @@ const LoginModal = () => {
 			</div>
 
 			<div className="mt-4">
-				<Button
+				{/* <Button
 					radius={'sm'}
 					color="primary"
 					className="w-full"
 					onClick={handleGoogleLogin}
 				>
 					Đăng nhập với Google
-				</Button>
+				</Button> */}
 				<div className="mt-4 flex">
 					<p>Bạn chưa có tài khoản?</p>
 					<button

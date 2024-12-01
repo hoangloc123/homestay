@@ -1,5 +1,5 @@
-const generateRoutes = (routesConfig) => {
-	return routesConfig.map(({ path, element: PageComponent, layout: LayoutComponent, layoutProps, ...rest }) => {
+const generateRoutes = routesConfig => {
+	return routesConfig.map(({path, element: PageComponent, layout: LayoutComponent, layoutProps, ...rest}) => {
 		return {
 			path,
 			element: LayoutComponent ? (
@@ -10,8 +10,8 @@ const generateRoutes = (routesConfig) => {
 				<PageComponent />
 			),
 			...rest,
-		};
-	});
-};
+		}
+	})
+}
 
-export default generateRoutes;
+export default generateRoutes
