@@ -1,30 +1,93 @@
 import StarIcon from '@assets/base/icon/Star'
-import {
-	Accordion,
-	AccordionItem,
-	Button,
-	Checkbox,
-	CheckboxGroup,
-	Radio,
-	RadioGroup,
-	Slider,
-	TimeInput,
-} from '@nextui-org/react'
-import {TYPE_HOST} from '@utils/constants'
-import {amenitiesSearchConst} from '@utils/constData'
-import React from 'react'
+import {Flex} from '@chakra-ui/react'
+import {Accordion, AccordionItem, Button, Checkbox, Radio, RadioGroup, Slider} from '@nextui-org/react'
+import {useEffect, useState} from 'react'
+import useRouter from '../../hook/use-router'
+import {amenitiesSearchConst, TYPE_HOST} from '../../utils/constants'
+
 export default function SideBarSearch() {
+	const [typeSort, setTypeSort] = useState()
+	const [amenitiesSearch, setAmenitiesSearch] = useState([])
+	const [rateCount, setRateCount] = useState()
+	const [price, setPrice] = useState([100000, 2000000])
+	const [typeAccommodation, setTypeAccommodation] = useState([])
+	const router = useRouter()
+
+	useEffect(() => {
+		const newParams = {
+			sort: typeSort,
+			pricePerNight: `${price[0]},${price[1]}`,
+			rate: rateCount,
+		}
+		if (amenitiesSearch.length > 0) {
+			newParams.amenities = amenitiesSearch.join(',')
+		}
+		if (typeAccommodation.length > 0) {
+			newParams.type = typeAccommodation.join(',')
+		}
+		router.replace(newParams)
+	}, [typeSort, rateCount])
+
+	const handleSearch = () => {
+		const newParams = {
+			sort: typeSort,
+			pricePerNight: `${price[0]},${price[1]}`,
+			amenities: amenitiesSearch.join(','),
+			type: typeAccommodation.join(','),
+		}
+		router.replace(newParams)
+	}
+
+	function handleChangeAmenity(value) {
+		if (amenitiesSearch.includes(value)) {
+			setAmenitiesSearch(amenitiesSearch.filter(item => item !== value))
+		} else {
+			setAmenitiesSearch([...amenitiesSearch, value])
+		}
+	}
+
+	function handleChangeType(value) {
+		if (typeAccommodation.includes(value)) {
+			setTypeAccommodation(typeAccommodation.filter(item => item !== value))
+		} else {
+			setTypeAccommodation([...typeAccommodation, value])
+		}
+	}
+
 	return (
 		<div className="px-2">
 			<div className="w-64">
 				<div className="flex flex-col rounded-t-lg border border-b-0 p-4">
 					<h2 className="mb-2 font-bold">Sắp xếp:</h2>
 					<div className="mb-0">
-						<RadioGroup defaultValue="S1">
-							<Radio value="S1">Mặc định</Radio>
-							<Radio value="S4"> Đánh giá cao nhất</Radio>
-							<Radio value="S5"> Giá tăng dần</Radio>
-							<Radio value="S6"> Giá giảm dần</Radio>
+						<RadioGroup
+							defaultValue="S1"
+							onChange={e => setTypeSort(e.target.value)}
+						>
+							<Radio
+								key="1"
+								value="S1"
+							>
+								Mặc định
+							</Radio>
+							<Radio
+								key="2"
+								value="S4"
+							>
+								Đánh giá cao nhất
+							</Radio>
+							<Radio
+								key="3"
+								value="S5"
+							>
+								Giá tăng dần
+							</Radio>
+							<Radio
+								key="4"
+								value="S6"
+							>
+								Giá giảm dần
+							</Radio>
 						</RadioGroup>
 					</div>
 				</div>
@@ -36,9 +99,16 @@ export default function SideBarSearch() {
 						minValue={100000}
 						maxValue={2000000}
 						defaultValue={[100000, 2000000]}
+						onChange={setPrice}
 						formatOptions={{style: 'currency', currency: 'VND'}}
 						className="max-w-md"
 					/>
+					<Flex
+						justify={'flex-end'}
+						marginTop={1}
+					>
+						<Button onClick={() => handleSearch()}>Áp dụng</Button>
+					</Flex>
 				</div>
 				<div className="mb-4 rounded-b-lg border px-4 py-4">
 					<h3 className="font-semibold">Bộ lọc:</h3>
@@ -52,11 +122,16 @@ export default function SideBarSearch() {
 							title="Loại chỗ nghỉ"
 						>
 							<div className="flex flex-col gap-1">
-								<CheckboxGroup label="">
-									{TYPE_HOST.map(x => (
-										<Checkbox value={x.id}>{x.name}</Checkbox>
-									))}
-								</CheckboxGroup>
+								{TYPE_HOST.map(x => (
+									<Checkbox
+										onChange={e => handleChangeType(x.id)}
+										value={x.id}
+										isSelected={typeAccommodation.includes(x.id)}
+									>
+										{x.name}
+									</Checkbox>
+								))}
+								<Button onClick={() => handleSearch()}>Áp dụng</Button>
 							</div>
 						</AccordionItem>
 						<AccordionItem
@@ -64,30 +139,22 @@ export default function SideBarSearch() {
 							title="Tiêu chí phổ biến"
 						>
 							<div className="flex flex-col gap-1">
-								<CheckboxGroup label="">
-									{amenitiesSearchConst.map(x => (
-										<Checkbox value={x.id}>{x.title}</Checkbox>
-									))}
-								</CheckboxGroup>
+								{amenitiesSearchConst.map(x => (
+									<Checkbox
+										value={x.id}
+										isSelected={amenitiesSearch.includes(x.id)}
+										onChange={e => handleChangeAmenity(e.target.value)}
+									>
+										{x.title}
+									</Checkbox>
+								))}
+								<Flex
+									justify="end"
+									marginTop={1}
+								></Flex>
+								<Button onClick={() => handleSearch()}>Áp dụng</Button>
 							</div>
 						</AccordionItem>
-						{/* <AccordionItem
-							key="2"
-							aria-label="Giá vé"
-							title="Giá vé"
-						>
-							<div className="">
-								<Slider
-									step={50}
-									label="Giá"
-									minValue={100000}
-									maxValue={2000000}
-									defaultValue={[100000, 2000000]}
-									formatOptions={{style: 'currency', currency: 'VND'}}
-									className="max-w-md"
-								/>
-							</div>
-						</AccordionItem> */}
 
 						<AccordionItem
 							key="5"
@@ -97,21 +164,47 @@ export default function SideBarSearch() {
 								<Button
 									variant="ghost flex-start"
 									className="flex-start"
+									onClick={() => setRateCount(5)}
 								>
 									<StarIcon />
 									<StarIcon />
 									<StarIcon />
 									<StarIcon />
-									trở lên
+									<StarIcon />
 								</Button>
 								<Button
 									variant="ghost flex-start"
+									className="flex-start"
+									onClick={() => setRateCount(4)}
+								>
+									<StarIcon />
+									<StarIcon />
+									<StarIcon />
+									<StarIcon />
+								</Button>
+								<Button
+									variant="ghost flex-start"
+									onClick={() => setRateCount(3)}
 									className="flex-start"
 								>
 									<StarIcon />
 									<StarIcon />
 									<StarIcon />
-									trở lên
+								</Button>
+								<Button
+									variant="ghost flex-start"
+									onClick={() => setRateCount(2)}
+									className="flex-start"
+								>
+									<StarIcon />
+									<StarIcon />
+								</Button>
+								<Button
+									variant="ghost flex-start"
+									onClick={() => setRateCount(1)}
+									className="flex-start"
+								>
+									<StarIcon />
 								</Button>
 							</div>
 						</AccordionItem>
