@@ -10,17 +10,10 @@ const config = {
 }
 const theme = extendTheme({config})
 
-const option = {
-	ariaWarning: false,
-}
-
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
 		<ChakraProvider theme={theme}>
-			<NextUIProvider
-				className="nextui-provider"
-				warningOption={option}
-			>
+			<NextUIProvider className="nextui-provider">
 				<ColorModeScript initialColorMode={theme.config.initialColorMode} />
 				<App />
 			</NextUIProvider>
