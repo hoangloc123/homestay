@@ -1,19 +1,19 @@
-import {Button, DateRangePicker} from '@nextui-org/react'
-import {cn, convertStringToNumber} from '@utils/Utils'
-import {useRef, useState} from 'react'
-import {parseZonedDateTime} from '@internationalized/date'
-import {
-	NumberDecrementStepper,
-	NumberIncrementStepper,
-	NumberInput,
-	NumberInputField,
-	NumberInputStepper,
-} from '@chakra-ui/react'
-import 'leaflet/dist/leaflet.css'
-import MapView from '@components/map/MapView'
+import {NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper} from '@chakra-ui/react'
 import GoogleMapLink from '@components/map/GoogleMapLink'
+import MapView from '@components/map/MapView'
+import {parseZonedDateTime} from '@internationalized/date'
+import {Button, DateRangePicker, Image} from '@nextui-org/react'
+import {cn, convertStringToNumber} from '@utils/Utils'
+import 'leaflet/dist/leaflet.css'
+import {useEffect, useRef, useState} from 'react'
+import {useParams} from 'react-router-dom'
+import ImageGallery from '../../components/galery/Galery'
+import Loading from '../../components/loading/Loading'
+import {useModalCommon} from '../../context/ModalContext'
+import {factories} from '../../factory'
+import useRouter from '../../hook/use-router'
+import {amenitiesConst} from '../../utils/constData'
 import {roomList} from '../mock'
-import {amenitiesConst} from '@utils/constData'
 
 const reviews = [
 	{
@@ -52,9 +52,11 @@ const longitude = 108.229786
 const htmlContent = `<h1>Chào mừng đến với trang web của tôi!</h1>
                        <p>Đây là một đoạn văn bản được render từ HTML.</p>`
 
-const amenitiesData = ['1', '1.1', '1.2', '1.4', '2', '3', '4', '2.2', '3.1', '3.4']
-
 export default function DetailPage() {
+	const router = useRouter()
+	const {id} = useParams()
+	const {onOpen} = useModalCommon()
+
 	const overviewRef = useRef()
 	const infoRef = useRef()
 	const commentsRef = useRef()
@@ -63,6 +65,16 @@ export default function DetailPage() {
 	const policyRef = useRef()
 
 	const [activeSection, setActiveSection] = useState()
+	const [loading, setLoading] = useState(true)
+	const [data, setData] = useState([])
+
+	useEffect(() => {
+		if (!id) return
+		factories
+			.getDetailAccommodation(id)
+			.then(data => setData(data))
+			.finally(() => setLoading(false))
+	}, [id])
 
 	function handlePressScroll(ref) {
 		setActiveSection(ref)
@@ -74,19 +86,34 @@ export default function DetailPage() {
 		}
 	}
 
+	function openModalImageGallery() {
+		onOpen({
+			view: <ImageGallery images={data.images} />,
+			title: 'Thư viện ảnh',
+			size: '5xl',
+			showFooter: false,
+		})
+	}
+
 	return (
 		<div className="mx-auto max-w-full px-5 pb-24 pt-10 lg:max-w-[80%] lg:px-0">
 			<SectionNavigator />
-			<Overview />
-			<InfoPrice />
-			<PolicyRender />
-			<Amenity selectedIds={amenitiesData} />
-			<NoteRender note={htmlContent} />
-			<CommentList />
+
+			{loading ? (
+				<Loading />
+			) : (
+				<>
+					<Overview />
+					<InfoPrice />
+					<PolicyRender />
+					<Amenity selectedIds={data?.amenities} />
+					<NoteRender note={data?.note} />
+					<CommentList />
+				</>
+			)}
 		</div>
 	)
 
-	// function component UI
 	// section
 	function SectionNavigator() {
 		return (
@@ -143,75 +170,55 @@ export default function DetailPage() {
 				ref={overviewRef}
 				className="my-5"
 			>
-				<div className="flex items-start justify-between overflow-scroll">
+				<div className="flex items-start justify-between gap-4 overflow-scroll">
 					<div className="w-3/4 min-w-[300px]">
-						<h1 className="mb-2 text-3xl font-bold">Temple Da Nang Resort</h1>
+						<h1 className="mb-2 text-3xl font-bold">{data.name}</h1>
 						<div className="mb-4 grid grid-cols-3 gap-2">
-							<img
-								src="https://placehold.co/200x150"
-								alt="Resort view 1"
-								className="h-auto w-full"
-							/>
-							<img
-								src="https://placehold.co/200x150"
-								alt="Resort view 2"
-								className="h-auto w-full"
-							/>
-							<img
-								src="https://placehold.co/200x150"
-								alt="Resort view 3"
-								className="h-auto w-full"
-							/>
-							<img
-								src="https://placehold.co/200x150"
-								alt="Resort view 4"
-								className="h-auto w-full"
-							/>
-							<img
-								src="https://placehold.co/200x150"
-								alt="Resort view 5"
-								className="h-auto w-full"
-							/>
-							<div className="relative">
-								<img
-									src="https://placehold.co/200x150"
-									alt="Resort view 6"
-									className="h-auto w-full"
+							{data.images.slice(0, 5).map((image, index) => (
+								<Image
+									key={index}
+									className="aspect-w-6 aspect-h-5 overflow-hidden rounded-md border"
+									src={image}
+									alt={`Resort view ${index + 1}`}
+									style={{
+										height: '100%',
+										width: '100%',
+										objectFit: 'cover',
+									}}
 								/>
-								<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-bold text-white">
-									+36 ảnh
-								</div>
-							</div>
+							))}
+							{data.images.length > 5 && (
+								<button
+									className="relative"
+									onClick={openModalImageGallery}
+								>
+									<Image
+										src={data.images[6]}
+										alt="Resort view 6"
+										className="z-0 h-auto w-full"
+									/>
+									<div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black bg-opacity-50 text-lg font-bold text-white">
+										+{data.images.length - 6}
+									</div>
+								</button>
+							)}
 						</div>
-						<p className="mb-4">
-							Nằm trên Bãi biển Mỹ Khê, Temple Da Nang Resort cung cấp chỗ nghỉ với Wi-Fi miễn phí và tầm nhìn ra biển.
-							Tại đây cũng có hồ bơi ngoài trời và nhà hàng.
-						</p>
-						<p className="mb-4">
-							Temple Da Nang Resort cách trung tâm thành phố Đà Nẵng 2 km, sân bay quốc tế Đà Nẵng 10 phút lái xe và Núi
-							Ngũ Hành Sơn 8 km.
-						</p>
-						<p className="mb-4">
-							Các phòng nghỉ tại đây đều được hoàn thiện với đồ kết an toàn trong phòng, truyền hình cáp màn hình phẳng,
-							tủ lạnh mini và máy điều hòa nhiệt độ. Một số phòng nghỉ có bồn tắm và vòi sen hoặc phòng tắm riêng biệt.
-							Tất cả các phòng đều có dép, máy sấy tóc và đồ vệ sinh cá nhân miễn phí. Các phòng nghỉ tại đây đều có ban
-							công riêng.
-						</p>
-						<p className="mb-4">
-							Tại Temple Da Nang Resort, du khách có thể thư giãn tại khu vực bãi biển riêng, phòng tắm nắng hoặc vườn.
-							Các hoạt động như lặn biển, lướt ván buồm, chèo thuyền kayak và lặn với ống thở cũng có thể được sắp xếp
-							tại đây. Du khách có thể tham gia các hoạt động như múa bụng, múa lửa và nhạc sống. Tại đây cũng có dịch
-							vụ đưa đón có tính phí và dịch vụ giữ hành lý.
-						</p>
-						<p className="mb-4">Các cặp đôi đặc biệt thích địa điểm này — họ cho điểm 8,8 khi đi du lịch hai người.</p>
+
+						<div
+							className="mb-4"
+							dangerouslySetInnerHTML={{__html: data.description}}
+						/>
 					</div>
 					<div className="w-1/4 min-w-[200px] rounded-lg bg-gray-100 p-4 shadow-lg">
 						<div className="mb-4 flex justify-between">
 							<span className="text-lg font-bold">Đánh giá</span>
 							<div className="mb-2 flex items-center">
-								<i className="fas fa-star text-yellow-500"></i>
-								<i className="fas fa-star text-yellow-500"></i>
-								<i className="fas fa-star text-yellow-500"></i>
+								{Array.from({length: 5}, (_, index) => (
+									<i
+										key={index}
+										className={`fas fa-star ${index < data?.rating ? 'text-yellow-500' : 'text-gray-300'}`}
+									></i>
+								))}
 							</div>
 						</div>
 						<h2 className="mb-2 text-lg font-bold">Điểm nổi bật của chỗ nghỉ</h2>
@@ -233,53 +240,35 @@ export default function DetailPage() {
 							<li>Khu vực bãi tắm riêng</li>
 							<li>Khu vực dành cho thả dù dưới nước (trong khuôn viên)</li>
 						</ul>
-						<button className="w-full rounded-lg bg-blue-600 py-2 text-white">Đặt ngay</button>
+						<button
+							onClick={() => handlePressScroll(infoRef)}
+							className="w-full rounded-lg bg-blue-600 py-2 text-white"
+						>
+							Đặt ngay
+						</button>
 					</div>
 				</div>
 				<div className="flex w-full flex-row justify-between">
 					<div className="flex-grow">
 						<h2 className="mb-2 text-xl font-bold">Các tiện nghi</h2>
-						<div className="grid grid-cols-2 gap-2">
-							<div className="flex items-center">
-								<i className="fas fa-swimming-pool text-green-600"></i>
-								<span className="ml-2">Hồ bơi ngoài trời</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-smoking-ban text-green-600"></i>
-								<span className="ml-2">Phòng không hút thuốc</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-concierge-bell text-green-600"></i>
-								<span className="ml-2">Dịch vụ phòng</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-parking text-green-600"></i>
-								<span className="ml-2">Chỗ đỗ xe miễn phí</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-wifi text-green-600"></i>
-								<span className="ml-2">WiFi miễn phí</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-wheelchair text-green-600"></i>
-								<span className="ml-2">Tiện nghi cho khách khuyết tật</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-utensils text-green-600"></i>
-								<span className="ml-2">Nhà hàng</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-cocktail text-green-600"></i>
-								<span className="ml-2">Quầy bar</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-spa text-green-600"></i>
-								<span className="ml-2">Khu vực bãi tắm riêng</span>
-							</div>
-							<div className="flex items-center">
-								<i className="fas fa-sun text-green-600"></i>
-								<span className="ml-2">Bữa sáng</span>
-							</div>
+						<div className="flex flex-wrap gap-5">
+							{amenitiesConst.map(amenity => {
+								const selectedIds = data.amenities
+								const hasSelectedChild = amenity.items.some(item => selectedIds.includes(item.id))
+								if (selectedIds.includes(amenity.id) || hasSelectedChild) {
+									return (
+										<div
+											key={amenity.id}
+											className="min-w-[150px] rounded-md border px-6 py-3 shadow-md"
+										>
+											<div className="flex items-center gap-2">
+												{amenity.icon()}
+												<p className={cn('text-lg font-bold')}>{amenity.title}</p>
+											</div>
+										</div>
+									)
+								}
+							})}
 						</div>
 					</div>
 
@@ -287,16 +276,16 @@ export default function DetailPage() {
 						<h2 className="mb-2 w-full text-xl font-bold">Hiển thị trên bản đồ</h2>
 						<div className="flex w-full justify-end">
 							<GoogleMapLink
-								lat={16.071298486798522}
-								lng={108.23018477435673}
+								lat={data?.lat}
+								lng={data?.lng}
 							/>
 						</div>
 						<MapView
 							zoom={20}
 							height={'400px'}
 							width={'100%'}
-							lat={latitude}
-							lng={longitude}
+							lat={data?.lat}
+							lng={data?.lng}
 						/>
 					</div>
 				</div>
@@ -499,11 +488,6 @@ export default function DetailPage() {
 				className="mx-auto mt-20 w-full"
 			>
 				<h1 className="mb-4 text-3xl font-bold">Đánh giá của khách</h1>
-				<div className="mb-4 flex w-full justify-end">
-					<select className="rounded border border-gray-300 p-2">
-						<option>Phù hợp nhất</option>
-					</select>
-				</div>
 				{reviews.map(review => (
 					<Review
 						key={review.id}
@@ -515,6 +499,7 @@ export default function DetailPage() {
 	}
 
 	function Amenity({selectedIds}) {
+		if (!selectedIds) return
 		return (
 			<div
 				ref={amenityRef}
@@ -523,7 +508,8 @@ export default function DetailPage() {
 				<h1 className="mb-4 text-3xl font-bold">Dịch vụ đi kèm</h1>
 				<div className="flex flex-row flex-wrap gap-[30px]">
 					{amenitiesConst.map(amenity => {
-						if (selectedIds.includes(amenity.id)) {
+						const hasSelectedChild = amenity.items.some(item => selectedIds.includes(item.id))
+						if (selectedIds.includes(amenity.id) || hasSelectedChild) {
 							return (
 								<div
 									key={amenity.id}
@@ -570,20 +556,14 @@ export default function DetailPage() {
 							<i className="fas fa-sign-in-alt mr-2 text-xl"></i>
 							<h2 className="font-bold">Nhận phòng</h2>
 						</div>
-						<div>
-							<p>Từ 14:00</p>
-							<p>Khách được yêu cầu xuất trình giấy tờ tùy thân có ảnh và thẻ tín dụng lúc nhận phòng</p>
-							<p>Trước đó bạn sẽ cần cho chỗ nghỉ biết giờ bạn sẽ đến nơi.</p>
-						</div>
+						<div dangerouslySetInnerHTML={{__html: data.policy.checkIn}} />
 					</div>
 					<div className="mb-4 flex flex-row">
 						<div className="flex w-72">
 							<i className="fas fa-sign-out-alt mr-2 text-xl"></i>
 							<h2 className="font-bold">Trả phòng</h2>
 						</div>
-						<div>
-							<p>Đến 12:00</p>
-						</div>
+						<div dangerouslySetInnerHTML={{__html: data.policy.checkOut}} />
 					</div>
 
 					<div className="mb-4 flex flex-row">
@@ -591,33 +571,7 @@ export default function DetailPage() {
 							<i className="fas fa-ban mr-2 text-xl"></i>
 							<h2 className="font-bold">Hủy đặt phòng/ Trả trước</h2>
 						</div>
-						<div>
-							<p>
-								Các chính sách hủy và thanh toán trước sẽ khác nhau tùy vào loại chỗ nghỉ. Vui lòng kiểm tra{' '}
-								<a
-									href="#"
-									className="text-blue-500"
-								>
-									các điều kiện
-								</a>{' '}
-								có thể được áp dụng cho mỗi lựa chọn của bạn.
-							</p>
-						</div>
-					</div>
-					<div className="mb-4 flex">
-						<div className="flex min-w-72">
-							<i className="fas fa-child mr-2 text-xl"></i>
-							<h2 className="font-bold">Trẻ em và giường</h2>
-						</div>
-						<div>
-							<p>Chính sách trẻ em</p>
-							<p>Phù hợp cho tất cả trẻ em.</p>
-							<p>Trẻ em từ 6 tuổi trở lên sẽ được tính giá như người lớn tại chỗ nghỉ này.</p>
-							<p>
-								Để xem thông tin giá và tình trạng phòng trống chính xác, vui lòng thêm số lượng và độ tuổi của trẻ em
-								trong nhóm của bạn khi tìm kiếm.
-							</p>
-						</div>
+						<div dangerouslySetInnerHTML={{__html: data.policy.cancellationPolicy}} />
 					</div>
 					<div className="mb-4 flex">
 						<div className="flex min-w-72">
@@ -633,9 +587,7 @@ export default function DetailPage() {
 							<i className="fas fa-paw mr-2 text-xl"></i>
 							<h2 className="font-bold">Vật nuôi</h2>
 						</div>
-						<div>
-							<p>Vật nuôi không được phép.</p>
-						</div>
+						<div> {data.policy.allowPetPolicy ? 'Cho phép mang theo vật nuôi' : 'Không cho phép mang theo vật nuôi'}</div>
 					</div>
 					<div className="flex">
 						<div className="flex min-w-72">
@@ -644,32 +596,35 @@ export default function DetailPage() {
 						</div>
 						<div>
 							<div className="mt-2 flex space-x-2">
-								<img
-									src="https://placehold.co/40x25"
-									alt="Visa logo"
-									className="h-6"
-								/>
-								<img
-									src="https://placehold.co/40x25"
-									alt="MasterCard logo"
-									className="h-6"
-								/>
-								<img
-									src="https://placehold.co/40x25"
-									alt="American Express logo"
-									className="h-6"
-								/>
-								<img
-									src="https://placehold.co/40x25"
-									alt="JCB logo"
-									className="h-6"
-								/>
-								<img
-									src="https://placehold.co/40x25"
-									alt="Cash logo"
-									className="h-6"
-								/>
-								<div className="rounded-md bg-green-600 px-2 py-1 text-white">
+								<div className="flex items-center justify-center rounded-lg border px-2">
+									<img
+										src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
+										alt="Visa"
+										className="h-4 w-14 rounded-lg border"
+									/>
+								</div>
+								<div className="flex items-center justify-center rounded-lg border px-2">
+									<img
+										src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg"
+										alt="MasterCard logo"
+										className="h-4 w-14"
+									/>
+								</div>
+								<div className="flex items-center justify-center rounded-lg border px-1">
+									<img
+										src="https://www.shareicon.net/data/512x512/2016/07/08/117093_online_512x512.png"
+										alt="JCB logo"
+										className="h-4 w-14"
+									/>
+								</div>
+								<div className="flex items-center justify-center rounded-lg border px-1">
+									<img
+										src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png"
+										alt="Cash logo"
+										className="h-4 w-14"
+									/>
+								</div>
+								<div className="rounded-md bg-green-600 px-2 py-0.5 text-white">
 									<span className="text-sm">Tiền mặt</span>
 								</div>
 							</div>
