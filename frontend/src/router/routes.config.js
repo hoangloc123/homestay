@@ -1,23 +1,23 @@
-import Layout from '@layout/Layout'
-import HomePage from '@pages/homepage/HomePage'
-import LoginPage from '@pages/login/Login'
-import NotFoundPage from '@pages/not-found/NotFoundPage'
-import {RouterPath} from './RouterPath'
 import PrivateRoute from '@components/private-router/PrivateRoute'
-import DetailPage from '@pages/detail/DetailPage'
-import SearchPage from '@pages/search/SearchPage'
 import AdminPage from '@pages/admin'
+import DetailPage from '@pages/detail/DetailPage'
+import HomePage from '@pages/homepage/HomePage'
+import NotFoundPage from '@pages/not-found/NotFoundPage'
+import SearchPage from '@pages/search/SearchPage'
+import Layout from '../layout/Layout'
+import ProfileManagerPage from '../pages/profile/ProfileManagerPage'
+import {RouterPath} from './RouterPath'
 
 const routesConfig = [
 	{
 		path: '/',
 		element: HomePage,
 		layout: Layout,
-		layoutProps: {showText: true},
+		layoutProps: {showText: true, showSearch: true},
 	},
 	{
 		path: RouterPath.PROFILE,
-		element: HomePage,
+		element: ProfileManagerPage,
 		layout: Layout,
 		layoutProps: {showText: false, showSearch: false},
 	},
@@ -30,6 +30,7 @@ const routesConfig = [
 		path: RouterPath.SEARCH,
 		element: SearchPage,
 		layout: Layout,
+		layoutProps: {showSearch: true},
 	},
 	{
 		path: RouterPath.ADMIN,
@@ -39,11 +40,6 @@ const routesConfig = [
 		path: '/about',
 		element: HomePage,
 		layout: PrivateRoute,
-	},
-	{
-		path: '/login',
-		element: LoginPage,
-		layout: Layout,
 	},
 	{
 		path: '*',
