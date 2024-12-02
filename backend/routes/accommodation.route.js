@@ -7,6 +7,16 @@ import Policy from "../models/schemas/Policy.schema.js";
 import Room from "../models/schemas/Room.schema.js";
 import Ticket from "../models/schemas/Ticket.schema.js";
 
+// Helper method
+const getPricePerNight = (accommodation, isAscending) => {
+  if ([0, 1, 2].includes(accommodation.type)) {
+    return accommodation.pricePerNight;
+  } else {
+    const roomPrices = accommodation.rooms.map((room) => room.pricePerNight);
+    return isAscending ? Math.min(...roomPrices) : Math.max(...roomPrices);
+  }
+};
+
 router.post("/", async (req, res) => {
   try {
     const {
@@ -22,15 +32,17 @@ router.post("/", async (req, res) => {
       images = [],
       description,
       noteAccommodation,
-      type = 0,
+      type,
       outstanding,
       options,
-      activities
+      activities,
     } = req.body;
 
     // Validate required fields
     if (!ownerId || !name || !city || !address || !description) {
-      return res.status(400).json({ message: "Some required fields are missing" });
+      return res
+        .status(400)
+        .json({ message: "Some required fields are missing" });
     }
 
     const newAccommodation = new Accommodation({
@@ -73,6 +85,8 @@ router.get("/", async (req, res) => {
       isWithPet,
       amenities = "",
       pricePerNight,
+      type,
+      orderBy = "0",
       page = 1,
       limit = 10,
     } = req.query;
@@ -94,6 +108,9 @@ router.get("/", async (req, res) => {
     const pricePerNightRange = pricePerNight
       .split(",")
       .map((price) => parseInt(price.trim(), 10));
+    const typeFilter = type
+      ? { type: { $in: type.split(",").map((t) => parseInt(t.trim(), 10)) } }
+      : {};
 
     const accommodations = await Accommodation.find({
       isVerified: true,
@@ -102,6 +119,7 @@ router.get("/", async (req, res) => {
       ...(amenitiesArray.length > 0 && {
         amenities: { $all: amenitiesArray },
       }),
+      typeFilter,
       $or: [
         { pricePerNight: 0 },
         {
@@ -112,7 +130,6 @@ router.get("/", async (req, res) => {
         },
       ],
     })
-      .sort({ rating: -1 })
       .populate({
         path: "rooms",
         select: "name capacity quantity pricePerNight amenities",
@@ -181,6 +198,19 @@ router.get("/", async (req, res) => {
       }
     }
 
+    if (orderBy === "0") {
+      // Order by rating
+      filteredAccommodations.sort((a, b) => b.rating - a.rating);
+    } else {
+      // Order by pricePerNight
+      filteredAccommodations.sort((a, b) => {
+        const priceA = getPricePerNight(a, orderBy === "1");
+        const priceB = getPricePerNight(b, orderBy === "1");
+
+        return orderBy === "1" ? priceA - priceB : priceB - priceA;
+      });
+    }
+
     const total = filteredAccommodations.length;
     const paginatedAccommodations = filteredAccommodations.slice(
       (pageNumber - 1) * limitNumber,
@@ -241,13 +271,14 @@ router.get("/:id", async (req, res) => {
     const { id } = req.params;
 
     const accommodation = await Accommodation.findById(id)
-        .populate(
-            "policy",
-      "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod"
-        ).populate(
-            "rooms",
-            "name capacity quantity pricePerNight amenities description"
-        );
+      .populate(
+        "policy",
+        "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod",
+      )
+      .populate(
+        "rooms",
+        "name capacity quantity pricePerNight amenities description",
+      );
 
     if (!accommodation) {
       return res.status(404).json({ message: "Accommodation not found" });
@@ -354,7 +385,7 @@ router.post("/:id/rooms", async (req, res) => {
         pricePerNight,
         amenities = [],
         quantity,
-        description
+        description,
       } = roomData;
 
       const newRoom = new Room({
@@ -363,7 +394,7 @@ router.post("/:id/rooms", async (req, res) => {
         pricePerNight,
         amenities,
         quantity,
-        description
+        description,
       });
       // NOTE: property 'available' is not defined in Room schema, it's a computed props.
 
