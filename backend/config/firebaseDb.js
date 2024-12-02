@@ -1,9 +1,9 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getFirestore, initializeFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { getStorage } from "firebase/storage";
 import dotenv from "dotenv";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore, initializeFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 dotenv.config();
 
 // Your web app's Firebase configuration
@@ -33,4 +33,4 @@ const auth = getAuth(app);
 // Initialize Firebase Storage and get a reference to the service
 const storage = getStorage(app);
 
-export { database, auth, storage };
+export { auth, database, storage };

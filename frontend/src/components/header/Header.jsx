@@ -1,3 +1,5 @@
+import {NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper} from '@chakra-ui/react'
+import {getLocalTimeZone, parseDate, today} from '@internationalized/date'
 import {
 	Avatar,
 	Button,
@@ -14,34 +16,51 @@ import {
 	SelectItem,
 	Switch,
 } from '@nextui-org/react'
-import {parseZonedDateTime} from '@internationalized/date'
-import {Link, NavLink, useNavigate} from 'react-router-dom'
+import {cn, getDate} from '@utils/Utils'
 import {useState} from 'react'
-import {
-	NumberDecrementStepper,
-	NumberIncrementStepper,
-	NumberInput,
-	NumberInputField,
-	NumberInputStepper,
-} from '@chakra-ui/react'
-import {cn} from '@utils/Utils'
-import {useModalCommon} from '../../context/ModalContext'
-import RegisterModal from './Register'
-import LoginModal from './Login'
+import {Link, useNavigate} from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
-import {RouterPath} from '@router/RouterPath'
+import {useModalCommon} from '../../context/ModalContext'
+import useRouter from '../../hook/use-router'
+import {RouterPath} from '../../router/RouterPath'
+import {provinceSearch} from '../../utils/constants'
+import LoginModal from './Login'
+import RegisterModal from './Register'
+
+const initToday = new Date()
+const defaultRange = {
+	start: parseDate(getDate(initToday, 3)),
+	end: parseDate(getDate(initToday.setDate(initToday.getDate() + 7), 3)),
+}
 
 function Header({showText}) {
 	const navigate = useNavigate()
+
 	const {auth, logout} = useAuth()
 
+	const [destination, setDestination] = useState('21')
 	const [roomCount, setRoomCount] = useState(1)
 	const [personCount, setPersonCount] = useState(2)
 	const [havePet, setHavePet] = useState(false)
 	const {onOpen} = useModalCommon()
+	const [dateRange, setDateRange] = useState(defaultRange)
+
+	const router = useRouter()
 
 	function handleSearch() {
-		navigate('/search')
+		const newParams = {
+			city: destination,
+			fromDate: dateRange.start,
+			toDate: dateRange.end,
+			roomQuantity: roomCount,
+			capacity: personCount,
+			isWithPet: Boolean(havePet),
+			pricePerNight: '100000, 2000000',
+		}
+		router.push({
+			pathname: RouterPath.SEARCH,
+			params: newParams,
+		})
 	}
 
 	const openLogin = () => {
@@ -128,7 +147,6 @@ function Header({showText}) {
 								</>
 							) : (
 								<>
-									{' '}
 									<Button
 										variant="bordered"
 										color="primary"
@@ -164,25 +182,30 @@ function Header({showText}) {
 								className="flex-4 xl:flex-3 border-none"
 								variant="flat"
 								radius="sm"
-								defaultSelectedKeys={[1]}
+								aria-label={'city'}
+								defaultSelectedKeys={['21']}
+								onChange={e => setDestination(e.target.value)}
 								placeholder="Bạn muốn đến đâu?"
 								startContent={<i className="fas fa-bed text-gray-500"></i>}
 							>
-								<SelectItem key={1}>{'Hội An'}</SelectItem>
-								<SelectItem key={2}>{'Đà Nẵng'}</SelectItem>
-								<SelectItem key={3}>{'Đà Lạt'}</SelectItem>
+								{provinceSearch.map(x => (
+									<SelectItem
+										aria-label={x.name}
+										key={x.id}
+									>
+										{x.name}
+									</SelectItem>
+								))}
 							</Select>
 
 							<DateRangePicker
 								radius="sm"
-								hideTimeZone
 								variant="flat"
 								visibleMonths={2}
 								className="flex-5 border-none"
-								defaultValue={{
-									start: parseZonedDateTime('2024-04-01T00:45[America/Los_Angeles]'),
-									end: parseZonedDateTime('2024-04-08T11:15[America/Los_Angeles]'),
-								}}
+								value={dateRange}
+								onChange={setDateRange}
+								minValue={today(getLocalTimeZone())}
 							/>
 
 							<Popover
@@ -190,12 +213,7 @@ function Header({showText}) {
 								offset={10}
 							>
 								<PopoverTrigger>
-									<Button
-										className={cn(
-											'flex-3 w-full rounded-lg border-none bg-white xl:min-w-[250px]',
-											havePet && 'min-w-[300px]',
-										)}
-									>
+									<Button className={cn('flex-3 w-full rounded-lg border-none bg-white xl:min-w-[250px]', havePet && 'min-w-[300px]')}>
 										Phòng {personCount} người · {roomCount} phòng {havePet && '· Vật nuôi'}
 										<i
 											className="fa fa-caret-down tet-xl text-[20px] text-grey-500"
@@ -204,10 +222,10 @@ function Header({showText}) {
 									</Button>
 								</PopoverTrigger>
 								<PopoverContent>
-									<div className="flex w-[250px] flex-col gap-2 p-4">
+									<div className="flex w-[300px] flex-col gap-2 p-4">
 										<div className="flex w-full">
 											<div className="flex w-full items-center justify-between gap-20">
-												<p className="text-small font-bold">Người lớn</p>
+												<p className="text-small font-bold">Số người mỗi phòng</p>
 											</div>
 											<NumberInput
 												minWidth={'100px'}
@@ -260,7 +278,7 @@ function Header({showText}) {
 							</Popover>
 
 							<Button
-								onClick={handleSearch}
+								onClick={() => handleSearch()}
 								variant="solid"
 								radius="sm"
 								className="w-full min-w-[200px] bg-blue-600 px-4 py-2 text-white xl:w-fit"

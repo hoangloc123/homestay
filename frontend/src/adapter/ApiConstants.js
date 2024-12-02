@@ -1,6 +1,10 @@
-const BASE_PREFIX = 'api'
+const BASE_PREFIX = 'http://localhost:5000'
 const ApiConstants = {
-	BRANCH: `/branches`,
+	ACCOMMODATIONS: `/accommodations`,
+	TICKETS: 'tickets',
+	USERS: 'users',
+	AUTH: 'auth',
+	PAYMENT: 'payments',
 }
 
 export default ApiConstants

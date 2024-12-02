@@ -2,7 +2,7 @@ export const amenitiesConst = [
 	{
 		id: '1',
 		title: 'Phòng tắm',
-		icon: () => <i className="fas fa-bath"></i>,
+		icon: () => <i className="fa fa-bath"></i>,
 		items: [
 			{id: '1.1', title: 'Giấy vệ sinh'},
 			{id: '1.2', title: 'Khăn tắm'},
@@ -20,7 +20,7 @@ export const amenitiesConst = [
 	{
 		id: '2',
 		title: 'Phòng ngủ',
-		icon: () => <i className="fas fe-bed"></i>,
+		icon: () => <i className="fa fe-bed"></i>,
 		items: [
 			{id: '2.1', title: 'Ra trải giường'},
 			{id: '2.2', title: 'Tủ hoặc phòng để quần áo'},
@@ -29,7 +29,7 @@ export const amenitiesConst = [
 	{
 		id: '3',
 		title: 'Tầm nhìn',
-		icon: () => <i className="fas fa-landmark"></i>,
+		icon: () => <i className="fa fa-landmark"></i>,
 		items: [
 			{id: '3.1', title: 'Nhìn ra thành phố'},
 			{id: '3.2', title: 'Nhìn ra địa danh nổi tiếng'},
@@ -39,7 +39,7 @@ export const amenitiesConst = [
 	{
 		id: '4',
 		title: 'Ngoài trời',
-		icon: () => <i className="fas fa-seedling"></i>,
+		icon: () => <i className="fa fa-seedling"></i>,
 		items: [
 			{id: '4.1', title: 'Bàn ghế ngoài trời'},
 			{id: '4.2', title: 'Sân hiên phơi nắng'},
@@ -51,7 +51,7 @@ export const amenitiesConst = [
 	{
 		id: '5',
 		title: 'Nhà bếp',
-		icon: () => <i className="fas fa-utensils"></i>,
+		icon: () => <i className="fa fa-utensils"></i>,
 		items: [
 			{id: '5.1', title: 'Ấm đun nước điện'},
 			{id: '5.2', title: 'Tủ lạnh'},
@@ -60,7 +60,7 @@ export const amenitiesConst = [
 	{
 		id: '6',
 		title: 'Khu vực phòng khách',
-		icon: () => <i className="fas fa-home"></i>,
+		icon: () => <i className="fa fa-home"></i>,
 		items: [
 			{id: '6.1', title: 'Lò sưởi'},
 			{id: '6.2', title: 'Khu vực tiếp khách'},
@@ -70,7 +70,7 @@ export const amenitiesConst = [
 	{
 		id: '7',
 		title: 'Truyền thông & Công nghệ',
-		icon: () => <i className="fas fa-television"></i>,
+		icon: () => <i className="fa fa-television"></i>,
 		items: [
 			{id: '7.1', title: 'TV màn hình phẳng'},
 			{id: '7.2', title: 'Truyền hình cáp'},
@@ -82,7 +82,12 @@ export const amenitiesConst = [
 	{
 		id: '8',
 		title: 'Đồ ăn & thức uống',
-		icon: () => <i className="fas fa-cutlery"></i>,
+		icon: () => (
+			<i
+				class="fa fa-leaf"
+				aria-hidden="true"
+			></i>
+		),
 		items: [
 			{id: '8.1', title: 'Trái cây (Phụ phí)'},
 			{id: '8.2', title: 'Rượu vang/sâm panh (Phụ phí)'},
@@ -98,25 +103,25 @@ export const amenitiesConst = [
 	{
 		id: '9',
 		title: 'Internet',
-		icon: () => <i className="fas fa-wifi"></i>,
+		icon: () => <i className="fa fa-wifi"></i>,
 		items: [{id: '9.1', title: 'Wi-fi miễn phí'}],
 	},
 	{
 		id: '10',
 		title: 'Chỗ đậu xe',
-		icon: () => <i className="fas fa-product-hunt"></i>,
+		icon: () => <i className="fa fa-product-hunt"></i>,
 		items: [{id: '10.1', title: 'Có chỗ đỗ xe'}],
 	},
 	{
 		id: '11',
 		title: 'Phương tiện đi lại',
-		icon: () => <i className="fas fa-car"></i>,
+		icon: () => <i className="fa fa-car"></i>,
 		items: [{id: '11.1', title: 'Vé đi phương tiện công cộng (Phụ phí)'}],
 	},
 	{
 		id: '12',
 		title: 'Dịch vụ lễ tân',
-		icon: () => <i className="fas fa-wifi"></i>,
+		icon: () => <i className="fa fa-wifi"></i>,
 		items: [
 			{
 				id: '12.1',
@@ -143,7 +148,7 @@ export const amenitiesConst = [
 	{
 		id: '13',
 		title: 'Tổng quát',
-		icon: () => <i className="fas fa-info-circle"></i>,
+		icon: () => <i className="fa fa-info-circle"></i>,
 		items: [
 			{id: '13.1', title: 'Dịch vụ đưa đón (Phụ phí)'},
 			{id: '13.2', title: 'Bát ăn cho vật nuôi'},
@@ -160,7 +165,7 @@ export const amenitiesConst = [
 	{
 		id: '14',
 		title: 'Thanh toán',
-		icon: () => <i className="fas fa-atm"></i>,
+		icon: () => <i className="fa fa-atm"></i>,
 		items: [
 			{id: '14.1', title: 'Không cần thanh toán trước'},
 			{id: '14.2', title: 'Thanh toán qua MOMO'},
