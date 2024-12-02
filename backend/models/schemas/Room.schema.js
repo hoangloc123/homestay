@@ -6,6 +6,7 @@ const RoomSchema = new mongoose.Schema({
   pricePerNight: { type: Number, required: true },
   amenities: [{ type: String }],
   quantity: { type: Number, required: true },
+  description: { type: String },
 });
 
 RoomSchema.index({ pricePerNight: 1 });
