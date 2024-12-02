@@ -29,19 +29,33 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/tickets", async (req, res) => {
   try {
     const { id } = req.params;
+    const { page = "1", limit = "10" } = req.query;
 
-    const tickets = await Ticket.find({ userId: id }).populate({
-      path: "accommodation",
-      select: "name city address",
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const tickets = await Ticket.find({ userId: id })
+      .populate({
+        path: "accommodation",
+        select: "name city address",
+      })
+      .sort({ fromDate: -1 })
+      .skip(skip)
+      .limit(limitNumber);
+
+    const totalTickets = await Ticket.countDocuments({ userId: id });
+
+    res.status(200).json({
+      tickets,
+      pagination: {
+        total: totalTickets,
+        pages: Math.ceil(totalTickets / limitNumber),
+        pageSize: limitNumber,
+        current: pageNumber,
+      },
     });
-
-    if (!tickets || tickets.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No tickets found for this user" });
-    }
-
-    res.status(200).json(tickets);
   } catch (error) {
     console.error("Error retrieving tickets:", error);
     res.status(500).json({ message: "Internal server error" });

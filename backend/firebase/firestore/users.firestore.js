@@ -141,10 +141,39 @@ async function getUsers(role, page = 1, pageSize = 10) {
   };
 }
 
+/**
+ * Get users by a list of user IDs.
+ * @param {Array<string>} userIds - Array of user IDs to fetch.
+ * @returns {Promise<Array>} - List of user objects.
+ */
+async function getUsersByIds(userIds) {
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    return [];
+  }
+
+  const usersRef = collection(database, COLLECTION_USERS);
+
+  // Lấy tất cả user có id thuộc mảng userIds
+  const usersQuery = query(usersRef, where("__name__", "in", userIds));
+
+  const querySnapshot = await getDocs(usersQuery);
+  const users = [];
+
+  querySnapshot.forEach((doc) => {
+    users.push({
+      id: doc.id,
+      ...doc.data(),
+    });
+  });
+
+  return users;
+}
+
 export {
   createUser,
   getUserById,
   getUsers,
+  getUsersByIds,
   updateUser,
   updateUserRequestingHost,
   removeUserHostRole,
