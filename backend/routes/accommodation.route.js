@@ -13,30 +13,33 @@ router.post("/", async (req, res) => {
       ownerId,
       name,
       city,
+      avatar,
       address,
       pricePerNight,
       amenities = [],
       lat,
       lng,
-      images,
+      images = [],
       description,
       noteAccommodation,
       type = 0,
+      outstanding,
+      options,
+      activities
     } = req.body;
 
-    // Validate required field
+    // Validate required fields
     if (!ownerId || !name || !city || !address || !description) {
-      return res
-        .status(400)
-        .json({ message: "Some required field are missing" });
+      return res.status(400).json({ message: "Some required fields are missing" });
     }
 
     const newAccommodation = new Accommodation({
       ownerId,
       name,
       city,
+      avatar,
       address,
-      pricePerNight,
+      pricePerNight: pricePerNight || 0,
       amenities,
       lat,
       lng,
@@ -44,12 +47,17 @@ router.post("/", async (req, res) => {
       description,
       noteAccommodation,
       type,
+      outstanding,
+      options,
+      activities,
+      isVerified: false,
     });
 
     const savedAccommodation = await newAccommodation.save();
 
     res.status(201).json({ accommodationId: savedAccommodation.id });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
@@ -136,8 +144,6 @@ router.get("/", async (req, res) => {
         "policy",
         "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod -_id",
       );
-
-    console.log(accommodations, pricePerNightRange);
 
     let filteredAccommodations = [];
 
@@ -234,14 +240,14 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const accommodation = await Accommodation.findById(id).populate("policy", [
-      "checkIn",
-      "checkOut",
-      "cancellationPolicy",
-      "additionalPolicy",
-      "allowPetPolicy",
-      "paymentMethod",
-    ]);
+    const accommodation = await Accommodation.findById(id)
+        .populate(
+            "policy",
+      "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod"
+        ).populate(
+            "rooms",
+            "name capacity quantity pricePerNight amenities description"
+        );
 
     if (!accommodation) {
       return res.status(404).json({ message: "Accommodation not found" });
@@ -348,6 +354,7 @@ router.post("/:id/rooms", async (req, res) => {
         pricePerNight,
         amenities = [],
         quantity,
+        description
       } = roomData;
 
       const newRoom = new Room({
@@ -356,6 +363,7 @@ router.post("/:id/rooms", async (req, res) => {
         pricePerNight,
         amenities,
         quantity,
+        description
       });
       // NOTE: property 'available' is not defined in Room schema, it's a computed props.
 
