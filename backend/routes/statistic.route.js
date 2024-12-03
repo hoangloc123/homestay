@@ -2,6 +2,7 @@ import express from "express";
 import moment from "moment";
 
 import Ticket from "../models/schemas/Ticket.schema.js";
+import Accommodation from "../models/schemas/Accommodation.schema.js";
 
 // Helper method
 function genMonthlyAggregatePipeline(startOfMonth, endOfMonth, ownerId) {
@@ -174,6 +175,56 @@ router.get("/trending-destination", async (req, res) => {
     res.status(200).json({ trendingCities });
   } catch (error) {
     console.error("Error fetching trending destinations:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/tickets", async (req, res) => {
+  try {
+    const { page = "1", limit = "10", ownerId } = req.query;
+
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    let query = {};
+    if (ownerId) {
+      // Fetch accommodations by ownerId
+      const accommodations = await Accommodation.find({ ownerId: ownerId });
+      const accommodationIds = accommodations.map((acc) => acc._id);
+
+      if (accommodationIds.length === 0) {
+        return res.status(200).json({
+          tickets: [],
+          pagination: { total: 0, pages: 0, pageSize: limitNumber, current: 1 },
+        });
+      }
+
+      query.accommodation = { $in: accommodationIds };
+    }
+
+    const total = await Ticket.countDocuments(query);
+    const tickets = await Ticket.find(query)
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .populate(
+        "accommodation",
+        "name city address avatar outstanding activities description noteAccommodation type pricePerNight ownerId",
+      )
+      .populate("rooms.roomId", "name capacity description pricePerNight");
+
+    const pagination = {
+      total,
+      pages: Math.ceil(total / limitNumber),
+      pageSize: limitNumber,
+      current: pageNumber,
+    };
+
+    res.status(200).json({
+      tickets,
+      pagination,
+    });
+  } catch (error) {
+    console.error("Error retrieving ticket:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

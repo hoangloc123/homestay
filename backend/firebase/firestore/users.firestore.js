@@ -1,6 +1,7 @@
 import {
   arrayRemove,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -107,19 +108,27 @@ async function updateUser(userId, updates) {
 }
 
 /**
- * Get a paginated list of users sorted by creation date, filtered by role.
+ * Get a paginated list of users sorted by creation date. Filtered by
+ * - optionally by role.
+ * - optionally by bossId.
  * @param {string} role - Role to filter users by. Accepts an empty string for no filtering.
+ * @param {string} bossId - Optional, ID of the boss to filter users by.
  * @param {number} page - Page number (1-indexed).
  * @param {number} pageSize - Number of users per page.
  * @returns {Promise<{users: Array, total: number}>} - Paginated users and total count.
  */
-async function getUsers(role, page = 1, pageSize = 10) {
+async function getUsers(role, bossId, page = 1, pageSize = 10) {
   const usersRef = collection(database, COLLECTION_USERS);
 
   let usersQuery = query(usersRef, orderBy("createdAt", "desc"));
 
   if (role) {
     usersQuery = query(usersQuery, where("roles", "array-contains", role));
+  }
+
+  // Check if bossId is provided and filter by it
+  if (bossId) {
+    usersQuery = query(usersQuery, where("bossId", "==", bossId));
   }
 
   const querySnapshot = await getDocs(usersQuery);
@@ -153,7 +162,6 @@ async function getUsersByIds(userIds) {
 
   const usersRef = collection(database, COLLECTION_USERS);
 
-  // Lấy tất cả user có id thuộc mảng userIds
   const usersQuery = query(usersRef, where("__name__", "in", userIds));
 
   const querySnapshot = await getDocs(usersQuery);
@@ -169,12 +177,58 @@ async function getUsersByIds(userIds) {
   return users;
 }
 
+/**
+ * Search users by name or phone.
+ * @param {string} keyword - Keyword to search by name or phone.
+ * @returns {Promise<Array>} - List of user objects that match the keyword.
+ */
+async function searchUsersByKeyword(keyword) {
+  const usersRef = collection(database, COLLECTION_USERS);
+
+  // NOTE: Firebase only support `Prefix` query, therefore, only user with name starts with "keyword" can be found.
+  const nameQuery = query(
+    usersRef,
+    where("name", ">=", keyword),
+    where("name", "<=", keyword + "\uf8ff"),
+  );
+  const phoneQuery = query(usersRef, where("phone", "==", keyword));
+
+  const [nameSnapshot, phoneSnapshot] = await Promise.all([
+    getDocs(nameQuery),
+    getDocs(phoneQuery),
+  ]);
+
+  const users = [];
+  nameSnapshot.forEach((doc) => {
+    users.push({ id: doc.id, ...doc.data() });
+  });
+  phoneSnapshot.forEach((doc) => {
+    if (!users.some((user) => user.id === doc.id)) {
+      users.push({ id: doc.id, ...doc.data() });
+    }
+  });
+
+  return users;
+}
+
+/**
+ * Delete a user by their ID.
+ * @param {string} userId - The ID of the user to delete.
+ * @returns {Promise<void>} - A promise that resolves when the user is deleted.
+ */
+async function deleteUser(userId) {
+  const docRef = doc(database, "users", userId); // Reference to the user document
+  await deleteDoc(docRef);
+}
+
 export {
   createUser,
+  deleteUser,
   getUserById,
   getUsers,
   getUsersByIds,
   updateUser,
   updateUserRequestingHost,
   removeUserHostRole,
+  searchUsersByKeyword,
 };
