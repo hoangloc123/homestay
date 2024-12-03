@@ -3,6 +3,8 @@ import React, {useState} from 'react'
 import {useAuth} from '../..//context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
+import {RouterPath} from '../../router/RouterPath'
+import {Role} from '../../utils/constants'
 import {ToastNotiError} from '../../utils/Utils'
 import RegisterModal from './Register'
 
@@ -45,6 +47,9 @@ const LoginModal = () => {
 			.getUserInfo(id)
 			.then(data => {
 				login(data)
+				if (data.roles[0] === Role.ADMIN) {
+					window.location.href = RouterPath.ADMIN
+				}
 				onClose()
 			})
 			.catch(err => {

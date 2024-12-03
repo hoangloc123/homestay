@@ -1,23 +1,27 @@
 import HeaderAdmin from '@components/header/HeaderAdmin'
 import LoginModal from '@components/header/Login'
-import {RouterPath} from '@router/RouterPath'
 import React, {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
-import Dashboard from '../../section/admin/Dashboard'
-import AdminUser from '../../section/admin/AdminUser'
+import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
 import AdminHostList from '../../section/admin/AdminHostList'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
 import AdminSideBar from '../../section/admin/AdminSideBar'
-import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
+import AdminUser from '../../section/admin/AdminUser'
+import Dashboard from '../../section/admin/Dashboard'
+import {Role, sidebarItems} from '../../utils/constants'
 
 export default function AdminPage() {
-	const [selectedItem, setSelectedItem] = useState('users')
-	const [selectedName, setSelectedName] = useState('')
+	const [selectedItem, setSelectedItem] = useState('dashboardAll')
+	const [selectedName, setSelectedName] = useState('Tổng quan')
+	const [filterItems, setFilterItems] = useState([])
+	console.log('🚀 ~ AdminPage ~ filterItems:', filterItems)
+
 	const {auth, loading} = useAuth()
 	const {onOpen} = useModalCommon()
 	const navigator = useNavigate()
+
 	const handleItemClick = (itemId, name) => {
 		setSelectedItem(itemId)
 		setSelectedName(name)
@@ -25,7 +29,7 @@ export default function AdminPage() {
 
 	useEffect(() => {
 		if (!loading) {
-			if (auth?.role !== '1') {
+			if (auth?.roles?.[0] !== Role.ADMIN) {
 				navigator(RouterPath.NOT_FOUND)
 				return
 			}
@@ -36,8 +40,17 @@ export default function AdminPage() {
 					showFooter: false,
 				})
 			}
+			const newList = sidebarItems.filter(item => item.roles.includes(auth.roles[0]))
+			setFilterItems(newList)
 		}
 	}, [auth, loading])
+
+	useEffect(() => {
+		if (filterItems?.length > 0) {
+			setSelectedItem(filterItems[0].id)
+			setSelectedName(filterItems[0].title)
+		}
+	}, [filterItems])
 
 	const renderContent = () => {
 		switch (selectedItem) {
@@ -73,6 +86,7 @@ export default function AdminPage() {
 						onSelectItem={(id, label) => {
 							return handleItemClick(id, label)
 						}}
+						filteredItems={filterItems}
 					/>
 					<main className="h-screen flex-1 items-start overflow-scroll">
 						<HeaderAdmin title={selectedName} />
