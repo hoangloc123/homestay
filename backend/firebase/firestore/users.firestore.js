@@ -153,7 +153,6 @@ async function getUsersByIds(userIds) {
 
   const usersRef = collection(database, COLLECTION_USERS);
 
-  // Lấy tất cả user có id thuộc mảng userIds
   const usersQuery = query(usersRef, where("__name__", "in", userIds));
 
   const querySnapshot = await getDocs(usersQuery);
@@ -169,6 +168,40 @@ async function getUsersByIds(userIds) {
   return users;
 }
 
+/**
+ * Search users by name or phone.
+ * @param {string} keyword - Keyword to search by name or phone.
+ * @returns {Promise<Array>} - List of user objects that match the keyword.
+ */
+async function searchUsersByKeyword(keyword) {
+  const usersRef = collection(database, COLLECTION_USERS);
+
+  // NOTE: Firebase only support `Prefix` query, therefore, only user with name starts with "keyword" can be found.
+  const nameQuery = query(
+    usersRef,
+    where("name", ">=", keyword),
+    where("name", "<=", keyword + "\uf8ff"),
+  );
+  const phoneQuery = query(usersRef, where("phone", "==", keyword));
+
+  const [nameSnapshot, phoneSnapshot] = await Promise.all([
+    getDocs(nameQuery),
+    getDocs(phoneQuery),
+  ]);
+
+  const users = [];
+  nameSnapshot.forEach((doc) => {
+    users.push({ id: doc.id, ...doc.data() });
+  });
+  phoneSnapshot.forEach((doc) => {
+    if (!users.some((user) => user.id === doc.id)) {
+      users.push({ id: doc.id, ...doc.data() });
+    }
+  });
+
+  return users;
+}
+
 export {
   createUser,
   getUserById,
@@ -177,4 +210,5 @@ export {
   updateUser,
   updateUserRequestingHost,
   removeUserHostRole,
+  searchUsersByKeyword,
 };

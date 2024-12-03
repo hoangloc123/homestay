@@ -6,6 +6,7 @@ import Accommodation from "../models/schemas/Accommodation.schema.js";
 import Policy from "../models/schemas/Policy.schema.js";
 import Room from "../models/schemas/Room.schema.js";
 import Ticket from "../models/schemas/Ticket.schema.js";
+import { searchUsersByKeyword } from "../firebase/firestore/users.firestore.js";
 
 // Helper method
 const getPricePerNight = (accommodation, isAscending) => {
@@ -232,15 +233,43 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/unverified", async (req, res) => {
+router.get("/managed-verification", async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = "1", limit = "10", isVerified, keyword, city } = req.query;
 
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
 
-    const total = await Accommodation.countDocuments({ isVerified: false });
-    const accommodations = await Accommodation.find({ isVerified: false })
+    let query = {};
+    if (isVerified !== undefined) {
+      query.isVerified = isVerified === "true";
+    }
+    if (city) {
+      query.city = city;
+    }
+
+    let ownerIds = [];
+    if (keyword) {
+      const users = await searchUsersByKeyword(keyword);
+      ownerIds = users.map((user) => user.id);
+      if (ownerIds.length === 0) {
+        return res
+          .status(200)
+          .json({
+            accommodations: [],
+            pagination: {
+              total: 0,
+              pages: 0,
+              pageSize: limitNumber,
+              current: 1,
+            },
+          });
+      }
+      query.ownerId = { $in: ownerIds };
+    }
+
+    const total = await Accommodation.countDocuments(query);
+    const accommodations = await Accommodation.find(query)
       .skip((pageNumber - 1) * limitNumber)
       .limit(limitNumber)
       .populate(
@@ -261,7 +290,7 @@ router.get("/unverified", async (req, res) => {
       pagination,
     });
   } catch (error) {
-    console.error("Error fetching unverified accommodations:", error);
+    console.error("Error fetching accommodations:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
