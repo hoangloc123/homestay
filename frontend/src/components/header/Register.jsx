@@ -1,12 +1,12 @@
 import {Button, Input} from '@nextui-org/react'
-import {signInWithPopup} from 'firebase/auth'
+import {EmailAuthProvider, linkWithCredential, signInWithPopup} from 'firebase/auth'
 import React, {useState} from 'react'
 import {auth, googleProvider} from '../../config/firebaseConfig'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import {Role} from '../../utils/constants'
-import {ToastNotiError} from '../../utils/Utils'
+import {ToastInfo, ToastNotiError} from '../../utils/Utils'
 import LoginModal from './Login'
 
 const RegisterModal = () => {
@@ -14,6 +14,7 @@ const RegisterModal = () => {
 	const {login} = useAuth()
 
 	const [isVisible, setIsVisible] = useState(false)
+	const [loading, setLoading] = useState(false)
 	const toggleVisibility = () => setIsVisible(!isVisible)
 
 	const openLogin = () => {
@@ -25,55 +26,76 @@ const RegisterModal = () => {
 	}
 
 	const handleSignUpEmail = () => {
+		setLoading(true)
 		const email = document.getElementById('email').value
 		const password = document.getElementById('password').value
 		const confirmPassword = document.getElementById('confirmPassword').value
 		if (!password || !confirmPassword || !email) {
 			ToastNotiError('Vui lòng nhập thông tin')
+			setLoading(false)
 			return
 		}
 		if (password !== confirmPassword) {
 			ToastNotiError('Mật khẩu không khớp, vui lòng nhập lại mật khẩu')
+			setLoading(false)
 			return
 		}
-		const role = {roles: [Role.EMPLOYEE]}
+		const metaData = {
+			name: email,
+			photoURL: 'https://ui-avatars.com/api/?name=' + email,
+			roles: [Role.USER],
+		}
 		factories
-			.getSignUpEmail(email, password, role)
+			.getSignUpEmail(email, password, metaData)
 			.then(data => {
-				login(data)
-				onClose()
+				ToastInfo('Đăng ký tài khoản thành công')
+				setLoading(false)
+				openLogin()
 			})
 			.catch(error => {
 				if (error.response.data.error === 'Firebase: Error (auth/email-already-in-use).') {
 					ToastNotiError('Email đã được sử dụng')
-				} else {
-					ToastNotiError(`Lỗi không xác định: ${error.message || 'Vui lòng thử lại sau!'}`)
+					setLoading(false)
+					return
 				}
+				if (error.response.data.error === 'Firebase: Error (auth/invalid-email).') {
+					ToastNotiError('Email sai định dạng')
+					setLoading(false)
+					return
+				}
+				ToastNotiError(`Lỗi không xác định: ${error.message || 'Vui lòng thử lại sau!'}`)
+				setLoading(false)
 			})
 	}
 
-	function handleLogin(user) {
-		const userInfo = {
-			id: user.uid,
-			name: user.displayName,
-			avatar: user.photoUrl,
-			email: user.email,
-			phone: user?.phoneNumber,
-			accessToken: user.accessToken,
-			role: '1',
-			emailVerified: user.emailVerified,
+	async function linkEmailAndPassword(user, email, password) {
+		try {
+			const credential = EmailAuthProvider.credential(email, password)
+			const linkedUser = await linkWithCredential(user, credential)
+			return linkedUser
+		} catch (error) {
+			if (error.code === 'auth/email-already-in-use') {
+				console.error('Email đã liên kết với tài khoản khác.')
+			} else {
+				console.error('Lỗi liên kết Email & Password:', error.message)
+			}
+			throw error
 		}
-		login(userInfo)
-		onClose()
 	}
 
 	const handleGoogleSignUp = async () => {
 		try {
 			const result = await signInWithPopup(auth, googleProvider)
 			const user = result.user
-			handleLogin(user)
+			console.log('🚀 ~ ~ user:', user)
+			await linkEmailAndPassword(user, email, user.uid)
+			ToastInfo('Đăng ký thành công.')
 		} catch (error) {
-			alert('Đăng ký thất bại, vui lòng thử lại.')
+			if (error?.response?.data.error === 'Firebase: Error (auth/email-already-in-use).') {
+				ToastNotiError('Email đã được sử dụng')
+				return
+			}
+			ToastNotiError('Đăng ký thất bại, vui lòng thử lại.')
 		}
 	}
 
@@ -146,25 +168,26 @@ const RegisterModal = () => {
 				className="mt-8 w-full rounded-lg"
 				variant="solid"
 				color="primary"
+				isLoading={loading}
 			>
 				Đăng ký
 			</Button>
 
-			<div className="mt-4 flex w-full items-center">
+			{/* <div className="mt-4 flex w-full items-center">
 				<div className="h-[1px] flex-grow bg-neutral-200" />
 				<p className="px-2">hoặc</p>
 				<div className="h-[1px] flex-grow bg-neutral-200" />
-			</div>
+			</div> */}
 
 			<div className="mt-4">
-				<Button
+				{/* <Button
 					radius={'sm'}
 					color="primary"
 					className="w-full"
 					onClick={handleGoogleSignUp}
 				>
 					Đăng ký với Google
-				</Button>
+				</Button> */}
 				<div className="mt-4 flex">
 					<p>Bạn đã có tài khoản?</p>
 					<button

@@ -36,4 +36,17 @@ export const factories = {
 			},
 		})
 	},
+	getUserInfo: id => {
+		return ApiOperation.request({
+			url: ApiConstants.USERS + '/' + id,
+			method: 'GET',
+		})
+	},
+	updateUserInfo: (id, data) => {
+		return ApiOperation.request({
+			url: ApiConstants.USERS + '/' + id,
+			method: 'PUT',
+			data: data,
+		})
+	},
 }
