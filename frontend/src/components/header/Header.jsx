@@ -111,7 +111,7 @@ function Header({showText, showSearch = false}) {
 												className="border-none hover:bg-transparent"
 											>
 												<Avatar
-													src={auth.avatar}
+													src={auth.photoURL}
 													className="h-6 w-6 bg-gray-200"
 												/>
 												<p className="text-white">{auth.name} </p>

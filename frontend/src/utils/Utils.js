@@ -8,6 +8,7 @@ import {toast} from 'react-toastify'
 // import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 // import { storage } from '../firebase'
 import clsx from 'clsx'
+import {ref} from 'firebase/storage'
 import {twMerge} from 'tailwind-merge'
 import {v4} from 'uuid'
 
@@ -128,6 +129,10 @@ export const getDate = (timestamp, type = 1) => {
 			break
 		case 12:
 			result = moment(timestamp).format('DD.MM.yyyy - HH:mm')
+			break
+		case 13:
+			const newDate = timestamp.year + '/' + timestamp.month + '/' + timestamp.day
+			result = moment(newDate, 'YYYY/MM/DD').format('YYYY-MM-DD')
 			break
 		default:
 			break
