@@ -5,6 +5,7 @@ import HomePage from '@pages/homepage/HomePage'
 import NotFoundPage from '@pages/not-found/NotFoundPage'
 import SearchPage from '@pages/search/SearchPage'
 import Layout from '../layout/Layout'
+import ChangePasswordPage from '../pages/profile/ChangePasswordPage'
 import ProfileManagerPage from '../pages/profile/ProfileManagerPage'
 import RegisterHost from '../pages/register-host/RegisterHost'
 import {RouterPath} from './RouterPath'
@@ -40,6 +41,12 @@ const routesConfig = [
 	{
 		path: RouterPath.REGISTER_HOST,
 		element: RegisterHost,
+		layout: Layout,
+		layoutProps: {showText: false, showSearch: false},
+	},
+	{
+		path: RouterPath.CHANGE_PASSWORD,
+		element: ChangePasswordPage,
 		layout: Layout,
 		layoutProps: {showText: false, showSearch: false},
 	},

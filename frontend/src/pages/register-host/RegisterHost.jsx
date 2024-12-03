@@ -3,12 +3,16 @@ import React, {useEffect, useRef} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import InputField from '../../components/common/InputField'
 import TextAreaField from '../../components/common/TextAreaField'
+import LoginModal from '../../components/header/Login'
 import {useAuth} from '../../context/AuthContext'
+import {useModalCommon} from '../../context/ModalContext'
 
 export default function RegisterHost() {
 	const formRef = useRef()
 	const methods = useForm()
 	const {auth} = useAuth()
+	const {onOpen} = useModalCommon()
+
 	const {
 		register,
 		setValue,
@@ -22,6 +26,14 @@ export default function RegisterHost() {
 			setValue('phone', auth.phone)
 		}
 	}, [auth])
+
+	const openModalLogin = () => {
+		onOpen({
+			view: <LoginModal />,
+			title: 'Đăng nhập',
+			showFooter: false,
+		})
+	}
 
 	return (
 		<div>
@@ -45,7 +57,7 @@ export default function RegisterHost() {
 						</ul>
 						<button
 							className="mt-4 rounded bg-blue-600 px-4 py-2 text-white"
-							onClick={() => formRef.current?.scrollIntoView({behavior: 'smooth'})}
+							onClick={() => (!auth ? openModalLogin() : formRef.current?.scrollIntoView({behavior: 'smooth'}))}
 						>
 							Bắt đầu ngay
 						</button>
@@ -126,53 +138,55 @@ export default function RegisterHost() {
 				</section>
 			</main>
 
-			<div
-				ref={formRef}
-				className="mt-10 flex w-full items-center justify-center pb-32"
-			>
-				<FormProvider {...methods}>
-					<div className="flex max-w-2xl flex-col gap-4 rounded-lg bg-white px-6 py-8 shadow-lg">
-						<p className="mt-0 w-full text-center text-2xl font-bold">Trở thành đối tác của chúng tôi</p>
-						<div className="mt-2" />
-						<InputField
-							label="Họ và tên"
-							placeholder="Nhập họ và tên"
-							name={'displayName'}
-							register={register}
-							isRequired
-							errors={errors}
-						/>
-						<InputField
-							placeholder="Nhập số điện thoại"
-							label="Số điện thoại"
-							name={'phone'}
-							isRequired
-							register={register}
-							errors={errors}
-						/>
-						<InputField
-							placeholder="Nhập email liên hệ"
-							label="Email"
-							isRequired
-							name={'email'}
-							register={register}
-							errors={errors}
-						/>
-						<TextAreaField
-							label={'Thông tin cần được tư vấn'}
-							register={register}
-							errors={errors}
-							name={'information'}
-						/>
-						<Button
-							className="mt-2"
-							color="primary"
-						>
-							Gửi yêu cầu
-						</Button>
-					</div>
-				</FormProvider>
-			</div>
+			{auth && (
+				<div
+					ref={formRef}
+					className="mt-10 flex w-full items-center justify-center pb-32"
+				>
+					<FormProvider {...methods}>
+						<div className="flex max-w-2xl flex-col gap-4 rounded-lg bg-white px-6 py-8 shadow-lg">
+							<p className="mt-0 w-full text-center text-2xl font-bold">Trở thành đối tác của chúng tôi</p>
+							<div className="mt-2" />
+							<InputField
+								label="Họ và tên"
+								placeholder="Nhập họ và tên"
+								name={'displayName'}
+								register={register}
+								isRequired
+								errors={errors}
+							/>
+							<InputField
+								placeholder="Nhập số điện thoại"
+								label="Số điện thoại"
+								name={'phone'}
+								isRequired
+								register={register}
+								errors={errors}
+							/>
+							<InputField
+								placeholder="Nhập email liên hệ"
+								label="Email"
+								isRequired
+								name={'email'}
+								register={register}
+								errors={errors}
+							/>
+							<TextAreaField
+								label={'Thông tin cần được tư vấn'}
+								register={register}
+								errors={errors}
+								name={'information'}
+							/>
+							<Button
+								className="mt-2"
+								color="primary"
+							>
+								Gửi yêu cầu
+							</Button>
+						</div>
+					</FormProvider>
+				</div>
+			)}
 		</div>
 	)
 }
