@@ -1,6 +1,7 @@
 import {
   arrayRemove,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -107,19 +108,27 @@ async function updateUser(userId, updates) {
 }
 
 /**
- * Get a paginated list of users sorted by creation date, filtered by role.
+ * Get a paginated list of users sorted by creation date. Filtered by
+ * - optionally by role.
+ * - optionally by bossId.
  * @param {string} role - Role to filter users by. Accepts an empty string for no filtering.
+ * @param {string} bossId - Optional, ID of the boss to filter users by.
  * @param {number} page - Page number (1-indexed).
  * @param {number} pageSize - Number of users per page.
  * @returns {Promise<{users: Array, total: number}>} - Paginated users and total count.
  */
-async function getUsers(role, page = 1, pageSize = 10) {
+async function getUsers(role, bossId, page = 1, pageSize = 10) {
   const usersRef = collection(database, COLLECTION_USERS);
 
   let usersQuery = query(usersRef, orderBy("createdAt", "desc"));
 
   if (role) {
     usersQuery = query(usersQuery, where("roles", "array-contains", role));
+  }
+
+  // Check if bossId is provided and filter by it
+  if (bossId) {
+    usersQuery = query(usersQuery, where("bossId", "==", bossId));
   }
 
   const querySnapshot = await getDocs(usersQuery);
@@ -202,8 +211,19 @@ async function searchUsersByKeyword(keyword) {
   return users;
 }
 
+/**
+ * Delete a user by their ID.
+ * @param {string} userId - The ID of the user to delete.
+ * @returns {Promise<void>} - A promise that resolves when the user is deleted.
+ */
+async function deleteUser(userId) {
+  const docRef = doc(database, "users", userId); // Reference to the user document
+  await deleteDoc(docRef);
+}
+
 export {
   createUser,
+  deleteUser,
   getUserById,
   getUsers,
   getUsersByIds,

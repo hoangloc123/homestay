@@ -253,17 +253,15 @@ router.get("/managed-verification", async (req, res) => {
       const users = await searchUsersByKeyword(keyword);
       ownerIds = users.map((user) => user.id);
       if (ownerIds.length === 0) {
-        return res
-          .status(200)
-          .json({
-            accommodations: [],
-            pagination: {
-              total: 0,
-              pages: 0,
-              pageSize: limitNumber,
-              current: 1,
-            },
-          });
+        return res.status(200).json({
+          accommodations: [],
+          pagination: {
+            total: 0,
+            pages: 0,
+            pageSize: limitNumber,
+            current: 1,
+          },
+        });
       }
       query.ownerId = { $in: ownerIds };
     }

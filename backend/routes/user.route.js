@@ -2,10 +2,12 @@ import express from "express";
 
 import Ticket from "../models/schemas/Ticket.schema.js";
 import {
+  deleteUser,
   getUserById,
   getUsers,
   updateUser,
 } from "../firebase/firestore/users.firestore.js";
+import { Role } from "../constants/role.constant.js";
 
 const router = express.Router();
 
@@ -91,7 +93,7 @@ router.put("/:id", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const { role = "", page = 1, pageSize = 10 } = req.query;
+  const { role = "", bossId = "", page = 1, pageSize = 10 } = req.query;
 
   try {
     const parsedPage = parseInt(page, 10);
@@ -106,7 +108,12 @@ router.get("/", async (req, res) => {
       return res.status(400).json({ message: "Invalid page or pageSize" });
     }
 
-    const { users, total } = await getUsers(role, parsedPage, parsedPageSize);
+    const { users, total } = await getUsers(
+      role,
+      bossId,
+      parsedPage,
+      parsedPageSize,
+    );
 
     const totalPages = Math.ceil(total / parsedPageSize);
 
@@ -125,6 +132,74 @@ router.get("/", async (req, res) => {
       message: "Failed to fetch users.",
       error: error.message,
     });
+  }
+});
+
+/**
+ * Route to delete a user by ID, only if currentUserId has 'admin' or 'host' role.
+ * @param {string} currentUserId - ID of the current user who is attempting the delete.
+ * @param {string} deleteId - ID of the user to be deleted.
+ */
+/**
+ * Route to delete a user by ID, with different behavior for admin and host users.
+ * @param {string} currentUserId - ID of the current user who is attempting the delete.
+ * @param {string} deleteId - ID of the user to be deleted.
+ */
+router.delete("/:currentUserId/:deleteId", async (req, res) => {
+  const { currentUserId, deleteId } = req.params;
+
+  try {
+    const currentUser = await getUserById(currentUserId);
+
+    if (!currentUser) {
+      return res.status(404).json({ message: "Current user not found" });
+    }
+
+    const isAdmin = currentUser.roles && currentUser.roles.includes(Role.ADMIN);
+    const isHost = currentUser.roles && currentUser.roles.includes(Role.HOST);
+    if (!isAdmin && !isHost) {
+      return res
+        .status(403)
+        .json({ message: "You do not have permission to delete this user" });
+    }
+
+    if (isAdmin) {
+      await deleteUser(deleteId);
+      return res
+        .status(200)
+        .json({
+          message: `User with ID ${deleteId} has been deleted successfully.`,
+        });
+    }
+
+    if (isHost) {
+      // If the current user is a host, ensure that the delete user has a matching bossId
+      const deleteUserDetails = await getUserById(deleteId);
+
+      if (!deleteUserDetails) {
+        return res
+          .status(404)
+          .json({ message: "User to be deleted not found" });
+      }
+
+      if (deleteUserDetails.bossId !== currentUserId) {
+        return res
+          .status(403)
+          .json({
+            message: "You can only delete users under your supervision",
+          });
+      }
+
+      await deleteUser(deleteId);
+      return res
+        .status(200)
+        .json({
+          message: `User with ID ${deleteId} has been deleted successfully.`,
+        });
+    }
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
