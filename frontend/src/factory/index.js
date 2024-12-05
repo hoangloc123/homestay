@@ -2,17 +2,17 @@ import ApiConstants from '../adapter/ApiConstants'
 import ApiOperation from '../adapter/ApiOperation'
 
 export const factories = {
-	getAccommodations: data => {
+	getUserInfo: id => {
 		return ApiOperation.request({
-			url: ApiConstants.ACCOMMODATIONS,
+			url: ApiConstants.USERS + '/' + id,
 			method: 'GET',
-			params: data,
 		})
 	},
-	getDetailAccommodation: id => {
+	updateUserInfo: (id, data) => {
 		return ApiOperation.request({
-			url: ApiConstants.ACCOMMODATIONS + '/' + id,
-			method: 'GET',
+			url: ApiConstants.USERS + '/' + id,
+			method: 'PUT',
+			data: data,
 		})
 	},
 	getLoginEmail: (email, pass) => {
@@ -36,17 +36,26 @@ export const factories = {
 			},
 		})
 	},
-	getUserInfo: id => {
+	updatePassword: data => {
 		return ApiOperation.request({
-			url: ApiConstants.USERS + '/' + id,
-			method: 'GET',
+			url: ApiConstants.AUTH + '/change-password',
+			method: 'POST',
+			data,
 		})
 	},
-	updateUserInfo: (id, data) => {
+	///
+
+	getAccommodations: data => {
 		return ApiOperation.request({
-			url: ApiConstants.USERS + '/' + id,
-			method: 'PUT',
-			data: data,
+			url: ApiConstants.ACCOMMODATIONS,
+			method: 'GET',
+			params: data,
+		})
+	},
+	getDetailAccommodation: id => {
+		return ApiOperation.request({
+			url: ApiConstants.ACCOMMODATIONS + '/' + id,
+			method: 'GET',
 		})
 	},
 }

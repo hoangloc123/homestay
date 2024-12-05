@@ -163,9 +163,84 @@ export const amenitiesSearchConst = [
 	{id: '9.1', title: 'Wi-fi miễn phí'},
 ]
 
-export const Role = {
+export const Role = Object.freeze({
 	ADMIN: 'admin',
 	USER: 'user',
 	HOST: 'host',
 	EMPLOYEE: 'employee',
-}
+})
+
+export const sidebarItems = [
+	{
+		id: 'dashboardAll',
+		icon: 'fa-th-large',
+		label: 'Tổng quan',
+		title: 'Tổng quan',
+		roles: ['admin'],
+	},
+	{
+		id: 'busAll',
+		icon: 'fa-hotel',
+		title: 'Danh sách cơ sở cho thuê',
+		label: 'Chỗ nghỉ',
+		roles: ['admin'],
+	},
+	{
+		id: 'usersAll',
+		icon: 'fa-users',
+		label: 'Tài khoản',
+		title: 'Danh sách Tài khoản',
+		active: true,
+		roles: ['admin'],
+	},
+	{
+		id: 'bookingAll',
+		icon: 'fa-tasks',
+		label: 'Đặt phòng',
+		title: 'Danh sách lượt đặt phòng',
+		roles: ['admin'],
+	},
+	{
+		id: 'request',
+		icon: 'fa-clipboard-list',
+		label: 'Yêu cầu',
+		title: 'Đăng ký chỗ nghỉ mới',
+		roles: ['admin'],
+	},
+	{
+		id: 'dashboard',
+		icon: 'fa-th-large',
+		label: 'Tổng quan',
+		title: 'Tổng quan',
+		roles: ['chuNhaXe'],
+	},
+	{
+		id: 'users',
+		icon: 'fa-users',
+		label: 'Tài khoản',
+		title: 'Danh sách Tài khoản',
+		active: true,
+		roles: ['chuNhaXe'],
+	},
+	{
+		id: 'buses',
+		icon: 'fa-hotel',
+		label: 'Chỗ nghỉ',
+		title: 'Danh sách Chỗ nghỉ',
+		roles: ['chuNhaXe', 'taiXe', 'phuXe'],
+	},
+	{
+		id: 'booking',
+		icon: 'fa-clipboard-list',
+		label: 'Đặt phòng',
+		title: 'Danh sách lượt đặt phòng',
+		roles: ['chuNhaXe', 'nhanVien'],
+	},
+	{
+		id: 'profile',
+		icon: 'fa-smile',
+		title: 'Thông tin tài khoản',
+		label: 'Thông tin',
+		roles: ['chuNhaXe', 'nhanVien', 'taiXe', 'phuXe'],
+	},
+]

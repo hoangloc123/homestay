@@ -81,7 +81,7 @@ function Header({showText, showSearch = false}) {
 	}
 
 	return (
-		<div className="relative rounded-ee-xl rounded-es-xl bg-blue-800">
+		<div className={cn('relative rounded-ee-xl rounded-es-xl bg-blue-800', !showText && !showSearch && 'rounded-none')}>
 			<div className="m-auto w-full max-w-[80%] 2xl:max-w-[80%]">
 				<header className="pt-5 text-white">
 					<div className="container mx-auto flex items-center justify-between">
@@ -98,6 +98,11 @@ function Header({showText, showSearch = false}) {
 								variant="light"
 								color="white"
 								className="rounded-xl font-bold hover:bg-blue-600"
+								onClick={() =>
+									router.push({
+										pathname: RouterPath.REGISTER_HOST,
+									})
+								}
 							>
 								Đăng chỗ nghỉ của quý vị
 							</Button>
@@ -111,7 +116,7 @@ function Header({showText, showSearch = false}) {
 												className="border-none hover:bg-transparent"
 											>
 												<Avatar
-													src={auth.avatar}
+													src={auth.photoURL}
 													className="h-6 w-6 bg-gray-200"
 												/>
 												<p className="text-white">{auth.name} </p>

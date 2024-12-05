@@ -1,4 +1,5 @@
-import {Button, ButtonGroup, Card, CardBody, CardHeader, Divider} from '@nextui-org/react'
+import {parseDate} from '@internationalized/date'
+import {Avatar, Button, ButtonGroup, Card, CardBody, Divider} from '@nextui-org/react'
 import React, {useEffect, useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import DatePickerField from '../../components/common/DatePickerField'
@@ -6,7 +7,8 @@ import InputField from '../../components/common/InputField'
 import Sidebar from '../../components/sidebar/SideBar'
 import {useAuth} from '../../context/AuthContext'
 import {factories} from '../../factory'
-import {ToastInfo, ToastNotiError} from '../../utils/Utils'
+import {uploadFirebase} from '../../utils/UFirebase'
+import {getDate, ToastInfo, ToastNotiError} from '../../utils/Utils'
 
 export default function ProfileManagerPage() {
 	const {auth, login} = useAuth()
@@ -25,21 +27,28 @@ export default function ProfileManagerPage() {
 			setValue('displayName', auth.displayName || '')
 			setValue('photoURL', auth.photoURL || '')
 			setValue('phone', auth.phone || '')
-			// setValue('dob', auth.dob ? new Date(auth.dob) : null)
+			setValue('dob', auth.dob ? parseDate(auth.dob) : null)
 			setValue('gender', auth.gender || '')
 			setValue('email', auth.email || '')
 		}
 	}, [auth])
 
-	function handleSave(values) {
+	async function handleSave(values) {
 		setLoading(true)
+		let newUrl = auth.photoURL
+		if (values.photoFile) {
+			console.log('2')
+
+			newUrl = await uploadFirebase(values.photoFile)
+		}
 		const newValues = {
 			...values,
-			// dob: values.dob ? new Date(values.dob.year, values.dob.month - 1, values.dob.day).toUTCString() : null,
+			photoURL: newUrl,
+			dob: getDate(values.dob, 13) ?? null,
 		}
 		factories
 			.updateUserInfo(auth.id, newValues)
-			.then(data => {
+			.then(() => {
 				ToastInfo('Cập nhật thông tin thành công')
 				handleUserInfo()
 				setLoading(false)
@@ -63,6 +72,18 @@ export default function ProfileManagerPage() {
 			})
 	}
 
+	const handleImageChange = event => {
+		const file = event.target.files?.[0]
+		if (file) {
+			setValue('photoFile', file)
+			const fileReader = new FileReader()
+			fileReader.onloadend = () => {
+				setValue('photoURL', fileReader.result)
+			}
+			fileReader.readAsDataURL(file)
+		}
+	}
+
 	return (
 		<div className="mx-auto my-20 flex justify-center">
 			<div className="flex w-full max-w-[60%] gap-6">
@@ -71,10 +92,31 @@ export default function ProfileManagerPage() {
 				</div>
 				<div className="flex flex-grow">
 					<Card className="w-full">
-						<CardHeader className="font-bold">Thông tin cá nhân</CardHeader>
 						<FormProvider {...methods}>
 							<form onSubmit={methods.handleSubmit(handleSave)}>
 								<CardBody className="w-full gap-4">
+									<div className="flex flex-row justify-between p-2">
+										<h5 className="text-2xl font-bold">Thông tin cá nhân</h5>
+										<div className="relative h-16 w-16 cursor-pointer">
+											<Avatar
+												showFallback
+												src={watch('photoURL')}
+												className="h-14 w-14 rounded-full"
+											/>
+											<div className="absolute bottom-1 right-1">
+												<i
+													class="fa fa-camera"
+													aria-hidden="true"
+												></i>
+											</div>
+											<input
+												type="file"
+												className="absolute inset-0 cursor-pointer opacity-0"
+												onChange={handleImageChange}
+											/>
+										</div>
+									</div>
+
 									<div className="flex gap-4">
 										<InputField
 											label={'Họ và tên'}
