@@ -165,11 +165,9 @@ router.delete("/:currentUserId/:deleteId", async (req, res) => {
 
     if (isAdmin) {
       await deleteUser(deleteId);
-      return res
-        .status(200)
-        .json({
-          message: `User with ID ${deleteId} has been deleted successfully.`,
-        });
+      return res.status(200).json({
+        message: `User with ID ${deleteId} has been deleted successfully.`,
+      });
     }
 
     if (isHost) {
@@ -183,19 +181,15 @@ router.delete("/:currentUserId/:deleteId", async (req, res) => {
       }
 
       if (deleteUserDetails.bossId !== currentUserId) {
-        return res
-          .status(403)
-          .json({
-            message: "You can only delete users under your supervision",
-          });
+        return res.status(403).json({
+          message: "You can only delete users under your supervision",
+        });
       }
 
       await deleteUser(deleteId);
-      return res
-        .status(200)
-        .json({
-          message: `User with ID ${deleteId} has been deleted successfully.`,
-        });
+      return res.status(200).json({
+        message: `User with ID ${deleteId} has been deleted successfully.`,
+      });
     }
   } catch (error) {
     console.error("Error deleting user:", error);
