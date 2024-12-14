@@ -1,89 +1,114 @@
+import bcrypt from "bcryptjs";
 import express from "express";
-import { changePassword, logIn, signUp } from "../firebase/authentication.js";
+import jwt from "jsonwebtoken";
 import { Role } from "../constants/role.constant.js";
+import Request from "../models/schemas/request.schema.js";
+import User from "../models/schemas/user.schema.js";
 
 const router = express.Router();
 
-router.post("/signup", async (req, res) => {
-  const { email, password, metadata } = req.body;
+router.post("/sign-up", async (req, res) => {
+    try {
+        const { email, password, fullName, phone, branchName, roles, profilePictureUrl, bossId } = req.body;
 
-  if (!email || !password || !metadata) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            email,
+            password: hashedPassword,
+            fullName,
+            roles,
+            profilePictureUrl,
+            phone,
+            ...(branchName ? { branchName } : {}),
+            ...(bossId ? { bossId } : {}),
+        });
+        const phoneExists = await User.findOne({ phone });
+        const emailExists = await User.findOne({ email });
+        if (emailExists) {
+            return res.status(400).json({ message: "Email đã được đăng ký" });
+        }
+        if (phoneExists) {
+            return res.status(400).json({ message: "Số điện thoại đã được đăng ký" });
+        }
+        await newUser.save();
 
-  if (
-    !metadata.roles ||
-    !Array.isArray(metadata.roles) ||
-    metadata.roles.some((role) => !Object.values(Role).includes(role))
-  ) {
-    return res.status(400).json({
-      message:
-        "Invalid roles. Roles must be an array and each role must be one of the following: " +
-        Object.values(Role).join(", "),
-    });
-  }
+        if (roles.includes(Role.HOST)) {
+            newUser.isRequestHostOwner = false;
 
-  try {
-    await signUp(email, password, metadata);
-    res
-      .status(201)
-      .json({ message: "User created successfully. Verification email sent." });
-  } catch (error) {
-    console.error("Error signing up user:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to sign up user.", error: error.message });
-  }
+            const newRequest = new Request({
+                target: "User",
+                targetId: newUser._id,
+                isResolved: false,
+            });
+
+            await newRequest.save();
+        }
+
+        res.status(201).json(newUser);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Error creating user",
+            error: error.message,
+        });
+    }
 });
 
-// router.post('/logout', async (req, res) => {
-//     try {
-//         await logOut();
-//         res.status(200).json({ message: 'Logged out successfully.' });
-//     } catch (error) {
-//         console.error('Error logging out user:', error);
-//         res.status(500).json({ message: 'Failed to log out.', error: error.message });
-//     }
-// });
-
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-  try {
-    const userCredential = await logIn(email, password);
-    res.status(200).json({ user: userCredential.user });
-  } catch (error) {
-    console.error("Error logging in user:", error);
-    res
-      .status(401)
-      .json({ message: "Failed to log in.", error: error.message });
-  }
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        if (!isPasswordMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        // Tạo token JWT
+        const token = jwt.sign(
+            { userId: user._id, roles: user.roles },
+            process.env.JWT_SECRET || "default_jwt_secret",
+            { expiresIn: "1h" },
+        );
+
+        res.status(200).json({
+            message: "Login successful",
+            token,
+            user,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Error during login",
+            error: error.message,
+        });
+    }
 });
 
 router.post("/change-password", async (req, res) => {
-  const { email, oldPassword, newPassword } = req.body;
+    const { userId, oldPassword, newPassword } = req.body;
+    if (!userId || !oldPassword || !newPassword) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+    try {
+        const user = await User.findById(userId);
+        if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
 
-  if (!email || !oldPassword || !newPassword) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await User.findByIdAndUpdate(userId, { password: hashedPassword });
 
-  try {
-    const userCredential = await logIn(email, oldPassword);
-
-    const user = userCredential.user;
-    await changePassword(user, newPassword);
-
-    res.status(200).json({ message: "Password updated successfully." });
-  } catch (error) {
-    console.error("Error changing password:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to update password.", error: error.message });
-  }
+        res.status(200).json({ message: "Password updated successfully." });
+    } catch (error) {
+        console.error("Error changing password:", error);
+        res
+            .status(500)
+            .json({ message: "Failed to update password.", error: error.message });
+    }
 });
-
 export default router;

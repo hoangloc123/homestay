@@ -1,56 +1,84 @@
 import express from "express";
-import {
-  approveRequest,
-  getRequests,
-} from "../firebase/firestore/requests.firestore.js";
-import moment from "moment";
+import Request from "../models/schemas/request.schema.js";
+import User from "../models/schemas/user.schema.js";
 
 const router = express.Router();
 
-/**
- * Approve or reject a request by ID
- */
-router.patch("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { isApprove } = req.body;
+router.get("/", async (req, res) => {
+    try {
+        const { isResolved = false, page = "1", limit = "10" } = req.query;
 
-    if (typeof isApprove !== "boolean") {
-      return res.status(400).json({ message: "isApprove must be a boolean" });
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+        let query = {};
+        if (isResolved !== undefined) {
+            query.isResolved = isResolved === "true";
+        }
+
+        const total = await Request.countDocuments(query);
+        const requests = await Request.find(query).populate({
+            path: "targetId",
+            model: "User"
+        }).skip((pageNumber - 1) * limitNumber).limit(limitNumber);
+
+        const formattedRequests = requests.map((request) => ({
+            ...request.toObject(),
+            user: request.targetId,
+        }));
+        const pagination = {
+            total,
+            pages: Math.ceil(total / limitNumber),
+            pageSize: limitNumber,
+            current: pageNumber,
+        };
+        res.status(200).json({ requests: formattedRequests, pagination });
+    } catch (error) {
+        console.error(error);
+        res
+            .status(500)
+            .json({ message: "Error fetching requests", error: error.message });
     }
-
-    await approveRequest(id, isApprove);
-    res.status(200).json({ message: "Request processed successfully" });
-  } catch (error) {
-    console.error("Error processing request:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 });
 
-/**
- * Get requests based on filters.
- * Query parameters:
- * - isResolved (boolean, optional, default: false)
- * - target (string, optional)
- * - actionNeeded (string, optional)
- */
-router.get("/", async (req, res) => {
-  try {
-    const { isResolved = "false", target, actionNeeded } = req.query;
+router.patch("/:requestId", async (req, res) => {
+    try {
+        const { requestId } = req.params;
+        const { isApprove } = req.body;
 
-    const resolvedStatus = isResolved === "true";
-    const requests = await getRequests(resolvedStatus, target, actionNeeded);
+        // Tìm request theo ID
+        const request = await Request.findById(requestId);
+        if (!request) {
+            return res.status(404).json({ message: "Request not found" });
+        }
 
-    res.status(200).json(
-      requests.map((req) => ({
-        ...req,
-        date: moment(req.date.toDate()).format("YYYY-MM-DD"),
-      })),
-    );
-  } catch (error) {
-    console.error("Error retrieving requests:", error.message);
-    res.status(500).json({ message: "Internal server error" });
-  }
+        const user = await User.findById(request.targetId);
+        if (!user) {
+            return res
+                .status(404)
+                .json({ message: "User not found for this request" });
+        }
+
+        if (isApprove) {
+            user.isRequestHostOwner = true;
+        } else {
+            user.isRequestHostOwner = false;
+        }
+
+        await user.save();
+
+        request.isResolved = true;
+        await request.save();
+
+        res.status(200).json({
+            message: isApprove ? "Request approved" : "Request rejected",
+            request,
+        });
+    } catch (error) {
+        console.error(error);
+        res
+            .status(500)
+            .json({ message: "Error updating request", error: error.message });
+    }
 });
 
 export default router;

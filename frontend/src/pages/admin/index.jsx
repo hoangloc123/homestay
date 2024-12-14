@@ -1,5 +1,4 @@
 import HeaderAdmin from '@components/header/HeaderAdmin'
-import LoginModal from '@components/header/Login'
 import React, {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
@@ -10,14 +9,12 @@ import AdminRequestHost from '../../section/admin/AdminRequestHost'
 import AdminSideBar from '../../section/admin/AdminSideBar'
 import AdminUser from '../../section/admin/AdminUser'
 import Dashboard from '../../section/admin/Dashboard'
-import {Role, sidebarItems} from '../../utils/constants'
+import {ROLES, sidebarItems} from '../../utils/constants'
 
 export default function AdminPage() {
 	const [selectedItem, setSelectedItem] = useState('dashboardAll')
 	const [selectedName, setSelectedName] = useState('Tổng quan')
 	const [filterItems, setFilterItems] = useState([])
-	console.log('🚀 ~ AdminPage ~ filterItems:', filterItems)
-
 	const {auth, loading} = useAuth()
 	const {onOpen} = useModalCommon()
 	const navigator = useNavigate()
@@ -28,22 +25,15 @@ export default function AdminPage() {
 	}
 
 	useEffect(() => {
-		if (!loading) {
-			if (auth?.roles?.[0] !== Role.ADMIN) {
+		if (auth) {
+			if (auth.roles[0] === ROLES.USER) {
 				navigator(RouterPath.NOT_FOUND)
 				return
-			}
-			if (!auth) {
-				onOpen({
-					view: <LoginModal />,
-					title: 'Đăng nhập',
-					showFooter: false,
-				})
 			}
 			const newList = sidebarItems.filter(item => item.roles.includes(auth.roles[0]))
 			setFilterItems(newList)
 		}
-	}, [auth, loading])
+	}, [auth])
 
 	useEffect(() => {
 		if (filterItems?.length > 0) {

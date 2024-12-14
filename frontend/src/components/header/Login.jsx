@@ -1,10 +1,10 @@
 import {Button, Input} from '@nextui-org/react'
 import React, {useState} from 'react'
-import {useAuth} from '../..//context/AuthContext'
+import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import {RouterPath} from '../../router/RouterPath'
-import {Role} from '../../utils/constants'
+import {ROLES} from '../../utils/constants'
 import {ToastNotiError} from '../../utils/Utils'
 import RegisterModal from './Register'
 
@@ -42,19 +42,12 @@ const LoginModal = () => {
 	// 	}
 	// }
 
-	function getUserInfo(id) {
-		factories
-			.getUserInfo(id)
-			.then(data => {
-				login(data)
-				if (data.roles[0] === Role.ADMIN) {
-					window.location.href = RouterPath.ADMIN
-				}
-				onClose()
-			})
-			.catch(err => {
-				ToastNotiError(err.response?.data?.message)
-			})
+	function getUserInfo(data) {
+		login(data)
+		onClose()
+		if (data.roles[0] === ROLES.ADMIN) {
+			window.location.href = RouterPath.ADMIN
+		}
 	}
 
 	const handleLoginEmail = (email, password) => {
@@ -62,16 +55,11 @@ const LoginModal = () => {
 		factories
 			.getLoginEmail(email, password)
 			.then(data => {
-				const newData = data.user
-				getUserInfo(newData.uid)
+				getUserInfo(data.user)
 				setIsLoading(false)
 			})
 			.catch(error => {
-				if (error.response.data.error === 'Firebase: Error (auth/invalid-credential).') {
-					ToastNotiError('Không tìm thấy tài khoản hoặc thông tin không chính xác!')
-				} else {
-					ToastNotiError(`Lỗi không xác định: ${error.message || 'Vui lòng thử lại sau!'}`)
-				}
+				ToastNotiError('Email hoặc mật khẩu không chính xác!')
 				setIsLoading(false)
 			})
 	}
@@ -98,12 +86,12 @@ const LoginModal = () => {
 						>
 							{isVisible ? (
 								<i
-									class="fa fa-eye-slash"
+									className="fa fa-eye-slash"
 									aria-hidden="true"
 								></i>
 							) : (
 								<i
-									class="fa fa-eye"
+									className="fa fa-eye"
 									aria-hidden="true"
 								></i>
 							)}

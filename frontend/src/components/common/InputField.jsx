@@ -2,21 +2,26 @@ import {Input} from '@nextui-org/react'
 import React from 'react'
 import {useFormContext} from 'react-hook-form'
 
-const InputField = ({type = 'text', placeholder = '', name, register, errors, className = '', ...props}) => {
-	const {watch} = useFormContext()
+const InputField = ({type = 'text', placeholder = '', name, label, disabled, validate = {}, className = '', ...props}) => {
+	const {register, formState, watch} = useFormContext()
+	const error = formState.errors?.[name]?.message
+
 	return (
-		<>
+		<div className="flex w-full flex-col">
 			<Input
 				type={type}
+				label={label}
 				placeholder={placeholder}
-				className={`w-full min-w-72 bg-transparent ${className}`}
-				color={errors?.[name] ? 'danger' : 'default'}
-				errorMessage={errors?.[name] && 'Bắt buộc nhập thông tin'}
-				value={watch(name) ? watch(name) : undefined}
-				{...register(name)}
+				isDisabled={disabled}
+				className={`w-full bg-transparent ${className}`}
+				color={error ? 'danger' : 'default'}
+				errorMessage={error}
+				value={watch(name)}
+				{...register(name, validate)}
 				{...props}
 			/>
-		</>
+			{error && <p className="text-sm text-red">{error}</p>}
+		</div>
 	)
 }
 

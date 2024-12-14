@@ -21,7 +21,7 @@ export default function ChangePasswordPage() {
 		const password = document.getElementById('password').value
 		const newPassword = document.getElementById('newPassword').value
 		const confirmPassword = document.getElementById('confirmPassword2').value
-		if (password.length < 8 || newPassword.length < 8 || confirmPassword.length < 8) {
+		if (password.length < 6 || newPassword.length < 6 || confirmPassword.length < 6) {
 			ToastNotiError('Mật khẩu tối thiểu 8 ký tự')
 			setLoading(false)
 			return
@@ -32,6 +32,7 @@ export default function ChangePasswordPage() {
 			return
 		}
 		const data = {
+			userId: auth._id,
 			email: auth.email,
 			oldPassword: password,
 			newPassword,
@@ -44,7 +45,6 @@ export default function ChangePasswordPage() {
 			})
 			.catch(error => {
 				if (error.response.data.message) {
-					// ToastNotiError(error.response.data.message)
 					ToastNotiError('Mật khẩu cũ không chính xác')
 					setLoading(false)
 					return
@@ -59,8 +59,6 @@ export default function ChangePasswordPage() {
 				<div className="w-fit">
 					<Sidebar active="1" />
 				</div>
-
-				{/* //  */}
 				<div className="flex w-full flex-grow">
 					<Card className="w-full">
 						<CardBody className="w-full gap-4 py-10">

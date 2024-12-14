@@ -23,7 +23,7 @@ import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import useRouter from '../../hook/use-router'
 import {RouterPath} from '../../router/RouterPath'
-import {provinceSearch} from '../../utils/constants'
+import {provinceSearch, ROLES} from '../../utils/constants'
 import LoginModal from './Login'
 import RegisterModal from './Register'
 
@@ -94,18 +94,20 @@ function Header({showText, showSearch = false}) {
 							</Link>
 						</div>
 						<div className="flex items-center space-x-2">
-							<Button
-								variant="light"
-								color="white"
-								className="rounded-xl font-bold hover:bg-blue-600"
-								onClick={() =>
-									router.push({
-										pathname: RouterPath.REGISTER_HOST,
-									})
-								}
-							>
-								Đăng chỗ nghỉ của quý vị
-							</Button>
+							{!auth && (
+								<Button
+									variant="light"
+									color="white"
+									className="rounded-xl font-bold hover:bg-blue-600"
+									onClick={() =>
+										router.push({
+											pathname: RouterPath.REGISTER_HOST,
+										})
+									}
+								>
+									Đăng chỗ nghỉ của quý vị
+								</Button>
+							)}
 
 							{auth ? (
 								<>
@@ -116,41 +118,55 @@ function Header({showText, showSearch = false}) {
 												className="border-none hover:bg-transparent"
 											>
 												<Avatar
-													src={auth.photoURL}
+													src={auth.profilePictureUrl}
 													className="h-6 w-6 bg-gray-200"
 												/>
-												<p className="text-white">{auth.name} </p>
+												<p className="text-white">{auth.fullName} </p>
 												<i className="fa fa-caret-down text-white"></i>
 											</Button>
 										</DropdownTrigger>
-										<DropdownMenu aria-label="Static Actions">
-											<DropdownItem
-												key="profile"
-												onClick={() => navigate(RouterPath.PROFILE)}
-											>
-												<i className="fas fa-user mr-2"></i>
-												<span>Thông tin tài khoản</span>
-											</DropdownItem>
-											<DropdownItem
-												key="ticket"
-												onClick={() => navigate(RouterPath.TICKET)}
-											>
-												<i className="fas fa-ticket-alt mr-2"></i>
-												<span>Vé của tôi</span>
-											</DropdownItem>
-											onClick={() => navigate(RouterPath.REVIEW)}
-											<DropdownItem key="review">
-												<i className="fas fa-comment-dots mr-2"></i>
-												<span>Nhận xét chuyến đi</span>
-											</DropdownItem>
-											<DropdownItem
-												color="danger"
-												onClick={handleLogout}
-											>
-												<i className="fas fa-power-off mr-2"></i>
-												<span>Đăng xuất</span>
-											</DropdownItem>
-										</DropdownMenu>
+										{auth.roles[0] === ROLES.USER || (auth.roles[0] === ROLES.BUS_OWNER && auth.isRequestBusOwner === false) ? (
+											<DropdownMenu aria-label="Static Actions">
+												<DropdownItem
+													key="profile"
+													onClick={() => navigate('/profile')}
+												>
+													<i className="fas fa-user mr-2"></i>
+													<span>Thông tin tài khoản</span>
+												</DropdownItem>
+												<DropdownItem
+													key="ticket"
+													onClick={() => navigate('/my-ticket')}
+												>
+													<i className="fas fa-ticket-alt mr-2"></i>
+													<span>Phòng của tôi</span>
+												</DropdownItem>
+												<DropdownItem
+													onClick={logout}
+													color="danger"
+												>
+													<i className="fas fa-power-off mr-2"></i>
+													<span>Đăng xuất</span>
+												</DropdownItem>
+											</DropdownMenu>
+										) : (
+											<DropdownMenu aria-label="Static Actions">
+												<DropdownItem
+													key="review"
+													onClick={() => navigate('/admin')}
+												>
+													<i className="fas fa-comment-dots mr-2"></i>
+													<span>Quản lý hệ thống</span>
+												</DropdownItem>
+												<DropdownItem
+													onClick={logout}
+													color="danger"
+												>
+													<i className="fas fa-power-off mr-2"></i>
+													<span>Đăng xuất</span>
+												</DropdownItem>
+											</DropdownMenu>
+										)}
 									</Dropdown>
 								</>
 							) : (
@@ -158,8 +174,8 @@ function Header({showText, showSearch = false}) {
 									<Button
 										variant="bordered"
 										color="primary"
-										onClick={() => openRegister()}
 										className="rounded-xl bg-slate-50 font-bold"
+										onClick={openRegister}
 									>
 										Đăng ký
 									</Button>
@@ -167,7 +183,7 @@ function Header({showText, showSearch = false}) {
 										variant="bordered"
 										color="primary"
 										className="rounded-xl bg-slate-50 font-bold"
-										onClick={() => openLogin()}
+										onClick={openLogin}
 									>
 										Đăng nhập
 									</Button>

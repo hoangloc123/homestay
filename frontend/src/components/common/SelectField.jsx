@@ -1,33 +1,27 @@
-import React from 'react';
+import {Select, SelectItem} from '@nextui-org/react'
+import React from 'react'
+import {useFormContext} from 'react-hook-form'
 
-const SelectField = ({
-  name,
-  options,
-  register,
-  errors,
-  placeholder = '',
-  className = '',
-  ...props
-}) => {
-  return (
-    <>
-      <select
-        className={`w-full border border-slate-200 rounded-lg py-3 px-3 outline-none bg-transparent ${className}`}
-        {...register(name)}
-        {...props}
-      >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map((item, index) => (
-          <option key={index} value={item.value}>
-            {item.label}
-          </option>
-        ))}
-      </select>
-      {errors[name] && (
-        <span className="text-red">Bắt buộc nhập thông tin</span>
-      )}
-    </>
-  );
-};
+const SelectField = ({name, options, label, placeholder = '', className = '', validate = {}}) => {
+	const {register, formState} = useFormContext()
+	const error = formState.errors?.[name]?.message
+	return (
+		<div className="flex w-full flex-col">
+			<Select
+				placeholder={placeholder}
+				label={label}
+				className={`w-full bg-transparent ${className}`}
+				color={error ? 'danger' : 'default'}
+				errorMessage={error}
+				{...register(name, validate)}
+			>
+				{options.map(option => (
+					<SelectItem key={option.id || option.value}>{option.label}</SelectItem>
+				))}
+			</Select>
+			{error && <p className="text-sm text-red">{error}</p>}
+		</div>
+	)
+}
 
-export default SelectField;
+export default SelectField

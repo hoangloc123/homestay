@@ -24,30 +24,27 @@ export default function ProfileManagerPage() {
 	} = methods
 	useEffect(() => {
 		if (auth) {
-			setValue('displayName', auth.displayName || '')
-			setValue('photoURL', auth.photoURL || '')
+			setValue('fullName', auth.fullName || '')
+			setValue('profilePictureUrl', auth.profilePictureUrl || '')
 			setValue('phone', auth.phone || '')
 			setValue('dob', auth.dob ? parseDate(auth.dob) : null)
 			setValue('gender', auth.gender || '')
 			setValue('email', auth.email || '')
 		}
 	}, [auth])
-
 	async function handleSave(values) {
 		setLoading(true)
-		let newUrl = auth.photoURL
+		let newUrl = auth.profilePictureUrl
 		if (values.photoFile) {
-			console.log('2')
-
 			newUrl = await uploadFirebase(values.photoFile)
 		}
 		const newValues = {
 			...values,
-			photoURL: newUrl,
+			profilePictureUrl: newUrl,
 			dob: getDate(values.dob, 13) ?? null,
 		}
 		factories
-			.updateUserInfo(auth.id, newValues)
+			.updateUserInfo(auth._id, newValues)
 			.then(() => {
 				ToastInfo('Cập nhật thông tin thành công')
 				handleUserInfo()
@@ -63,7 +60,7 @@ export default function ProfileManagerPage() {
 
 	function handleUserInfo() {
 		factories
-			.getUserInfo(auth.id)
+			.getUserInfo(auth._id)
 			.then(data => {
 				login(data)
 			})
@@ -78,7 +75,7 @@ export default function ProfileManagerPage() {
 			setValue('photoFile', file)
 			const fileReader = new FileReader()
 			fileReader.onloadend = () => {
-				setValue('photoURL', fileReader.result)
+				setValue('profilePictureUrl', fileReader.result)
 			}
 			fileReader.readAsDataURL(file)
 		}
@@ -100,7 +97,7 @@ export default function ProfileManagerPage() {
 										<div className="relative h-16 w-16 cursor-pointer">
 											<Avatar
 												showFallback
-												src={watch('photoURL')}
+												src={watch('profilePictureUrl')}
 												className="h-14 w-14 rounded-full"
 											/>
 											<div className="absolute bottom-1 right-1">
@@ -121,7 +118,8 @@ export default function ProfileManagerPage() {
 										<InputField
 											label={'Họ và tên'}
 											placeholder="Nhập họ và tên"
-											name={'displayName'}
+											name={'fullName'}
+											validate={{required: 'Bắt buộc chọn'}}
 											register={register}
 											isRequired
 											errors={errors}
@@ -130,20 +128,22 @@ export default function ProfileManagerPage() {
 											placeholder="Nhập số điện thoại"
 											label={'Số điện thoại'}
 											name={'phone'}
-											isRequired
 											register={register}
 											errors={errors}
 										/>
 									</div>
 									<div className="flex gap-4">
-										<InputField
-											placeholder="Nhập email"
-											label={'Email'}
-											isRequired
-											name={'email'}
-											register={register}
-											errors={errors}
-										/>
+										<div className="w-full min-w-[250px]">
+											<InputField
+												placeholder="Nhập email"
+												label={'Email'}
+												name={'email'}
+												register={register}
+												validate={{required: 'Bắt buộc chọn'}}
+												disabled
+												errors={errors}
+											/>
+										</div>
 										<DatePickerField
 											placeholder="Nhập ngày sinh"
 											label={'Ngày sinh'}

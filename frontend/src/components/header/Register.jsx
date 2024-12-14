@@ -1,21 +1,20 @@
 import {Button, Input} from '@nextui-org/react'
-import {EmailAuthProvider, linkWithCredential, signInWithPopup} from 'firebase/auth'
+import {ROLES} from '@utils/constants'
+import {EmailAuthProvider, linkWithCredential} from 'firebase/auth'
 import React, {useState} from 'react'
-import {auth, googleProvider} from '../../config/firebaseConfig'
-import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
-import {Role} from '../../utils/constants'
 import {ToastInfo, ToastNotiError} from '../../utils/Utils'
 import LoginModal from './Login'
 
-const RegisterModal = () => {
+const RegisterModal = ({addEmployee, bossId, onReload}) => {
 	const {onOpen, onClose} = useModalCommon()
-	const {login} = useAuth()
 
 	const [isVisible, setIsVisible] = useState(false)
+	const [isVisible2, setIsVisible2] = useState(false)
 	const [loading, setLoading] = useState(false)
 	const toggleVisibility = () => setIsVisible(!isVisible)
+	const toggleVisibility2 = () => setIsVisible2(!isVisible2)
 
 	const openLogin = () => {
 		onOpen({
@@ -35,36 +34,42 @@ const RegisterModal = () => {
 			setLoading(false)
 			return
 		}
+		if (password.length < 8 || confirmPassword.length < 8) {
+			ToastNotiError('Mật khẩu tối thiểu 8 ký tự')
+		}
 		if (password !== confirmPassword) {
 			ToastNotiError('Mật khẩu không khớp, vui lòng nhập lại mật khẩu')
 			setLoading(false)
 			return
 		}
 		const metaData = {
-			name: email,
-			photoURL: 'https://ui-avatars.com/api/?name=' + email,
-			roles: [Role.USER],
+			email,
+			password: password,
+			fullName: email.replace('@gmail.com', ''),
+			profilePictureUrl: 'https://ui-avatars.com/api/?name=' + email.replace('@gmail.com', ''),
+			roles: [addEmployee ? ROLES.TICKET_CONTROLLER : ROLES.USER],
+			bossId: bossId ?? '',
 		}
 		factories
-			.getSignUpEmail(email, password, metaData)
+			.getSignUpEmail(metaData)
 			.then(data => {
 				ToastInfo('Đăng ký tài khoản thành công')
 				setLoading(false)
+				if (addEmployee) {
+					onClose()
+					onReload()
+					return
+				}
 				openLogin()
 			})
 			.catch(error => {
-				if (error.response.data.error === 'Firebase: Error (auth/email-already-in-use).') {
-					ToastNotiError('Email đã được sử dụng')
-					setLoading(false)
-					return
-				}
-				if (error.response.data.error === 'Firebase: Error (auth/invalid-email).') {
-					ToastNotiError('Email sai định dạng')
-					setLoading(false)
-					return
-				}
-				ToastNotiError(`Lỗi không xác định: ${error.message || 'Vui lòng thử lại sau!'}`)
 				setLoading(false)
+				const dataE = error.response.data.error
+				if (dataE.includes('E11000')) {
+					ToastNotiError('Email đã tồn tại')
+					return
+				}
+				ToastNotiError(dataE)
 			})
 	}
 
@@ -83,21 +88,23 @@ const RegisterModal = () => {
 		}
 	}
 
-	const handleGoogleSignUp = async () => {
-		try {
-			const result = await signInWithPopup(auth, googleProvider)
-			const user = result.user
-			console.log('🚀 ~ ~ user:', user)
-			await linkEmailAndPassword(user, email, user.uid)
-			ToastInfo('Đăng ký thành công.')
-		} catch (error) {
-			if (error?.response?.data.error === 'Firebase: Error (auth/email-already-in-use).') {
-				ToastNotiError('Email đã được sử dụng')
-				return
-			}
-			ToastNotiError('Đăng ký thất bại, vui lòng thử lại.')
-		}
-	}
+	//   const handleGoogleSignUp = async () => {
+	//     try {
+	//       const result = await signInWithPopup(auth, googleProvider);
+	//       const user = result.user;
+	//       await linkEmailAndPassword(user, email, user.uid);
+	//       ToastInfo('Đăng ký thành công.');
+	//     } catch (error) {
+	//       if (
+	//         error?.response?.data.error ===
+	//         'Firebase: Error (auth/email-already-in-use).'
+	//       ) {
+	//         ToastNotiError('Email đã được sử dụng');
+	//         return;
+	//       }
+	//       ToastNotiError('Đăng ký thất bại, vui lòng thử lại.');
+	//     }
+	//   };
 
 	return (
 		<div>
@@ -144,9 +151,9 @@ const RegisterModal = () => {
 							className="focus:outline-none"
 							type="button"
 							aria-label="toggle password visibility"
-							onClick={toggleVisibility}
+							onClick={toggleVisibility2}
 						>
-							{isVisible ? (
+							{isVisible2 ? (
 								<i
 									class="fa fa-eye-slash"
 									aria-hidden="true"
@@ -159,7 +166,7 @@ const RegisterModal = () => {
 							)}
 						</button>
 					}
-					type={isVisible ? 'text' : 'password'}
+					type={isVisible2 ? 'text' : 'password'}
 				/>
 			</div>
 
@@ -181,22 +188,24 @@ const RegisterModal = () => {
 
 			<div className="mt-4">
 				{/* <Button
-					radius={'sm'}
-					color="primary"
-					className="w-full"
-					onClick={handleGoogleSignUp}
-				>
-					Đăng ký với Google
-				</Button> */}
-				<div className="mt-4 flex">
-					<p>Bạn đã có tài khoản?</p>
-					<button
-						onClick={() => openLogin()}
-						className="px-2 font-bold text-cyan-dark"
-					>
-						Đăng nhập
-					</button>
-				</div>
+            radius={'sm'}
+            color="primary"
+            className="w-full"
+            onClick={handleGoogleSignUp}
+        >
+            Đăng ký với Google
+        </Button> */}
+				{!addEmployee && (
+					<div className="mt-4 flex pb-4">
+						<p>Bạn đã có tài khoản?</p>
+						<button
+							onClick={() => openLogin()}
+							className="px-2 font-bold text-cyan-dark"
+						>
+							Đăng nhập
+						</button>
+					</div>
+				)}
 			</div>
 		</div>
 	)

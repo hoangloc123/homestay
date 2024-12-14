@@ -1,62 +1,92 @@
 import {CustomTable} from '@components/custom-table/CustomTable'
 import {Button, Input} from '@nextui-org/react'
-import React from 'react'
+import {getDate, ToastInfo, ToastNotiError} from '@utils/Utils'
+import React, {useEffect, useState} from 'react'
+import {factories} from '../../factory'
 
-const requestData = [
-	{
-		Province: 'Đà Nẵng',
-		PhoneNumber: '0987654321',
-		PassengerName: 'Duy Anh',
-		BranchName: 'Hoàng Long',
-		Status: 'Chờ Duyệt',
-	},
-	{
-		Province: 'Đà Nẵng',
-		PassengerName: 'Thiên Long',
-		PhoneNumber: '0981234567',
-		BranchName: 'Minh Tú',
-		Status: 'Đã từ chối',
-	},
-]
+export default function AdminRequestHost() {
+	const [loading, setLoading] = useState(true)
+	const [data, setData] = useState([])
+	const [pagination, setPagination] = useState([])
 
-const columns = [
-	{
-		id: 'PassengerName',
-		label: 'Họ và Tên',
-		renderCell: row => <div className="w-40">{row.PassengerName}</div>,
-	},
-	{
-		id: 'BranchName',
-		label: 'Tên Chỗ Nghỉ',
-		renderCell: row => <div className="w-40">{row.BranchName}</div>,
-	},
-	{
-		id: 'Province',
-		label: 'Tỉnh / Thành phố',
-		renderCell: row => <span>{row.Province}</span>,
-	},
-	{
-		id: 'PhoneNumber',
-		label: 'Số Điện Thoại',
-		renderCell: row => <span>{row.PhoneNumber}</span>,
-	},
-	{
-		id: 'Status',
-		label: 'Trạng Thái',
-		renderCell: row => (
-			<div className="">
+	useEffect(() => {
+		setLoading(true)
+		loadList()
+	}, [])
+
+	function loadList() {
+		factories
+			.getRequestHost()
+			.then(data => {
+				setData(data.requests)
+				setPagination(data.pagination)
+			})
+			.finally(() => setLoading(false))
+	}
+
+	const columns = [
+		{
+			id: 'PassengerName',
+			label: 'Họ và Tên',
+			renderCell: row => <div className="w-40">{row.targetId?.fullName}</div>,
+		},
+		{
+			id: 'BranchName',
+			label: 'Tên Nhà xe',
+			renderCell: row => <div className="w-40">{row.targetId?.branchName}</div>,
+		},
+		{
+			id: 'PhoneNumber',
+			label: 'Số Điện Thoại',
+			renderCell: row => <span>{row.targetId?.phone}</span>,
+		},
+		{
+			id: 'time',
+			label: 'Thời Gian',
+			renderCell: row => <span>{getDate(row.targetId?.createdAt, 3)}</span>,
+		},
+		{
+			id: 'Status',
+			label: '',
+			renderCell: row => (
 				<Button
 					size="sm"
-					color={'default'}
+					color="primary"
+					onClick={() => handleChangeStatus(row._id, 1)}
 				>
-					Chờ duyệt
+					Duyệt
 				</Button>
-			</div>
-		),
-	},
-]
+			),
+		},
+		{
+			id: 'Status',
+			label: '',
+			renderCell: row => (
+				<Button
+					size="sm"
+					color={'danger'}
+					onClick={() => handleChangeStatus(row._id, 2)}
+				>
+					Từ chối
+				</Button>
+			),
+		},
+	]
 
-export default function AdminRequestHost({isAdmin}) {
+	function handleChangeStatus(id, status) {
+		factories
+			.updateStatusRequest(id, status)
+			.then(e => {
+				ToastInfo(e.message)
+				loadList()
+			})
+			.catch(error => {
+				const dataE = error.response.data.message
+				loadList()
+				ToastNotiError(dataE)
+			})
+	}
+
 	return (
 		<div
 			className="rounded bg-white px-4 py-3 pt-6 shadow-md"
@@ -73,7 +103,8 @@ export default function AdminRequestHost({isAdmin}) {
 			<div className="mt-4">
 				<CustomTable
 					columns={columns}
-					data={requestData}
+					data={data}
+					isLoading={loading}
 				/>
 			</div>
 		</div>

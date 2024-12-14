@@ -1,18 +1,20 @@
 import {Button} from '@nextui-org/react'
-import React, {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import InputField from '../../components/common/InputField'
-import TextAreaField from '../../components/common/TextAreaField'
-import LoginModal from '../../components/header/Login'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
-
+import {factories} from '../../factory'
+import useRouter from '../../hook/use-router'
+import {ToastInfo, ToastNotiError} from '../../utils/Utils'
+import {ROLES} from '../../utils/constants'
 export default function RegisterHost() {
 	const formRef = useRef()
 	const methods = useForm()
 	const {auth} = useAuth()
 	const {onOpen} = useModalCommon()
-
+	const [loading, setLoading] = useState(false)
+	const router = useRouter()
 	const {
 		register,
 		setValue,
@@ -27,12 +29,50 @@ export default function RegisterHost() {
 		}
 	}, [auth])
 
-	const openModalLogin = () => {
-		onOpen({
-			view: <LoginModal />,
-			title: 'Đăng nhập',
-			showFooter: false,
-		})
+	const handleSignUpEmail = values => {
+		setLoading(true)
+		const re =
+			/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+		if (!re.test(String(values.email).toLowerCase())) {
+			ToastNotiError('Email không hợp lệ')
+			setLoading(false)
+			return
+		}
+		if (!values.email) {
+			ToastNotiError('Vui lòng nhập email')
+			return
+		}
+		if (!values.phone) {
+			ToastNotiError('Vui lòng số điện thoại')
+			return
+		}
+		if (!values.fullName) {
+			ToastNotiError('Vui lòng nhập hộ và tên')
+			return
+		}
+		const metaData = {
+			email: values.email,
+			password: 'Host@123456',
+			fullName: values.fullName,
+			phone: values.phone,
+			branchName: values.name,
+			profilePictureUrl: 'https://ui-avatars.com/api/?name=' + values.fullName,
+			roles: [ROLES.HOST],
+		}
+		factories
+			.getSignUpEmail(metaData)
+			.then(data => {
+				ToastInfo('Đăng ký tài khoản thành công, chúng tôi sẽ liên hệ với bạn trong thời gian tới')
+				setLoading(false)
+				router.push({
+					pathname: '/',
+				})
+			})
+			.catch(error => {
+				setLoading(false)
+				const dataE = error.response.data.message
+				ToastNotiError(dataE)
+			})
 	}
 
 	return (
@@ -57,7 +97,7 @@ export default function RegisterHost() {
 						</ul>
 						<button
 							className="mt-4 rounded bg-blue-600 px-4 py-2 text-white"
-							onClick={() => (!auth ? openModalLogin() : formRef.current?.scrollIntoView({behavior: 'smooth'}))}
+							onClick={() => formRef.current?.scrollIntoView({behavior: 'smooth'})}
 						>
 							Bắt đầu ngay
 						</button>
@@ -138,55 +178,54 @@ export default function RegisterHost() {
 				</section>
 			</main>
 
-			{auth && (
-				<div
-					ref={formRef}
-					className="mt-10 flex w-full items-center justify-center pb-32"
-				>
-					<FormProvider {...methods}>
+			<div
+				ref={formRef}
+				className="mt-10 flex w-full items-center justify-center pb-32"
+			>
+				<FormProvider {...methods}>
+					<form onSubmit={methods.handleSubmit(handleSignUpEmail)}>
 						<div className="flex max-w-2xl flex-col gap-4 rounded-lg bg-white px-6 py-8 shadow-lg">
 							<p className="mt-0 w-full text-center text-2xl font-bold">Trở thành đối tác của chúng tôi</p>
 							<div className="mt-2" />
 							<InputField
 								label="Họ và tên"
 								placeholder="Nhập họ và tên"
-								name={'displayName'}
+								name={'fullName'}
 								register={register}
 								isRequired
+								validate={{required: 'Bắt buộc chọn'}}
 								errors={errors}
 							/>
 							<InputField
 								placeholder="Nhập số điện thoại"
 								label="Số điện thoại"
 								name={'phone'}
+								validate={{required: 'Bắt buộc chọn'}}
 								isRequired
+								type="number"
 								register={register}
 								errors={errors}
 							/>
 							<InputField
 								placeholder="Nhập email liên hệ"
 								label="Email"
+								validate={{required: 'Bắt buộc chọn'}}
 								isRequired
 								name={'email'}
 								register={register}
 								errors={errors}
 							/>
-							<TextAreaField
-								label={'Thông tin cần được tư vấn'}
-								register={register}
-								errors={errors}
-								name={'information'}
-							/>
 							<Button
 								className="mt-2"
 								color="primary"
+								type="submit"
 							>
 								Gửi yêu cầu
 							</Button>
 						</div>
-					</FormProvider>
-				</div>
-			)}
+					</form>
+				</FormProvider>
+			</div>
 		</div>
 	)
 }
