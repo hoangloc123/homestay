@@ -222,3 +222,16 @@ export const sidebarItems = [
         roles: ['admin', 'host', 'employee'],
     },
 ]
+
+
+export const GENDER = {
+    1: 'Nam',
+    2: 'Nữ',
+    3: 'Khác',
+};
+
+
+export const STATUS = {
+    true: 'Hoạt động',
+    false: 'Vô hiệu hóa',
+};

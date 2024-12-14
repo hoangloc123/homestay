@@ -47,7 +47,7 @@ const RegisterModal = ({addEmployee, bossId, onReload}) => {
 			password: password,
 			fullName: email.replace('@gmail.com', ''),
 			profilePictureUrl: 'https://ui-avatars.com/api/?name=' + email.replace('@gmail.com', ''),
-			roles: [addEmployee ? ROLES.TICKET_CONTROLLER : ROLES.USER],
+			roles: [addEmployee ? ROLES.EMPLOYEE : ROLES.USER],
 			bossId: bossId ?? '',
 		}
 		factories
@@ -64,11 +64,7 @@ const RegisterModal = ({addEmployee, bossId, onReload}) => {
 			})
 			.catch(error => {
 				setLoading(false)
-				const dataE = error.response.data.error
-				if (dataE.includes('E11000')) {
-					ToastNotiError('Email đã tồn tại')
-					return
-				}
+				const dataE = error.response.data.message
 				ToastNotiError(dataE)
 			})
 	}

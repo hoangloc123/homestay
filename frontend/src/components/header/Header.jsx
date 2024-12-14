@@ -125,7 +125,7 @@ function Header({showText, showSearch = false}) {
 												<i className="fa fa-caret-down text-white"></i>
 											</Button>
 										</DropdownTrigger>
-										{auth.roles[0] === ROLES.USER || (auth.roles[0] === ROLES.BUS_OWNER && auth.isRequestBusOwner === false) ? (
+										{auth.roles[0] === ROLES.USER || (auth.roles[0] === ROLES.HOST && auth.isRequestBusOwner === false) ? (
 											<DropdownMenu aria-label="Static Actions">
 												<DropdownItem
 													key="profile"

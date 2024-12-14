@@ -22,13 +22,9 @@ router.post("/sign-up", async (req, res) => {
             ...(branchName ? { branchName } : {}),
             ...(bossId ? { bossId } : {}),
         });
-        const phoneExists = await User.findOne({ phone });
         const emailExists = await User.findOne({ email });
         if (emailExists) {
             return res.status(400).json({ message: "Email đã được đăng ký" });
-        }
-        if (phoneExists) {
-            return res.status(400).json({ message: "Số điện thoại đã được đăng ký" });
         }
         await newUser.save();
 

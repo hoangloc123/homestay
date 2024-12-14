@@ -11,6 +11,13 @@ export const factories = {
             },
         });
     },
+    getListUser: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.USERS,
+            method: 'GET',
+            params,
+        });
+    },
     getRequestHost: () => {
         return ApiOperation.request({
             url: ApiConstants.REQUESTS,
