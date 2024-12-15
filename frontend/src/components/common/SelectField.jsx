@@ -16,7 +16,7 @@ const SelectField = ({name, options, label, placeholder = '', className = '', va
 				{...register(name, validate)}
 			>
 				{options.map(option => (
-					<SelectItem key={option.id || option.value}>{option.label}</SelectItem>
+					<SelectItem key={option.id || option.value}>{option.label ?? option?.name}</SelectItem>
 				))}
 			</Select>
 			{error && <p className="text-sm text-red">{error}</p>}

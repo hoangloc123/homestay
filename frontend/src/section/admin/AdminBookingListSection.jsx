@@ -1,6 +1,5 @@
 import {CustomTable} from '@components/custom-table/CustomTable'
-import {Chip, Input, Tab, Tabs} from '@nextui-org/react'
-import Constants from '@utils/constants'
+import {Input, Tab, Tabs} from '@nextui-org/react'
 import {convertStringToNumber} from '@utils/Utils'
 import React, {useState} from 'react'
 
@@ -58,17 +57,6 @@ const columns = [
 	// 		</span>
 	// 	),
 	// },
-	{
-		id: 'Status',
-		label: 'Trạng Thái',
-		renderCell: row => (
-			<div className="w-36">
-				<Chip color={Constants.optionsStatusBooking.find(x => x.value === row.Status)?.color}>
-					<p className="text-white">{Constants.optionsStatusBooking.find(x => x.value === row.Status)?.label}</p>
-				</Chip>
-			</div>
-		),
-	},
 ]
 
 export default function AdminBookingListSection() {

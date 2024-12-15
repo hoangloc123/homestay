@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
+import AdminAccommodationList from '../../section/admin/AdminAccommodationList'
 import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
 import AdminHostList from '../../section/admin/AdminHostList'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
@@ -46,6 +47,8 @@ export default function AdminPage() {
 		switch (selectedItem) {
 			case 'dashboardAll':
 				return <Dashboard isAdmin />
+			case 'accommodation':
+				return <AdminAccommodationList isAdmin />
 			case 'usersAll':
 				return <AdminUser isAdmin />
 			case 'busAll':

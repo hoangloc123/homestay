@@ -23,7 +23,7 @@ import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import useRouter from '../../hook/use-router'
 import {RouterPath} from '../../router/RouterPath'
-import {provinceSearch, ROLES} from '../../utils/constants'
+import {PROVINCES, ROLES} from '../../utils/constants'
 import LoginModal from './Login'
 import RegisterModal from './Register'
 
@@ -214,7 +214,7 @@ function Header({showText, showSearch = false}) {
 									placeholder="Bạn muốn đến đâu?"
 									startContent={<i className="fas fa-bed text-gray-500"></i>}
 								>
-									{provinceSearch.map(x => (
+									{PROVINCES.map(x => (
 										<SelectItem
 											aria-label={x.name}
 											key={x.id}

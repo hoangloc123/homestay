@@ -1,12 +1,11 @@
 import express from "express";
-import removeAccents from "remove-accents";
 const router = express.Router();
 
+import { searchUsersByKeyword } from "../firebase/firestore/users.firestore.js";
 import Accommodation from "../models/schemas/Accommodation.schema.js";
 import Policy from "../models/schemas/Policy.schema.js";
 import Room from "../models/schemas/Room.schema.js";
 import Ticket from "../models/schemas/Ticket.schema.js";
-import { searchUsersByKeyword } from "../firebase/firestore/users.firestore.js";
 
 // Helper method
 const getPricePerNight = (accommodation, isAscending) => {
@@ -233,6 +232,47 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/admin", async (req, res) => {
+  try {
+    const { ownerId, page = "1", limit = "10", keyword, city } = req.query;
+
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    let query = {};
+    if (ownerId) {
+      query.ownerId = ownerId;
+    }
+    if (keyword) {
+      query.$or = [
+        { name: { $regex: new RegExp(keyword, "i") } },
+        { city: { $regex: new RegExp(keyword, "i") } },
+      ];
+    }
+    if (city) {
+      query.city = city;
+    }
+
+    const total = await Accommodation.countDocuments(query);
+    const accommodations = await Accommodation.find(query)
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .populate("policy");
+
+    res.status(200).json({
+      accommodations,
+      pagination: {
+        total,
+        pages: Math.ceil(total / limitNumber),
+        pageSize: limitNumber,
+        current: pageNumber,
+      },
+    });
+  } catch (error) {
+    console.error("Error searching accommodations for admin:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 router.get("/managed-verification", async (req, res) => {
   try {
     const { page = "1", limit = "10", isVerified, keyword, city } = req.query;

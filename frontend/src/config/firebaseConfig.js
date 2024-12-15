@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
-import {initializeApp} from 'firebase/app'
-import {getAuth, GoogleAuthProvider} from 'firebase/auth'
-import {initializeFirestore} from 'firebase/firestore'
-import {getStorage} from 'firebase/storage'
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { initializeFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // const FIREBASE_API_KEY = 'AIzaSyDWz6FYGMTCiEZGI_x-3AlROIMo1a_0HDU'
 // const FIREBASE_AUTH_DOMAIN = 'homestays-fcb33.firebaseapp.com'
@@ -13,20 +13,20 @@ import {getStorage} from 'firebase/storage'
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
-	apiKey: 'AIzaSyC2CrhhDkmucwgpw4LnWXHf9jgKyRcpCkc',
-	authDomain: 'co-velo.firebaseapp.com',
-	projectId: 'co-velo',
-	storageBucket: 'co-velo.appspot.com',
-	messagingSenderId: '37346108711',
-	appId: '1:37346108711:web:f491a03d5dfd1073ae7502',
-	measurementId: 'G-2JDTZ2S9CP',
-}
+    apiKey: "AIzaSyA38Liip3bPVJem9J6MtyP6wEviLBPzcYM",
+    authDomain: "webnovel-eee3f.firebaseapp.com",
+    projectId: "webnovel-eee3f",
+    storageBucket: "webnovel-eee3f.appspot.com",
+    messagingSenderId: "201939309789",
+    appId: "1:201939309789:web:b0a089abb9803a2ffb7734",
+    measurementId: "G-LP0JPHZ93F"
+};
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 
 // Initialize Firestore
 initializeFirestore(app, {
-	ignoreUndefinedProperties: true, // Avoid errors with undefined values
+    ignoreUndefinedProperties: true, // Avoid errors with undefined values
 })
 
 // Initialize Firebase services
@@ -34,4 +34,4 @@ const auth = getAuth(app)
 const storage = getStorage(app)
 const googleProvider = new GoogleAuthProvider()
 
-export {auth, googleProvider, storage}
+export { auth, googleProvider, storage };

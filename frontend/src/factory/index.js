@@ -2,6 +2,20 @@ import ApiConstants from '../adapter/ApiConstants';
 import ApiOperation from '../adapter/ApiOperation';
 
 export const factories = {
+    getAdminListAccommodation: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.ACCOMMODATIONS + '/admin',
+            method: 'GET',
+            params: params,
+        });
+    },
+    createNewAccommodation: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.ACCOMMODATIONS,
+            method: 'POST',
+            data: data,
+        });
+    },
     updateStatusRequest: (id, value) => {
         return ApiOperation.request({
             url: ApiConstants.REQUESTS + '/' + id,

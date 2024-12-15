@@ -3,7 +3,7 @@ import {Flex} from '@chakra-ui/react'
 import {Accordion, AccordionItem, Button, Checkbox, Radio, RadioGroup, Slider} from '@nextui-org/react'
 import {useEffect, useState} from 'react'
 import useRouter from '../../hook/use-router'
-import {amenitiesSearchConst, TYPE_HOST} from '../../utils/constants'
+import {AMENITIES, TYPE_HOST} from '../../utils/constants'
 
 export default function SideBarSearch() {
 	const [typeSort, setTypeSort] = useState()
@@ -139,7 +139,7 @@ export default function SideBarSearch() {
 							title="Tiêu chí phổ biến"
 						>
 							<div className="flex flex-col gap-1">
-								{amenitiesSearchConst.map(x => (
+								{AMENITIES.map(x => (
 									<Checkbox
 										value={x.id}
 										isSelected={amenitiesSearch.includes(x.id)}

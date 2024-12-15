@@ -8,7 +8,7 @@ import Loading from '../../components/loading/Loading'
 import PaginationCustom from '../../components/pagination'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
-import {amenitiesSearchConst, provinceSearch, TYPE_HOST} from '../../utils/constants'
+import {AMENITIES, PROVINCES, TYPE_HOST} from '../../utils/constants'
 
 export default function SearchResult() {
 	const router = useRouter()
@@ -85,7 +85,7 @@ export default function SearchResult() {
 				})}
 				{/* Tiện nghi */}
 				{amenities?.split(',')?.map((item, index) => {
-					const data = amenitiesSearchConst.find(x => x.id === item)?.title
+					const data = AMENITIES.find(x => x.id === item)?.title
 					if (data) {
 						return (
 							<Chip
@@ -154,7 +154,7 @@ function CardSearch({item}) {
 							</Flex>
 							<div className="flex items-center gap-2">
 								<p className="text-[10px] text-sm font-bold text-blue-400 underline">
-									{item.address} - {provinceSearch.find(x => x.id.toString() === item.city)?.name}
+									{item.address} - {PROVINCES.find(x => x.id.toString() === item.city)?.name}
 								</p>
 								<a
 									target="_blank"
