@@ -1,3 +1,4 @@
+import ConfirmPage from '@pages/confirm/ConfirmPage'
 import PaymentSuccessPage from '@pages/payment/PaymentSuccess'
 import MyWalletPage from '@pages/profile/MyWallet'
 import PrivateRoute from '../components/private-router/PrivateRoute'
@@ -57,6 +58,12 @@ const routesConfig = [
         element: MyWalletPage,
         layout: Layout,
         layoutProps: { showText: false, showSearch: false },
+    },
+    {
+        path: RouterPath.CONFIRM_INFORMATION,
+        element: ConfirmPage,
+        layout: Layout,
+        layoutProps: { showText: false },
     },
     {
         path: RouterPath.VNPAY_RETURN,

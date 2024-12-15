@@ -27,23 +27,23 @@ export const TYPE_HOST = [
 
 export const PROVINCES = [
     {
-        id: 21,
+        id: '21',
         name: 'Đà Nẵng',
     },
     {
-        id: 1,
+        id: '1',
         name: 'Hà Nội',
     },
     {
-        id: 2,
+        id: '2',
         name: 'Vũng Tàu',
     },
     {
-        id: 23,
+        id: '23',
         name: 'Hải Phòng',
     },
     {
-        id: 'ho chi minh',
+        id: '25',
         name: 'TP. Hồ Chí Minh',
     },
 ]
@@ -165,4 +165,21 @@ export const PAYMENT_METHODS = [
         label: 'Thanh toán qua ví MOMO',
         disable: true,
     },
+];
+
+export const REVIEW = [
+    {
+        id: 1,
+        title: 'Rất tốt',
+    }
+]
+
+export const WEEKDAYS = [
+    'Chủ nhật ',
+    'Thứ hai',
+    'Thứ ba',
+    'Thứ tư',
+    'Thứ năm',
+    'Thứ sáu',
+    'Thứ bảy',
 ];

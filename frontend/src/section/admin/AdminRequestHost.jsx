@@ -31,11 +31,6 @@ export default function AdminRequestHost() {
 			renderCell: row => <div className="w-40">{row.targetId?.fullName}</div>,
 		},
 		{
-			id: 'BranchName',
-			label: 'Tên Nhà xe',
-			renderCell: row => <div className="w-40">{row.targetId?.branchName}</div>,
-		},
-		{
 			id: 'PhoneNumber',
 			label: 'Số Điện Thoại',
 			renderCell: row => <span>{row.targetId?.phone}</span>,
