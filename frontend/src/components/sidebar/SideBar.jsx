@@ -34,13 +34,7 @@ export default function Sidebar({active}) {
 				as={Link}
 				key="/my-ticket"
 				to="/my-ticket"
-				title="Vé của tôi"
-			/>
-			<Tab
-				as={Link}
-				key="/my-review"
-				to="/my-review"
-				title="Nhận xét của tôi"
+				title="Phòng của tôi"
 			/>
 			<Tab
 				as={Link}

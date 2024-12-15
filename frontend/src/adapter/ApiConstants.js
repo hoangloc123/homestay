@@ -4,7 +4,7 @@ const ApiConstants = {
     TICKETS: 'tickets',
     USERS: 'users',
     AUTH: 'auth',
-    PAYMENT: 'payments',
+    PAYMENT: 'payment',
     REQUESTS: 'requests',
 
 }

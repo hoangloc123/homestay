@@ -9,6 +9,26 @@ export const factories = {
             params: params,
         });
     },
+    updatePayment: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.PAYMENT,
+            method: 'PUT',
+            data,
+        });
+    },
+    createPayment: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.PAYMENT + '/create_payment_url',
+            method: 'POST',
+            data: data,
+        });
+    },
+    getWalletInfo: (id) => {
+        return ApiOperation.request({
+            url: ApiConstants.PAYMENT + '/user/' + id,
+            method: 'GET',
+        });
+    },
     getAdminListRoom: (params) => {
         return ApiOperation.request({
             url: ApiConstants.ACCOMMODATIONS + '/rooms/admin',
