@@ -1,4 +1,4 @@
-export const amenitiesConst = [
+export const AMENITIES_ROOM = [
 	{
 		id: '1',
 		title: 'Phòng tắm',
@@ -18,12 +18,34 @@ export const amenitiesConst = [
 		],
 	},
 	{
-		id: '2',
-		title: 'Phòng ngủ',
-		icon: () => <i className="fa fe-bed"></i>,
+		id: '8',
+		title: 'Đồ ăn & thức uống',
+		icon: () => (
+			<i
+				class="fa fa-leaf"
+				aria-hidden="true"
+			></i>
+		),
 		items: [
-			{id: '2.1', title: 'Ra trải giường'},
-			{id: '2.2', title: 'Tủ hoặc phòng để quần áo'},
+			{id: '8.1', title: 'Trái cây (Phụ phí)'},
+			{id: '8.2', title: 'Rượu vang/sâm panh (Phụ phí)'},
+			{id: '8.3', title: 'Bữa ăn tự chọn phù hợp với trẻ em'},
+			{id: '8.4', title: 'Bữa ăn trẻ em (Phụ phí)'},
+			{id: '8.5', title: 'Thực đơn ăn kiêng đặc biệt (theo yêu cầu)'},
+			{id: '8.6', title: 'Bữa sáng tại phòng'},
+			{id: '8.7', title: 'Minibar'},
+			{id: '8.8', title: 'Nhà hàng'},
+			{id: '8.9', title: 'Máy pha trà/cà phê'},
+		],
+	},
+	{
+		id: '6',
+		title: 'Khu vực phòng khách',
+		icon: () => <i className="fa fa-home"></i>,
+		items: [
+			{id: '6.1', title: 'Lò sưởi'},
+			{id: '6.2', title: 'Khu vực tiếp khách'},
+			{id: '6.3', title: 'Bàn làm việc'},
 		],
 	},
 	{
@@ -49,25 +71,6 @@ export const amenitiesConst = [
 		],
 	},
 	{
-		id: '5',
-		title: 'Nhà bếp',
-		icon: () => <i className="fa fa-utensils"></i>,
-		items: [
-			{id: '5.1', title: 'Ấm đun nước điện'},
-			{id: '5.2', title: 'Tủ lạnh'},
-		],
-	},
-	{
-		id: '6',
-		title: 'Khu vực phòng khách',
-		icon: () => <i className="fa fa-home"></i>,
-		items: [
-			{id: '6.1', title: 'Lò sưởi'},
-			{id: '6.2', title: 'Khu vực tiếp khách'},
-			{id: '6.3', title: 'Bàn làm việc'},
-		],
-	},
-	{
 		id: '7',
 		title: 'Truyền thông & Công nghệ',
 		icon: () => <i className="fa fa-television"></i>,
@@ -80,24 +83,21 @@ export const amenitiesConst = [
 		],
 	},
 	{
-		id: '8',
-		title: 'Đồ ăn & thức uống',
-		icon: () => (
-			<i
-				class="fa fa-leaf"
-				aria-hidden="true"
-			></i>
-		),
+		id: '5',
+		title: 'Nhà bếp',
+		icon: () => <i className="fa fa-utensils"></i>,
 		items: [
-			{id: '8.1', title: 'Trái cây (Phụ phí)'},
-			{id: '8.2', title: 'Rượu vang/sâm panh (Phụ phí)'},
-			{id: '8.3', title: 'Bữa ăn tự chọn phù hợp với trẻ em'},
-			{id: '8.4', title: 'Bữa ăn trẻ em (Phụ phí)'},
-			{id: '8.5', title: 'Thực đơn ăn kiêng đặc biệt (theo yêu cầu)'},
-			{id: '8.6', title: 'Bữa sáng tại phòng'},
-			{id: '8.7', title: 'Minibar'},
-			{id: '8.8', title: 'Nhà hàng'},
-			{id: '8.9', title: 'Máy pha trà/cà phê'},
+			{id: '5.1', title: 'Ấm đun nước điện'},
+			{id: '5.2', title: 'Tủ lạnh'},
+		],
+	},
+	{
+		id: '2',
+		title: 'Phòng ngủ',
+		icon: () => <i className="fa fe-bed"></i>,
+		items: [
+			{id: '2.1', title: 'Ra trải giường'},
+			{id: '2.2', title: 'Tủ hoặc phòng để quần áo'},
 		],
 	},
 	{
@@ -113,11 +113,23 @@ export const amenitiesConst = [
 		items: [{id: '10.1', title: 'Có chỗ đỗ xe'}],
 	},
 	{
-		id: '11',
-		title: 'Phương tiện đi lại',
-		icon: () => <i className="fa fa-car"></i>,
-		items: [{id: '11.1', title: 'Vé đi phương tiện công cộng (Phụ phí)'}],
+		id: '13',
+		title: 'Tổng quát',
+		icon: () => <i className="fa fa-info-circle"></i>,
+		items: [
+			{id: '13.1', title: 'Dịch vụ đưa đón (Phụ phí)'},
+			{id: '13.2', title: 'Bát ăn cho vật nuôi'},
+			{id: '13.3', title: 'Chỗ ngủ cho vật nuôi'},
+			{id: '13.4', title: 'Giao nhận đồ tạp hóa (Phụ phí)'},
+			{id: '13.5', title: 'Khu vực xem TV/sành chung'},
+			{id: '13.6', title: 'Không gây dị ứng'},
+			{id: '13.7', title: 'Khu vực cho phép hút thuốc'},
+			{id: '13.8', title: 'Điều hòa nhiệt độ'},
+			{id: '13.9', title: 'Phòng không gây dị ứng'},
+			{id: '13.10', title: 'Màn chống muỗi'},
+		],
 	},
+
 	{
 		id: '12',
 		title: 'Dịch vụ lễ tân',
@@ -143,32 +155,6 @@ export const amenitiesConst = [
 				id: '12.5',
 				title: 'Giữ hành lín',
 			},
-		],
-	},
-	{
-		id: '13',
-		title: 'Tổng quát',
-		icon: () => <i className="fa fa-info-circle"></i>,
-		items: [
-			{id: '13.1', title: 'Dịch vụ đưa đón (Phụ phí)'},
-			{id: '13.2', title: 'Bát ăn cho vật nuôi'},
-			{id: '13.3', title: 'Chỗ ngủ cho vật nuôi'},
-			{id: '13.4', title: 'Giao nhận đồ tạp hóa (Phụ phí)'},
-			{id: '13.5', title: 'Khu vực xem TV/sành chung'},
-			{id: '13.6', title: 'Không gây dị ứng'},
-			{id: '13.7', title: 'Khu vực cho phép hút thuốc'},
-			{id: '13.8', title: 'Điều hòa nhiệt độ'},
-			{id: '13.9', title: 'Phòng không gây dị ứng'},
-			{id: '13.10', title: 'Màn chống muỗi'},
-		],
-	},
-	{
-		id: '14',
-		title: 'Thanh toán',
-		icon: () => <i className="fa fa-atm"></i>,
-		items: [
-			{id: '14.1', title: 'Không cần thanh toán trước'},
-			{id: '14.2', title: 'Thanh toán qua MOMO'},
 		],
 	},
 ]

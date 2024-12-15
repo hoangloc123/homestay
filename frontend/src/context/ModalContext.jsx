@@ -1,4 +1,4 @@
-import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from '@nextui-org/react'
+import {Modal, ModalBody, ModalContent, ModalHeader} from '@nextui-org/react'
 import React, {createContext, useContext, useState} from 'react'
 
 const ModalContext = createContext()
@@ -44,26 +44,6 @@ export const ModalProvider = ({children}) => {
 						<>
 							<ModalHeader className="flex flex-col gap-1 text-center">{modalTitle}</ModalHeader>
 							<ModalBody>{modalContent}</ModalBody>
-							<ModalFooter>
-								{isShowFooter && (
-									<Button
-										color="danger"
-										variant="light"
-										onPress={onClose}
-									>
-										Close
-									</Button>
-								)}
-								{modalActions.map((action, index) => (
-									<Button
-										key={index}
-										{...action.props}
-										onPress={action.onClick}
-									>
-										{action.label}
-									</Button>
-								))}
-							</ModalFooter>
 						</>
 					)}
 				</ModalContent>

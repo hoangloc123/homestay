@@ -5,7 +5,7 @@ import UploadImages from '@components/common/UploadImage'
 import {Button, Checkbox} from '@nextui-org/react'
 import {AMENITIES, PAYMENT_METHODS, PROVINCES, TYPE_HOST} from '@utils/constants'
 import {ToastInfo, ToastNotiError, uploadFirebase} from '@utils/Utils'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import {useAuth} from '../../../context/AuthContext'
 import {useModalCommon} from '../../../context/ModalContext'
@@ -20,27 +20,27 @@ export default function CreateAccommodationModal({onReload}) {
 	const methods = useForm()
 	const {watch, setValue} = methods
 
-	useEffect(() => {
-		setValue('price', 0)
-		setValue('ownerId', '1')
-		setValue('name', '1')
-		setValue('city', '1')
-		setValue('avatar', '1')
-		setValue('address', '1')
-		setValue('pricePerNight', '1')
-		setValue('amenities', '1')
-		setValue('lat', '1')
-		setValue('lng', '1')
-		setValue('images', '1')
-		setValue('description', '1')
-		setValue('noteAccommodation', '1')
-		setValue('type', '1')
-		setValue('outstanding', '1')
-		setValue('options', '1')
-		setValue('activities', '1')
-	}, [])
+	// useEffect(() => {
+	// 	setValue('price', 0)
+	// 	setValue('ownerId', '1')
+	// 	setValue('name', '1')
+	// 	setValue('city', '1')
+	// 	setValue('avatar', '1')
+	// 	setValue('address', '1')
+	// 	setValue('pricePerNight', '1')
+	// 	setValue('amenities', '1')
+	// 	setValue('lat', '1')
+	// 	setValue('lng', '1')
+	// 	setValue('images', '1')
+	// 	setValue('description', '1')
+	// 	setValue('noteAccommodation', '1')
+	// 	setValue('type', '1')
+	// 	setValue('outstanding', '1')
+	// 	setValue('options', '1')
+	// 	setValue('activities', '1')
+	// }, [])
 	async function handleSave(values) {
-		// setIsLoading(true)
+		setIsLoading(true)
 		let data = {
 			...values,
 			ownerId: auth._id,

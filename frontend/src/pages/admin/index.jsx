@@ -5,8 +5,8 @@ import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import AdminAccommodationList from '../../section/admin/AdminAccommodationList'
 import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
-import AdminHostList from '../../section/admin/AdminHostList'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
+import AdminRoomList from '../../section/admin/AdminRoomList'
 import AdminSideBar from '../../section/admin/AdminSideBar'
 import AdminUser from '../../section/admin/AdminUser'
 import Dashboard from '../../section/admin/Dashboard'
@@ -45,24 +45,16 @@ export default function AdminPage() {
 
 	const renderContent = () => {
 		switch (selectedItem) {
-			case 'dashboardAll':
-				return <Dashboard isAdmin />
-			case 'accommodation':
-				return <AdminAccommodationList isAdmin />
-			case 'usersAll':
-				return <AdminUser isAdmin />
-			case 'busAll':
-				return <AdminHostList isAdmin />
-			case 'request':
-				return <AdminRequestHost isAdmin />
 			case 'dashboard':
 				return <Dashboard />
 			case 'users':
 				return <AdminUser />
-			case 'buses':
-				return <AdminHostList />
-			case 'bookingAll':
-				return <AdminBookingListSection isAdmin />
+			case 'accommodation':
+				return <AdminAccommodationList />
+			case 'room':
+				return <AdminRoomList />
+			case 'request':
+				return <AdminRequestHost />
 			case 'booking':
 				return <AdminBookingListSection />
 			default:

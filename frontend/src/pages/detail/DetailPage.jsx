@@ -12,7 +12,7 @@ import Loading from '../../components/loading/Loading'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
-import {amenitiesConst} from '../../utils/constData'
+import {AMENITIES_ROOM} from '../../utils/constData'
 import {roomList} from '../mock'
 
 const reviews = [
@@ -252,7 +252,7 @@ export default function DetailPage() {
 					<div className="flex-grow">
 						<h2 className="mb-2 text-xl font-bold">Các tiện nghi</h2>
 						<div className="flex flex-wrap gap-5">
-							{amenitiesConst.map(amenity => {
+							{AMENITIES_ROOM.map(amenity => {
 								const selectedIds = data.amenities
 								const hasSelectedChild = amenity.items.some(item => selectedIds.includes(item.id))
 								if (selectedIds.includes(amenity.id) || hasSelectedChild) {
@@ -507,7 +507,7 @@ export default function DetailPage() {
 			>
 				<h1 className="mb-4 text-3xl font-bold">Dịch vụ đi kèm</h1>
 				<div className="flex flex-row flex-wrap gap-[30px]">
-					{amenitiesConst.map(amenity => {
+					{AMENITIES_ROOM.map(amenity => {
 						const hasSelectedChild = amenity.items.some(item => selectedIds.includes(item.id))
 						if (selectedIds.includes(amenity.id) || hasSelectedChild) {
 							return (

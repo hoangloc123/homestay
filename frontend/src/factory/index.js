@@ -9,9 +9,23 @@ export const factories = {
             params: params,
         });
     },
+    getAdminListRoom: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.ACCOMMODATIONS + '/rooms/admin',
+            method: 'GET',
+            params: params,
+        });
+    },
     createNewAccommodation: (data) => {
         return ApiOperation.request({
             url: ApiConstants.ACCOMMODATIONS,
+            method: 'POST',
+            data: data,
+        });
+    },
+    createNewRoom: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.ACCOMMODATIONS + '/' + data.id + '/rooms',
             method: 'POST',
             data: data,
         });
