@@ -1,8 +1,8 @@
 import express from "express";
 
-import Ticket from "../models/schemas/Ticket.schema.js";
 import Accommodation from "../models/schemas/Accommodation.schema.js";
 import Review from "../models/schemas/Review.schema.js";
+import Ticket from "../models/schemas/Ticket.schema.js";
 
 const router = express.Router();
 
@@ -14,9 +14,7 @@ router.post("/", async (req, res) => {
       rooms,
       fromDate,
       toDate,
-      isPaid = false,
-      isConfirmed = false,
-      isCanceled = false,
+      status,
       totalPrice,
     } = req.body;
 
@@ -82,7 +80,6 @@ router.post("/", async (req, res) => {
         const overlappingTickets = await Ticket.find({
           accommodation: accommodationId,
           rooms: { $elemMatch: { roomId } },
-          isCanceled: true,
           $or: [
             { fromDate: { $lte: fromDate }, toDate: { $gte: toDate } },
             { fromDate: { $gte: fromDate, $lte: toDate } },
@@ -110,9 +107,7 @@ router.post("/", async (req, res) => {
       rooms: rooms,
       fromDate,
       toDate,
-      isPaid,
-      isConfirmed,
-      isCanceled,
+      status,
       totalPrice,
     });
 

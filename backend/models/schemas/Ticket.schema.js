@@ -16,9 +16,7 @@ const TicketSchema = new mongoose.Schema({
   bookedQuantity: { type: Number },
   fromDate: { type: String, required: true },
   toDate: { type: String, required: true },
-  isPaid: { type: Boolean, default: false },
-  isConfirmed: { type: Boolean, default: false },
-  isCanceled: { type: Boolean, default: false },
+  status: { type: Number, required: true, default: 1 },
   totalPrice: { type: Number, required: true },
 });
 

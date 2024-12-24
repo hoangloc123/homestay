@@ -56,14 +56,21 @@ router.post("/login", async (req, res) => {
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Sai tài khoản hoặc mật khẩu" });
         }
 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Sai tài khoản hoặc mật khẩu" });
         }
 
+        if (user.status === false) {
+            return res.status(401).json({ message: "Tài khoản đã bị vô hiệu hoá" });
+        }
+
+        if (user.roles.includes(Role.HOST) && user.isRequestHostOwner === false) {
+            return res.status(401).json({ message: "Tài khoản chưa được phê duyệt" });
+        }
         // Tạo token JWT
         const token = jwt.sign(
             { userId: user._id, roles: user.roles },
