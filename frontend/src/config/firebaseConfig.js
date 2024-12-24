@@ -13,14 +13,15 @@ import { getStorage } from 'firebase/storage';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
-    apiKey: "AIzaSyA38Liip3bPVJem9J6MtyP6wEviLBPzcYM",
-    authDomain: "webnovel-eee3f.firebaseapp.com",
-    projectId: "webnovel-eee3f",
-    storageBucket: "webnovel-eee3f.appspot.com",
-    messagingSenderId: "201939309789",
-    appId: "1:201939309789:web:b0a089abb9803a2ffb7734",
-    measurementId: "G-LP0JPHZ93F"
+    apiKey: "AIzaSyDvPZ-ME9NtX5STf9re9HV9cybfSYrpFp4",
+    authDomain: "hint-20c72.firebaseapp.com",
+    projectId: "hint-20c72",
+    storageBucket: "hint-20c72.appspot.com",
+    messagingSenderId: "492885275134",
+    appId: "1:492885275134:web:373b00370c9754af1410af",
+    measurementId: "G-ZQG00BZJSW"
 };
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 

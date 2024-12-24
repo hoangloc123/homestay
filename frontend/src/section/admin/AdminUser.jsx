@@ -13,7 +13,6 @@ import {factories} from '../../factory'
 export default function AdminUser({isAdmin}) {
 	const {auth} = useAuth()
 	const [activeTab, setActiveTab] = useState(isAdmin ? '' : ROLES.EMPLOYEE)
-	console.log('🚀 ~ AdminUser ~ activeTab:', activeTab)
 	const [keyword, setKeyword] = useState()
 	const [loading, setLoading] = useState(true)
 	const [data, setData] = useState([])
@@ -27,6 +26,7 @@ export default function AdminUser({isAdmin}) {
 		setLoading(true)
 		const params = {
 			roles: activeTab,
+			limit: 10,
 			page: pagination?.current,
 			...(auth.roles[0] === ROLES.HOST && {bossId: auth._id}),
 			...(keyword ? {keyword} : {}),
@@ -77,7 +77,7 @@ export default function AdminUser({isAdmin}) {
 			label: 'Trạng thái',
 			renderCell: row => (
 				<Chip
-					color={row.status ? 'success' : 'danger'}
+					color={row.status ? 'success' : 'default'}
 					className="text-white"
 				>
 					{STATUS[row?.status]}
@@ -104,7 +104,7 @@ export default function AdminUser({isAdmin}) {
 						size="sm"
 						className="h-8 max-w-8 border-none"
 					>
-						{row?.status ? <i className="fas fa-pause text-sm text-pink-500"></i> : <i className="fas fa-play text-sm text-blue-500"></i>}
+						{row?.status ? <i className="fas fa-pause text-sm text-red"></i> : <i className="fas fa-play text-sm text-blue-500"></i>}
 					</Button>
 				</div>
 			),
@@ -140,6 +140,7 @@ export default function AdminUser({isAdmin}) {
 	function onDelete(row) {
 		const newValues = {
 			...row,
+			page: pagination?.current,
 			status: !row.status,
 		}
 		factories
@@ -239,7 +240,12 @@ export default function AdminUser({isAdmin}) {
 					columns={columns}
 					data={data}
 					isLoading={loading}
-				/>
+					isShowPagination
+					// limit={10}
+					total={pagination?.total}
+					page={pagination?.page}
+					setPage={page => setPagination({...pagination, current: page})}
+				/>{' '}
 			</div>
 		</div>
 	)

@@ -272,10 +272,10 @@ export default function DetailPage() {
 								return (
 									<div
 										key={amenity.id}
-										className="min-w-[150px] rounded-lg border px-6 py-3 shadow-md"
+										className="min-w-[150px] rounded-lg border px-6 py-2 shadow-md"
 									>
 										<div className="flex items-center gap-2">
-											<p className={cn('text-lg font-bold')}>{amenity.title}</p>
+											<p className={cn('text-center text-lg font-bold')}>{amenity.title}</p>
 										</div>
 									</div>
 								)

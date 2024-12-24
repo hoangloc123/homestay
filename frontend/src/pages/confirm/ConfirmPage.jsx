@@ -1,13 +1,14 @@
 import DatePickerField from '@components/common/DatePickerField'
 import ImageGallery from '@components/galery/Galery'
-import {Button, Image, Radio, RadioGroup} from '@nextui-org/react'
+import {useAuth} from '@context/AuthContext.jsx'
+import {useModalCommon} from '@context/ModalContext.jsx'
+import {getLocalTimeZone, today} from '@internationalized/date'
+import {Button, Image} from '@nextui-org/react'
 import {RouterPath} from '@router/RouterPath'
-import {PAYMENT_METHODS, PROVINCES, TYPE_HOST} from '@utils/constants'
-import {convertStringToNumber, ToastInfo, ToastNotiError} from '@utils/Utils'
+import {PROVINCES, TYPE_HOST} from '@utils/constants'
+import {convertStringToNumber, differenceInTime, ToastInfo, ToastNotiError} from '@utils/Utils'
 import React, {useEffect, useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
-import {useAuth} from '../../context/AuthContext'
-import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
 
@@ -23,22 +24,31 @@ export default function ConfirmPage() {
 	const {onOpen} = useModalCommon()
 
 	function handleSave(values) {
+		if (!values.fromDate) {
+			ToastNotiError('Vui lòng chọn ngày nhận phòng')
+			return
+		}
+		if (!values.fromDate) {
+			ToastNotiError('Vui lòng chọn ngày trả phòng')
+			return
+		}
 		setLoading(true)
+		const newFromDate = new Date(values.fromDate)
+		const newToDate = new Date(values.toDate)
+		const days = Math.ceil(Math.abs(newToDate - newFromDate) / (1000 * 60 * 60 * 24))
 		const newTicket = {
 			userId: auth._id,
-			name: values.fullName,
-			phone: values.phone,
-			email: values?.email,
-			seats: data.seats,
-			bus: data.bus,
-			driverId: data.driverId,
-			status: 1,
-			tripId: data._id,
-			price: data.price,
-			paymentMethod: values.payment ?? 1,
+			accommodationId: data._id,
+			fromDate: newFromDate,
+			toDate: newToDate,
+			rooms: data.roomsSelected.map(x => ({
+				roomId: x.roomId,
+				bookedQuantity: x.number,
+			})),
+			totalPrice: data.roomsSelected.reduce((total, number) => total + number.price * number.number, 0) * days,
 		}
 		factories
-			.addMoneyToWallet(newTicket)
+			.createTicket(newTicket)
 			.then(() => {
 				setLoading(false)
 				ToastInfo('Đặt vé thành công')
@@ -73,30 +83,15 @@ export default function ConfirmPage() {
 			showFooter: false,
 		})
 	}
+
 	return (
-		<div className="mx-auto mb-20 mt-6 flex max-w-full gap-4 px-5 lg:max-w-[70%] lg:px-0 2xl:max-w-[60%]">
+		<div className="mx-auto mb-20 mt-16 flex max-w-full justify-center gap-4 px-5 lg:max-w-[70%] lg:px-0 2xl:max-w-[60%]">
 			<FormProvider {...methods}>
 				<form onSubmit={methods.handleSubmit(handleSave)}>
-					<div className="flex flex-row justify-between gap-10">
-						<div className="flex w-2/3 flex-col gap-4">
+					<div className="mx-auto flex justify-between gap-10">
+						<div className="flex flex-col gap-4">
 							<div className="w-full rounded-lg border p-6 shadow-lg">
-								<h2 className="mb-4 text-lg font-semibold">Thông tin thuê</h2>
-								<div className="mb-4 flex items-center justify-between">
-									<div className="flex items-center gap-4">
-										<span className="text-sm">
-											<DatePickerField
-												label="Ngày nhận phòng"
-												name="dateStart"
-											/>
-										</span>
-										<span className="text-sm">
-											<DatePickerField
-												label="Ngày trả phòng"
-												name="dateEnd"
-											/>
-										</span>
-									</div>
-								</div>
+								<p className="mb-4 text-center text-2xl font-bold text-blue-500">Xác nhận đặt phòng</p>
 								<div className="mb-4 flex items-center">
 									<Image
 										src={data.images[0] ?? 'https://static.vexere.com/production/images/1716953194738.jpeg?w=250&h=250'}
@@ -110,8 +105,33 @@ export default function ConfirmPage() {
 										<p className="text-md text-gray-800">{TYPE_HOST.find(x => x.id === data.type)?.name}</p>
 									</div>
 								</div>
+								<h2 className="mb-4 text-lg font-semibold">Thông tin thuê</h2>
+								<div className="mb-4 flex items-center justify-between">
+									<div className="flex items-center gap-4">
+										<span className="w-full flex-1 text-sm">
+											<DatePickerField
+												label="Ngày nhận phòng"
+												name="fromDate"
+												isRequired
+												granularity="day"
+												minValue={today(getLocalTimeZone())}
+												validate={{required: 'Bắt buộc chọn'}}
+											/>
+										</span>
+										<span className="flex-1 text-sm">
+											<DatePickerField
+												label="Ngày trả phòng"
+												name="toDate"
+												isRequired
+												granularity="day"
+												minValue={methods.watch('fromDate') ?? today(getLocalTimeZone())}
+												validate={{required: 'Bắt buộc chọn'}}
+											/>
+										</span>
+									</div>
+								</div>
 								<hr className="my-4 border-gray-300" />
-								<div className="flex flex-row gap-4">
+								<div className="flex flex-col gap-4">
 									{data.roomsSelected?.map((room, index) => {
 										const roomT = data.rooms.find(x => x._id === room.roomId)
 										return (
@@ -138,12 +158,25 @@ export default function ConfirmPage() {
 														<div className="flex flex-col gap-1">
 															<div className="flex items-center gap-2">
 																<p className="text-sm font-semibold">{roomT.name}</p>
-																<p className="text-sm font-semibold">{roomT.capacity}</p>
-																<i className="fas fa-user-friends ml-0 mr-2 text-gray-500"></i>
+																<div className="flex flex-row items-center gap-1">
+																	<p className="text-sm font-semibold">{roomT.capacity}</p>
+																	<i className="fas fa-user ml-0 mr-2 text-gray-500"></i>
+																</div>
 															</div>
-															<p className="text-sm text-gray-500">(x{room.number})</p>
+															<div className="flex items-center gap-2">
+																<p>Số lượng phòng</p>
+															</div>
+															<div className="flex items-center gap-2">
+																<p>Thời gian</p>
+															</div>
 														</div>
-														<p className="text-sm text-gray-500">{convertStringToNumber(roomT.pricePerNight * room.number)}</p>
+														<div className="flex flex-col items-end justify-end gap-2">
+															<p className="text-sm text-gray-500">{convertStringToNumber(roomT.pricePerNight * room.number)}</p>
+															<p className="text-sm text-gray-500">x{room.number}</p>
+															<p className="text-sm text-gray-500">
+																{differenceInTime(methods.watch('fromDate'), methods.watch('toDate'))} ngày
+															</p>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -151,58 +184,14 @@ export default function ConfirmPage() {
 									})}
 								</div>
 							</div>
-						</div>
-						<div className="w-1/3">
 							<div className="mb-5 w-full rounded-lg border p-6 px-4 shadow-lg">
-								<div className="mb-4 flex justify-between">
-									<span className="text-lg font-semibold">Giá tiền</span>
-									<div className="flex flex-col items-end">
-										<span className="font-sans text-sm font-semibold">
-											{data.roomsSelected.length} x {convertStringToNumber(data.price)}
-										</span>
-									</div>
-								</div>
 								<div className="mb-4 flex items-center justify-between">
-									<span className="text-lg font-semibold">Tổng tiền:</span>
+									<span className="text-lg font-semibold">Tổng chi phí:</span>
 									<div className="text-2xl font-bold text-gray-900">
-										VND {data.roomsSelected.reduce((total, number) => total + number.price * number.number, 0)}
+										{convertStringToNumber(data.roomsSelected.reduce((total, number) => total + number.price * number.number, 0))}
 									</div>
 								</div>
 							</div>
-
-							{/* // thanh toán */}
-							<div className="w-full rounded-lg border p-6 px-4 shadow-lg">
-								<p className="mb-2 text-lg font-bold">Phương thức thanh toán</p>
-								<RadioGroup>
-									{PAYMENT_METHODS.filter(i => ['1', '2'].includes(i.id)).map(x => (
-										<Radio
-											key={x.id}
-											value={x.id}
-											defaultChecked={'1'}
-										>
-											{x.label}
-										</Radio>
-									))}
-								</RadioGroup>
-
-								{/* <RadioGroup
-									defaultValue={data.paymentMethods[0]}
-									onChange={e => {
-										setValue('payment', e)
-									}}
-								>
-									{PAYMENT_METHODS.filter(i => data.paymentMethods.includes(i.id)).map(x => (
-										<Radio
-											key={x.id}
-											value={x.id}
-											defaultChecked={x.id === data.paymentMethods[0]}
-										>
-											{x.label}
-										</Radio>
-									))}
-								</RadioGroup> */}
-							</div>
-
 							<Button
 								color="primary"
 								type="submit"
@@ -210,7 +199,7 @@ export default function ConfirmPage() {
 								variant="shadow"
 								isLoading={loading}
 							>
-								Tiếp tục
+								Đặt phòng
 							</Button>
 						</div>
 					</div>

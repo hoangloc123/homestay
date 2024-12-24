@@ -2,7 +2,7 @@ import {Select, SelectItem} from '@nextui-org/react'
 import React from 'react'
 import {useFormContext} from 'react-hook-form'
 
-const SelectField = ({name, options, label, placeholder = '', className = '', validate = {}}) => {
+const SelectField = ({name, options, label, isRequired, placeholder = '', className = '', validate = {}}) => {
 	const {register, formState} = useFormContext()
 	const error = formState.errors?.[name]?.message
 	return (
@@ -10,6 +10,7 @@ const SelectField = ({name, options, label, placeholder = '', className = '', va
 			<Select
 				placeholder={placeholder}
 				label={label}
+				isRequired={isRequired}
 				className={`w-full bg-transparent ${className}`}
 				color={error ? 'danger' : 'default'}
 				errorMessage={error}

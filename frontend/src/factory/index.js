@@ -23,6 +23,13 @@ export const factories = {
             data: data,
         });
     },
+    createTicket: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKETS,
+            method: 'POST',
+            data: data,
+        });
+    },
     getWalletInfo: (id) => {
         return ApiOperation.request({
             url: ApiConstants.PAYMENT + '/user/' + id,

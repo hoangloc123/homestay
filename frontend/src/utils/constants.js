@@ -128,13 +128,13 @@ export const sidebarItems = [
         title: 'Danh sách đánh giá',
         roles: ['admin'],
     },
-    {
-        id: 'profile',
-        icon: 'fa-smile',
-        title: 'Thông tin tài khoản',
-        label: 'Thông tin',
-        roles: ['admin', 'host', 'employee'],
-    },
+    // {
+    //     id: 'profile',
+    //     icon: 'fa-smile',
+    //     title: 'Thông tin tài khoản',
+    //     label: 'Thông tin',
+    //     roles: ['admin', 'host', 'employee'],
+    // },
 ]
 
 

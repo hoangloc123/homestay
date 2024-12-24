@@ -3,7 +3,6 @@ import moment from 'moment'
 import regex from './regex'
 // import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 // import { db } from '../firebase'
-import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
 // import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 // import { storage } from '../firebase'
@@ -89,7 +88,7 @@ export const ToastNotiError = (mes = 'Hệ thống lỗi') => {
     })
 }
 
-export const getDate = (timestamp, type = 1) => {
+export const getDate = (timestamp, type = 1, format = 'DD/MM/YYYY') => {
     if (timestamp == null) {
         return null
     }
@@ -99,42 +98,73 @@ export const getDate = (timestamp, type = 1) => {
             result = moment(timestamp).format('DD/MM/YYYY')
             break
         case 2:
-            result = moment(timestamp).format('YYYY-MM-DD')
+            result = moment(timestamp).format('DD.MM.yyyy - HH:mm')
             break
         case 3:
-            result = moment(timestamp).format('yyyy-MM-DD')
-            break
-        case 4:
-            result = dayjs(timestamp)
-            break
-        case 5:
-            result = moment(timestamp).format('DD.MM.yyyy - HH:mm')
-            break
-        case 6:
             result = moment(timestamp).format('HH:mm')
             break
-        case 7:
-            result = moment(timestamp).format('HH:mm  DD.MM.yyyy')
-            break
-        case 8:
-            result = moment(timestamp).format('MM/DD/YYYY')
-            break
-        case 9:
-            result = moment(timestamp).format('YYYY')
-            break
-        case 10:
-            result = moment(timestamp).format('MM')
-            break
-        case 11:
+        case 4:
             result = moment(timestamp).format('MM/YYYY')
             break
-        case 12:
-            result = moment(timestamp).format('DD.MM.yyyy - HH:mm')
+        case 5:
+            result = moment(timestamp).format(format)
             break
-        case 13:
-            const newDate = timestamp.year + '/' + timestamp.month + '/' + timestamp.day
-            result = moment(newDate, 'YYYY/MM/DD').format('YYYY-MM-DD')
-            break
+        case 6:
+            result = result = new Date(
+                timestamp.year,
+                timestamp.month - 1, // Tháng bắt đầu từ 0
+                timestamp.day,
+                timestamp.hour,
+                timestamp.minute,
+                timestamp.second,
+                timestamp.millisecond
+            );
+            break;
+        case 6:
+            result = result = new Date(
+                timestamp.year,
+                timestamp.month - 1, // Tháng bắt đầu từ 0
+                timestamp.day,
+                timestamp.hour,
+                timestamp.minute,
+                timestamp.second,
+                timestamp.millisecond
+            );
+            break;
+        case 7:
+            const formatter = new Intl.DateTimeFormat('en-US', {
+                timeZone,
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: false,
+                fractionalSecondDigits: 3,
+            });
+            const parts = formatter.formatToParts(timestamp);
+            const dateObj = {};
+            parts.forEach(part => {
+                if (part.type !== 'literal') {
+                    dateObj[part.type] = parseInt(part.value, 10);
+                }
+            });
+            const offset = -date.getTimezoneOffset() * 60 * 1000;
+            result = {
+                year: dateObj.year,
+                month: dateObj.month,
+                day: dateObj.day,
+                hour: dateObj.hour,
+                minute: dateObj.minute,
+                second: dateObj.second,
+                millisecond: date.getMilliseconds(),
+                timeZone: timeZone,
+                offset: offset,
+                era: dateObj.year >= 1 ? 'AD' : 'BC',
+                calendar: { identifier: 'gregory' },
+            };
+            break;
         default:
             break
     }
@@ -202,4 +232,19 @@ export function cn(...args) {
 
 export function getGGMapLink(lat, lng) {
     return `https://www.google.com/maps?q=${lat},${lng}`
+}
+
+import { parseDateTime } from '@internationalized/date'
+
+export function differenceInTime(startTime, endTime) {
+
+    const start = getDate(startTime);
+    const end = parseDateTime(endTime);
+    const difference = Math.abs(end.getTime() - start.getTime());
+
+    const seconds = Math.floor((difference / 1000) % 60);
+    const minutes = Math.floor((difference / (1000 * 60)) % 60);
+    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    return ''
 }

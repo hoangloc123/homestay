@@ -12,7 +12,7 @@ const columns = [
 	{
 		id: 'name',
 		label: 'Tên phòng',
-		renderCell: row => <div className="w-40">{row?.name}</div>,
+		renderCell: row => <div className="">{row?.name}</div>,
 	},
 	{
 		id: 'capacity',
@@ -67,18 +67,19 @@ export default function AdminRoomList() {
 	}
 	return (
 		<div className="h-full rounded bg-white px-4 py-3 shadow-md">
-			<div className="mb-3 flex items-center justify-between">
-				<div className="mt-2 flex w-full items-center justify-end">
-					<Button
-						onClick={AddRoom}
-						size="sm"
-						color="primary"
-					>
-						Tạo phòng mới
-					</Button>
+			{auth.roles[0] === ROLES.HOST && (
+				<div className="mb-3 flex items-center justify-between">
+					<div className="mt-2 flex w-full items-center justify-end">
+						<Button
+							onClick={AddRoom}
+							size="sm"
+							color="primary"
+						>
+							Tạo phòng mới
+						</Button>
+					</div>
 				</div>
-			</div>
-
+			)}
 			<Input
 				type="text"
 				onChange={e => setKeyword(e.target.value)}

@@ -10,5 +10,6 @@ export const RouterPath = {
     CHANGE_PASSWORD: '/change-password',
     CONFIRM_INFORMATION: '/confirm-information',
     VNPAY_RETURN: '/vnpay/return',
+    CREATED_SUCCESS: '/create_success',
     NOT_FOUND: '/*',
 }

@@ -92,12 +92,14 @@ export default function CreateAccommodationModal({onReload}) {
 							<InputField
 								placeholder="Nhập tên chỗ nghỉ"
 								label="Tên chỗ nghỉ"
+								isRequired
 								validate={{required: 'Bắt buộc chọn'}}
 								name={'name'}
 							/>
 							<SelectField
 								options={PROVINCES || []}
 								placeholder="Chọn thành phố"
+								isRequired
 								label="Thành phố"
 								isMultiple
 								validate={{required: 'Bắt buộc chọn'}}
@@ -108,6 +110,7 @@ export default function CreateAccommodationModal({onReload}) {
 							options={TYPE_HOST || []}
 							placeholder="Chọn loại chỗ nghỉ"
 							label="Loại hình"
+							isRequired
 							validate={{required: 'Bắt buộc chọn'}}
 							name={'type'}
 						/>
@@ -116,12 +119,14 @@ export default function CreateAccommodationModal({onReload}) {
 								placeholder="Nhập địa chỉ"
 								label="Địa chỉ"
 								validate={{required: 'Bắt buộc chọn'}}
+								isRequired
 								name={'address'}
 							/>
 							{watch('type') <= 3 && (
 								<InputField
 									placeholder="0"
 									label="Nhập giá mỗi đêm"
+									isRequired
 									validate={{required: 'Bắt buộc chọn'}}
 									name={'pricePerNight'}
 									type="number"
@@ -131,12 +136,14 @@ export default function CreateAccommodationModal({onReload}) {
 						<div className="flex flex-row gap-2">
 							<InputField
 								placeholder="Nhập kinh độ"
+								isRequired
 								label="Kinh độ"
 								validate={{required: 'Bắt buộc chọn'}}
 								name={'lat'}
 							/>
 							<InputField
 								placeholder="Nhập vĩ độ"
+								isRequired
 								label="Vĩ độ"
 								validate={{required: 'Bắt buộc chọn'}}
 								name={'lng'}
@@ -195,7 +202,7 @@ export default function CreateAccommodationModal({onReload}) {
 							placeholder="Hoạt động"
 							label="Hoạt động"
 							name={'activities'}
-						/>{' '}
+						/>
 						<InputQuillForm
 							placeholder="Ghi chú quy định"
 							label="Quy định"
