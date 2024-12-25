@@ -10,7 +10,7 @@ import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 
 export default function AdminBookingListSection() {
-	const [activeTab, setActiveTab] = useState()
+	const [activeTab, setActiveTab] = useState(1)
 	const [loading, setLoading] = useState(true)
 	const [data, setData] = useState([])
 	const {auth} = useAuth()
@@ -34,6 +34,16 @@ export default function AdminBookingListSection() {
 	}, [auth, activeTab])
 
 	const columns = [
+		{
+			id: 'username',
+			label: 'Tên khách hàng',
+			renderCell: row => <div className="flex-grow">{row?.userId?.fullName}</div>,
+		},
+		{
+			id: 'phone',
+			label: 'Sđt',
+			renderCell: row => <div className="flex-grow">{row?.userId?.phone}</div>,
+		},
 		{
 			id: 'date',
 			label: 'Ngày nhận phòng',
@@ -104,7 +114,7 @@ export default function AdminBookingListSection() {
 		onOpen({
 			view: (
 				<TicketModal
-					item={row}
+					id={row._id}
 					onReload={loadList}
 				/>
 			),
@@ -143,7 +153,7 @@ export default function AdminBookingListSection() {
 							title="Đã hoàn thành"
 						/>
 						<Tab
-							key="43"
+							key="4"
 							title="Đã đánh giá"
 						/>
 					</Tabs>

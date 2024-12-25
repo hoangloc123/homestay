@@ -4,6 +4,7 @@ import moment from "moment";
 import Accommodation from "../models/schemas/Accommodation.schema.js";
 import Payment from "../models/schemas/payment.schema.js";
 import Review from "../models/schemas/Review.schema.js";
+import Room from "../models/schemas/Room.schema.js";
 import Ticket from "../models/schemas/Ticket.schema.js";
 import User from "../models/schemas/user.schema.js";
 
@@ -257,19 +258,35 @@ router.get('/reviews', async (req, res) => {
     }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/detail/:id", async (req, res) => {
+    const { id } = req.params;
     try {
-        const { id } = req.params;
+        const ticket = await Ticket.findById(id)
+            .populate("userId", "name email")
+            .populate("accommodation")
 
-        const ticket = await Ticket.findById(id);
+
         if (!ticket) {
             return res.status(404).json({ message: "Ticket not found" });
         }
 
-        res.status(200).json(ticket);
+        const roomIds = ticket.rooms.map((room) => room.roomId);
+        const roomDetails = await Room.find({ _id: { $in: roomIds } });
+        const detailedRooms = ticket.rooms.map((room) => {
+            const roomDetail = roomDetails.find((detail) => detail._id.toString() === room.roomId.toString());
+            return {
+                ...room.toObject(),
+                ...roomDetail?.toObject(),
+            };
+        });
+
+        res.status(200).json({
+            ...ticket.toObject(),
+            detailedRooms
+        });
     } catch (error) {
-        console.error("Error retrieving ticket:", error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Error fetching ticket and rooms:", error);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 });
 
@@ -294,7 +311,6 @@ router.get("/", async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
-
 
 router.put('/:id', async (req, res) => {
     try {
@@ -405,7 +421,5 @@ router.patch('/update-show/:id', async (req, res) => {
             .json({ message: 'Lỗi hệ thống', error: error.message });
     }
 });
-
-
 
 export default router;

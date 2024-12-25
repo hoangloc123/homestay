@@ -16,7 +16,6 @@ export default function CreateRoomModal({onReload}) {
 	const [isReady, setIsReady] = useState(false)
 	const [amenities, setAmenities] = useState([])
 	const [dataAcm, setData] = useState([])
-	console.log('🚀 ~ CreateRoomModal ~ dataAcm:', dataAcm)
 	const {auth} = useAuth()
 	const {onClose} = useModalCommon()
 	const methods = useForm()

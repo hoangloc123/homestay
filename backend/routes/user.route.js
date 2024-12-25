@@ -64,8 +64,7 @@ router.get("/:userId", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const { keyword, bossId, roles, page = "1", limit = "10" } = req.query;
-        let query = { email: { $ne: "admin@booking.com" } };
-        console.log("🚀 ~ router.get ~ roles:", roles)
+        let query = { email: { $ne: process.env.ADMIN_EMAIL } };
         if (keyword) {
             query.$or = [
                 { fullName: { $regex: `.*${keyword}.*`, $options: "i" } },

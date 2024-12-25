@@ -55,7 +55,6 @@ export default function CreateAccommodationModal({onReload}) {
 			newUrls.push(newUrl)
 		}
 		data.images = newUrls
-		console.log('🚀 ~ handleSave ~ data:', data)
 		factories
 			.createNewAccommodation(data)
 			.then(() => {

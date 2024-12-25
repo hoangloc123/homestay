@@ -75,6 +75,12 @@ export const factories = {
             params: params
         });
     },
+    getTicket: (id) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKET + '/detail/' + id,
+            method: 'GET',
+        });
+    },
     getAdminListRoom: (params) => {
         return ApiOperation.request({
             url: ApiConstants.ACCOMMODATIONS + '/rooms/admin',

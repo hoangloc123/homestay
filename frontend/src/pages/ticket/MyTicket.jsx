@@ -103,7 +103,7 @@ export default function MyTicketPage() {
 		onOpen({
 			view: (
 				<TicketModal
-					item={row}
+					id={row._id}
 					onReload={loadList}
 				/>
 			),

@@ -248,3 +248,14 @@ export function differenceInTime(startTime, endTime) {
     // Chuyển đổi sang ngày
     return diffInMilliseconds / (1000 * 60 * 60 * 24) + 1;
 }
+export function differenceTimeDate(startTime, endTime) {
+    if (startTime == null || endTime == null) {
+        return 0
+    }
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    // Tính chênh lệch (theo mili giây)
+    const diffInMilliseconds = Math.abs(end - start);
+    // Chuyển đổi sang ngày
+    return diffInMilliseconds / (1000 * 60 * 60 * 24) + 1;
+}

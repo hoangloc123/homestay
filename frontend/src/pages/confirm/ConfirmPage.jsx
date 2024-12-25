@@ -52,12 +52,8 @@ export default function ConfirmPage() {
 			.then(() => {
 				setLoading(false)
 				ToastInfo('Đặt phòng thành công')
-				const encodedItem = encodeURIComponent(JSON.stringify(data))
 				router.push({
-					pathname: RouterPath.CREATED_SUCCESS,
-					params: {
-						item: encodedItem,
-					},
+					pathname: RouterPath.MY_TICKET,
 				})
 			})
 			.catch(err => {
