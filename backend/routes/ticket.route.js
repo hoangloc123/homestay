@@ -1,232 +1,411 @@
 import express from "express";
 
+import moment from "moment";
 import Accommodation from "../models/schemas/Accommodation.schema.js";
+import Payment from "../models/schemas/payment.schema.js";
 import Review from "../models/schemas/Review.schema.js";
 import Ticket from "../models/schemas/Ticket.schema.js";
+import User from "../models/schemas/user.schema.js";
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
-  try {
-    const {
-      userId,
-      accommodationId,
-      rooms,
-      fromDate,
-      toDate,
-      status,
-      totalPrice,
-    } = req.body;
+    try {
+        const {
+            userId,
+            accommodationId,
+            rooms,
+            fromDate,
+            toDate,
+            status,
+            totalPrice,
+        } = req.body;
 
-    if (!userId || !accommodationId || !fromDate || !toDate || !totalPrice) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    if (fromDate >= toDate) {
-      return res.status(400).json({ message: "Invalid booking time period" });
-    }
-
-    const accommodation = await Accommodation.findById(
-      accommodationId,
-    ).populate({
-      path: "rooms",
-      select: "name capacity quantity pricePerNight amenities",
-    });
-    if (!accommodation) {
-      return res.status(404).json({ message: "Accommodation not found" });
-    }
-
-    if (!rooms.length) {
-      // Ensure accommodation type is [0, 1, 2]
-      if (![0, 1, 2].includes(accommodation.type)) {
-        return res.status(400).json({
-          message: "Rooms are required for this type of accommodation",
-        });
-      }
-
-      // Check for overlapping tickets
-      const existingTickets = await Ticket.find({
-        accommodation: accommodationId,
-        $or: [
-          { fromDate: { $lte: fromDate }, toDate: { $gte: toDate } },
-          { fromDate: { $gte: fromDate, $lte: toDate } },
-          { toDate: { $gte: fromDate, $lte: toDate } },
-        ],
-      });
-
-      if (existingTickets.length > 0) {
-        return res.status(400).json({
-          message: "Accommodation is already booked for the given period",
-        });
-      }
-    } else {
-      if ([0, 1, 2].includes(accommodation.type)) {
-        return res.status(400).json({
-          message:
-            "Rooms should not be provided for this type of accommodation",
-        });
-      }
-
-      for (const { roomId, bookedQuantity } of rooms) {
-        const room = accommodation.rooms.find(
-          (r) => r._id.toString() === roomId,
-        );
-        if (!room) {
-          return res.status(404).json({
-            message: `Room with ID ${roomId} not found in the accommodation`,
-          });
+        if (!userId || !accommodationId || !fromDate || !toDate || !totalPrice) {
+            return res.status(400).json({ message: "Lỗi hệ thống thiếu thông tin" });
         }
 
-        const overlappingTickets = await Ticket.find({
-          accommodation: accommodationId,
-          rooms: { $elemMatch: { roomId } },
-          $or: [
-            { fromDate: { $lte: fromDate }, toDate: { $gte: toDate } },
-            { fromDate: { $gte: fromDate, $lte: toDate } },
-            { toDate: { $gte: fromDate, $lte: toDate } },
-          ],
+        if (fromDate > toDate) {
+            return res.status(400).json({ message: "Thời gian trả phòng cần lớn hơn thời gian nhận phòng" });
+        }
+
+        const accommodation = await Accommodation.findById(
+            accommodationId,
+        ).populate({
+            path: "rooms",
+            select: "name capacity quantity pricePerNight amenities",
+        });
+        if (!accommodation) {
+            return res.status(404).json({ message: "Không tồn tại chỗ nghỉ" });
+        }
+
+        if (!rooms.length) {
+            // Ensure accommodation type is [0, 1, 2]
+            if (![1, 2, 3].includes(accommodation.type)) {
+                return res.status(400).json({
+                    message: "Cần lựa chọn phòng",
+                });
+            }
+        } else {
+            if ([0, 1, 2].includes(accommodation.type)) {
+                return res.status(400).json({
+                    message:
+                        "Không chọn phòng với dạnh chỗ nghỉ nguyên căn",
+                });
+            }
+
+            for (const { roomId, bookedQuantity } of rooms) {
+                const room = accommodation.rooms.find(
+                    (r) => r._id.toString() === roomId,
+                );
+                if (!room) {
+                    return res.status(404).json({
+                        message: `Không tồn tại phòng đang được tạo`,
+                    });
+                }
+
+                const overlappingTickets = await Ticket.find({
+                    accommodation: accommodationId,
+                    rooms: { $elemMatch: { roomId } },
+                    $or: [
+                        { fromDate: { $lte: fromDate }, toDate: { $gte: toDate } },
+                        { fromDate: { $gte: fromDate, $lte: toDate } },
+                        { toDate: { $gte: fromDate, $lte: toDate } },
+                    ],
+                });
+
+                const totalBookedQuantity = overlappingTickets.reduce((sum, ticket) => {
+                    const roomBooking = ticket.rooms.find((r) => r.roomId === roomId);
+                    return sum + (roomBooking?.bookedQuantity || 0);
+                }, 0);
+
+                const availableQuantity = room.quantity - totalBookedQuantity;
+                if (availableQuantity < bookedQuantity) {
+                    return res.status(400).json({
+                        message: `Số lượng phòng ${room.name} còn lại không đủ. Chỉ còn ${availableQuantity} phòng.`,
+                    });
+                }
+            }
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res
+                .status(404)
+                .json({ message: 'Tài khoản không tồn tại, vui lòng đăng nhập' });
+        }
+        if (user.balance < totalPrice) {
+            return res.status(400).json({
+                message: 'Số dư không đủ, vui lòng nạp thêm tiền vào ví thanh toán',
+            });
+        }
+        user.balance -= totalPrice;
+        await user.save();
+        const date = new Date()
+        let orderId = moment(date).format('DDHHmmss');
+        const newPayment = new Payment({
+            txnRef: orderId,
+            amount: totalPrice,
+            userId,
+            status: 1,
+            description: 'Thanh toán đặt phòng ' + accommodation.name,
+        });
+        await newPayment.save();
+
+        const admin = await User.findOne({ email: process.env.ADMIN_EMAIL });
+        const newPaymentAdmin = new Payment({
+            txnRef: 'I' + orderId,
+            amount: totalPrice,
+            userId: admin._id,
+            status: 1,
+            description: 'Thanh toán đặt phòng ' + accommodation.name + ' cho ' + user.fullName,
+        });
+        await newPaymentAdmin.save();
+        admin.balance += totalPrice;
+        await admin.save()
+
+        const newTicket = new Ticket({
+            userId,
+            accommodation: accommodationId,
+            rooms: rooms,
+            fromDate,
+            toDate,
+            status,
+            totalPrice,
         });
 
-        const totalBookedQuantity = overlappingTickets.reduce((sum, ticket) => {
-          const roomBooking = ticket.rooms.find((r) => r.roomId === roomId);
-          return sum + (roomBooking?.bookedQuantity || 0);
-        }, 0);
-
-        const availableQuantity = room.quantity - totalBookedQuantity;
-        if (availableQuantity < bookedQuantity) {
-          return res.status(400).json({
-            message: `Room ${room.name} has insufficient availability. Only ${availableQuantity} rooms left.`,
-          });
+        if (!newTicket.rooms?.length) {
+            newTicket.bookedQuantity = 1;
         }
-      }
+
+        const savedTicket = await newTicket.save();
+
+        res.status(201).json({ ticket: savedTicket });
+    } catch (error) {
+        console.error("Error creating ticket:", error);
+        res.status(500).json({ message: "Lỗi hệ thống" });
     }
-
-    const newTicket = new Ticket({
-      userId,
-      accommodation: accommodationId,
-      rooms: rooms,
-      fromDate,
-      toDate,
-      status,
-      totalPrice,
-    });
-
-    if (!newTicket.rooms?.length) {
-      newTicket.bookedQuantity = 1;
-    }
-
-    const savedTicket = await newTicket.save();
-
-    res.status(201).json({ ticket: savedTicket });
-  } catch (error) {
-    console.error("Error creating ticket:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 });
 
 router.patch("/:ticketId", async (req, res) => {
-  const { ticketId } = req.params;
-  const { isPaid, isConfirmed, isCanceled } = req.body;
+    const { ticketId } = req.params;
+    const { isPaid, isConfirmed, isCanceled } = req.body;
 
-  try {
-    const ticket = await Ticket.findById(ticketId);
-    if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+    try {
+        const ticket = await Ticket.findById(ticketId);
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+
+        let msg = "";
+        // Handle payment logic
+        if (isPaid) {
+            msg = "PAID";
+            // TODO: IMPLEMENT Payment function
+            // await functionA(ticket); // Call functionA before updating payment status
+            ticket.isPaid = isPaid;
+        }
+
+        // Handle cancellation logic
+        if (isCanceled) {
+            msg = "CANCELED";
+            // TODO: IMPLEMENT Cancel function
+            // await functionB(ticket); // Call functionB before updating cancellation status
+            ticket.isCanceled = isCanceled;
+        }
+
+        // Handle confirmation logic
+        if (isConfirmed) {
+            msg = "CONFIRMED";
+            ticket.isConfirmed = isConfirmed;
+        }
+
+        const updatedTicket = await ticket.save();
+        res.status(200).json({
+            message: `Ticket updated successfully: ${msg}`,
+            ticket: updatedTicket,
+        });
+    } catch (error) {
+        console.error("Error updating ticket:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
-
-    let msg = "";
-    // Handle payment logic
-    if (isPaid) {
-      msg = "PAID";
-      // TODO: IMPLEMENT Payment function
-      // await functionA(ticket); // Call functionA before updating payment status
-      ticket.isPaid = isPaid;
-    }
-
-    // Handle cancellation logic
-    if (isCanceled) {
-      msg = "CANCELED";
-      // TODO: IMPLEMENT Cancel function
-      // await functionB(ticket); // Call functionB before updating cancellation status
-      ticket.isCanceled = isCanceled;
-    }
-
-    // Handle confirmation logic
-    if (isConfirmed) {
-      msg = "CONFIRMED";
-      ticket.isConfirmed = isConfirmed;
-    }
-
-    const updatedTicket = await ticket.save();
-    res.status(200).json({
-      message: `Ticket updated successfully: ${msg}`,
-      ticket: updatedTicket,
-    });
-  } catch (error) {
-    console.error("Error updating ticket:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 });
 
 router.post("/:id/review", async (req, res) => {
-  const { id } = req.params; // Ticket ID from route
-  const { rating, comment } = req.body; // Rating and comment from body
+    const { id } = req.params; // Ticket ID from route
+    const { rating, comment } = req.body; // Rating and comment from body
 
-  try {
-    if (typeof rating !== "number" || rating < 0 || rating > 5) {
-      return res
-        .status(400)
-        .json({ message: "Rating must be a number between 0 and 5." });
+    try {
+        if (typeof rating !== "number" || rating < 0 || rating > 5) {
+            return res
+                .status(400)
+                .json({ message: "Rating must be a number between 0 and 5." });
+        }
+
+        const ticket = await Ticket.findById(id);
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found." });
+        }
+
+        const accommodation = await Accommodation.findById(ticket.accommodation);
+        if (!accommodation) {
+            return res.status(404).json({ message: "Accommodation not found." });
+        }
+
+        const review = await Review.create({
+            ticket: id,
+            accommodation: ticket.accommodation,
+            creatorId: ticket.userId,
+            rating,
+            comment,
+        });
+
+        const oldRating = accommodation.rating;
+        const oldRatingCount = accommodation.ratingCount;
+        const newRatingCount = oldRatingCount + 1;
+        accommodation.rating =
+            (oldRating * oldRatingCount + rating) / newRatingCount;
+        accommodation.ratingCount = newRatingCount;
+
+        await accommodation.save();
+
+        res.status(201).json({ review });
+    } catch (error) {
+        console.error("Error creating review:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
+});
+router.get('/reviews', async (req, res) => {
+    try {
+        const { userId, isShow } = req.query;
+        let query = {}
+        if (userId) {
+            query.userId = userId;
+        }
+        if (isShow) {
+            query.isShow = true;
+        }
+        const reviews = await Ticket.find(query).populate('userId').populate('accommodation');
 
-    const ticket = await Ticket.findById(id);
-    if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found." });
+        res.status(200).json(reviews);
+    } catch (error) {
+        console.error(error);
+        res
+            .status(500)
+            .json({ message: 'Error fetching reviews', error: error.message });
     }
-
-    const accommodation = await Accommodation.findById(ticket.accommodation);
-    if (!accommodation) {
-      return res.status(404).json({ message: "Accommodation not found." });
-    }
-
-    const review = await Review.create({
-      ticket: id,
-      accommodation: ticket.accommodation,
-      creatorId: ticket.userId,
-      rating,
-      comment,
-    });
-
-    const oldRating = accommodation.rating;
-    const oldRatingCount = accommodation.ratingCount;
-    const newRatingCount = oldRatingCount + 1;
-    accommodation.rating =
-      (oldRating * oldRatingCount + rating) / newRatingCount;
-    accommodation.ratingCount = newRatingCount;
-
-    await accommodation.save();
-
-    res.status(201).json({ review });
-  } catch (error) {
-    console.error("Error creating review:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
 });
 
 router.get("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
+    try {
+        const { id } = req.params;
 
-    const ticket = await Ticket.findById(id);
-    if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found" });
+        const ticket = await Ticket.findById(id);
+        if (!ticket) {
+            return res.status(404).json({ message: "Ticket not found" });
+        }
+
+        res.status(200).json(ticket);
+    } catch (error) {
+        console.error("Error retrieving ticket:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
-
-    res.status(200).json(ticket);
-  } catch (error) {
-    console.error("Error retrieving ticket:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 });
+
+router.get("/", async (req, res) => {
+    try {
+        const { id, status } = req.query;
+        let query = {}
+        if (id) {
+            query.userId = id
+        }
+        if (status) {
+            query.status = status
+        }
+        const tickets = await Ticket.find(query).populate('userId').populate('accommodation');
+        if (!tickets) {
+            return res.status(404).json({ message: "No ticket found" });
+        }
+
+        res.status(200).json(tickets);
+    } catch (error) {
+        console.error("Error retrieving ticket:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+
+router.put('/:id', async (req, res) => {
+    try {
+        const { id, status } = req.params;
+
+        if (!status) {
+            return res
+                .status(400)
+                .json({ message: 'Status is required' });
+        }
+        const checkTicket = await Ticket.findById(id).populate('accommodation');
+        const now = new Date();
+        const departureTime = new Date(checkTicket.fromDate);
+        const twelveHours = 24 * 60 * 60 * 1000; // 12h
+        if (now.getTime() - departureTime.getTime() > twelveHours) {
+            return res
+                .status(400)
+                .json({ message: 'Không thể huỷ vé lúc này.' });
+        }
+        const ticket = await Ticket.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true },
+        );
+        if (!ticket) {
+            return res.status(404).json({ message: 'Vẽ không tồn tại' });
+        }
+        const user = await User.findById(ticket.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'Tài khoản không tồn tại' });
+        }
+        user.balance += ticket.price;
+        await user.save();
+        let orderId = moment(date).format('DDHHmmss');
+        console.log('checkTicket.totalPrice', checkTicket.totalPrice)
+        const newPayment = new Payment({
+            txnRef: orderId,
+            amount: checkTicket.totalPrice,
+            userId: checkTicket.userId,
+            status: 1,
+            description: 'Hoàn tiền huỷ đặt phòng ' + checkTicket.accommodation.name,
+        });
+        await newPayment.save();
+
+        const admin = await User.findOne({ email: process.env.ADMIN_EMAIL });
+        const newPaymentAdmin = new Payment({
+            txnRef: 'O' + orderId,
+            amount: checkTicket.totalPrice,
+            userId: admin._id,
+            status: 1,
+            description: 'Thanh toán hoàn tiền đặt phòng ' + checkTicket.accommodation.name + ' cho ' + user.name,
+        });
+        await newPaymentAdmin.save();
+        admin.balance = admin.balance - checkTicket.totalPrice;
+        await admin.save()
+
+
+        res.status(200).json(ticket);
+    } catch (error) {
+        console.error(error);
+        res
+            .status(500)
+            .json({ message: 'Error updating ticket', error: error.message });
+    }
+});
+
+router.post('/review/:ticketId', async (req, res) => {
+    try {
+        const { ticketId } = req.params;
+        const { star, review } = req.body;
+
+        const ticket = await Ticket.findById(ticketId);
+        if (!ticket) {
+            return res
+                .status(404)
+                .json({ message: 'Không tìm thấy thông tin đặt phòng' });
+        }
+        ticket.star = star;
+        ticket.review = review;
+
+        ticket.status = 4;
+        await ticket.save();
+
+        res.status(200).json(ticket);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Xảy ra lỗi hệ thông', error: error.message });
+    }
+});
+router.patch('/update-show/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isShow } = req.body;
+
+        const ticket = await Ticket.findByIdAndUpdate(
+            id,
+            { isShow },
+            { new: true },
+        );
+        if (!ticket) {
+            return res.status(404).json({ message: 'Đánh giá không tồn tại' });
+        }
+        res.status(200).json(ticket);
+    } catch (error) {
+        console.error(error);
+        res
+            .status(500)
+            .json({ message: 'Lỗi hệ thống', error: error.message });
+    }
+});
+
+
 
 export default router;

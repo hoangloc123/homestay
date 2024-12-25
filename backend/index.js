@@ -22,9 +22,9 @@ await checkFirestoreConnection();
 const app = express();
 
 const corsOptions = {
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-  credentials: true,
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -41,5 +41,5 @@ app.use("/payment", paymentRoute);
 app.use(cookieParser());
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`);
 });
