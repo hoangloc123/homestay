@@ -1,6 +1,7 @@
 import ConfirmPage from '@pages/confirm/ConfirmPage'
 import PaymentSuccessPage from '@pages/payment/PaymentSuccess'
 import MyWalletPage from '@pages/profile/MyWallet'
+import MyTicketPage from '@pages/ticket/MyTicket'
 import PrivateRoute from '../components/private-router/PrivateRoute'
 import Layout from '../layout/Layout'
 import AdminPage from '../pages/admin'
@@ -56,6 +57,12 @@ const routesConfig = [
     {
         path: RouterPath.MY_WALLET,
         element: MyWalletPage,
+        layout: Layout,
+        layoutProps: { showText: false, showSearch: false },
+    },
+    {
+        path: RouterPath.MY_TICKET,
+        element: MyTicketPage,
         layout: Layout,
         layoutProps: { showText: false, showSearch: false },
     },

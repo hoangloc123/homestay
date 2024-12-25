@@ -34,13 +34,13 @@ export default function Sidebar({active}) {
 				as={Link}
 				key="/my-ticket"
 				to="/my-ticket"
-				title="Phòng của tôi"
+				title="Lịch sử đặt phòng"
 			/>
 			<Tab
 				as={Link}
 				key="/my-wallet"
 				to="/my-wallet"
-				title="Ví của tôi"
+				title="Ví cá nhân"
 			/>
 		</Tabs>
 	)

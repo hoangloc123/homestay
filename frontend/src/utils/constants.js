@@ -112,7 +112,7 @@ export const sidebarItems = [
         icon: 'fa-tasks',
         label: 'Đặt phòng',
         title: 'Danh sách lượt đặt phòng',
-        roles: ['admin', 'host'],
+        roles: ['admin', 'host', 'employee'],
     },
     {
         id: 'request',
@@ -182,4 +182,27 @@ export const WEEKDAYS = [
     'Thứ năm',
     'Thứ sáu',
     'Thứ bảy',
+];
+
+export const TICKET_STATUS = [
+    {
+        value: 1,
+        label: 'Đã thanh toán',
+        color: 'primary',
+    },
+    {
+        value: 2,
+        label: 'Đã huỷ',
+        color: 'danger',
+    },
+    {
+        value: 3,
+        label: 'Đã hoàn thành',
+        color: 'success',
+    },
+    {
+        value: 4,
+        label: 'Đã đánh giá',
+        color: 'secondary',
+    },
 ];

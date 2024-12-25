@@ -1,12 +1,12 @@
-import {useEffect, useState} from 'react'
-import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import {useEffect, useState} from 'react'
+import {MapContainer, Marker, Popup, TileLayer} from 'react-leaflet'
 
 delete L.Icon.Default.prototype._getIconUrl
 
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 L.Icon.Default.mergeOptions({
 	iconRetinaUrl: markerIcon2x,
@@ -35,7 +35,7 @@ export default function MapView({isMine = false, lat, lng, zoomIn: zoom = 15, he
 	}
 
 	useEffect(() => {
-		getCurrentLocation()
+		// getCurrentLocation()
 	}, [])
 
 	return (

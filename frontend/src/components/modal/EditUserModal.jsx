@@ -40,7 +40,7 @@ export default function EditUserModal({auth, onReload}) {
 		const newValues = {
 			...values,
 			profilePictureUrl: newUrl,
-			dob: getDate(values.dob, 13) ?? null,
+			dob: getDate(values.dob, 7) ?? null,
 			bossId: auth?.bossId ?? '',
 		}
 		factories

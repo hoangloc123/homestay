@@ -1,5 +1,5 @@
 import {parseDate} from '@internationalized/date'
-import {Avatar, Button, ButtonGroup, Card, CardBody, Divider} from '@nextui-org/react'
+import {Avatar, Button, ButtonGroup, Divider} from '@nextui-org/react'
 import React, {useEffect, useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import DatePickerField from '../../components/common/DatePickerField'
@@ -40,7 +40,7 @@ export default function ProfileManagerPage() {
 		const newValues = {
 			...values,
 			profilePictureUrl: newUrl,
-			dob: getDate(values.dob, 13) ?? null,
+			dob: getDate(values.dob, 9) ?? null,
 		}
 		factories
 			.updateUserInfo(auth._id, newValues)
@@ -82,38 +82,45 @@ export default function ProfileManagerPage() {
 
 	return (
 		<div className="mx-auto my-20 flex justify-center">
-			<div className="flex w-full max-w-[60%] gap-6">
+			<div className="flex w-full max-w-[60%] gap-4 rounded-lg border bg-white p-4 shadow-lg">
 				<div className="w-fit">
 					<Sidebar active="1" />
 				</div>
 				<div className="flex flex-grow">
-					<Card className="w-full">
+					<div className="w-full">
 						<FormProvider {...methods}>
 							<form onSubmit={methods.handleSubmit(handleSave)}>
-								<CardBody className="w-full gap-4">
+								<div className="flex w-full flex-col gap-4">
 									<div className="flex flex-row justify-between p-2">
-										<h5 className="text-2xl font-bold">Thông tin cá nhân</h5>
-										<div className="relative h-16 w-16 cursor-pointer">
-											<Avatar
-												showFallback
-												src={watch('profilePictureUrl')}
-												className="h-14 w-14 rounded-full"
-											/>
-											<div className="absolute bottom-1 right-1">
-												<i
-													class="fa fa-camera"
-													aria-hidden="true"
-												></i>
+										<div className="relative flex h-[90px] w-full justify-end">
+											<div className="absolute flex h-[120px] w-32 justify-end">
+												<Button
+													color="danger"
+													className="absolute right-3 top-1"
+												>
+													Thay đổi
+												</Button>
+												<input
+													type="file"
+													className="absolute inset-0 cursor-pointer opacity-0"
+													onChange={handleImageChange}
+												/>
 											</div>
-											<input
-												type="file"
-												className="absolute inset-0 cursor-pointer opacity-0"
-												onChange={handleImageChange}
-											/>
+										</div>
+										<Avatar
+											showFallback
+											src={watch('profilePictureUrl')}
+											className="h-24 w-28 rounded-full"
+										/>
+										<div className="absolute bottom-1 right-1">
+											<i
+												class="fa fa-camera"
+												aria-hidden="true"
+											></i>
 										</div>
 									</div>
 
-									<div className="flex gap-4">
+									<div className="flex flex-col gap-4">
 										<InputField
 											label={'Họ và tên'}
 											placeholder="Nhập họ và tên"
@@ -128,21 +135,9 @@ export default function ProfileManagerPage() {
 											label={'Số điện thoại'}
 											name={'phone'}
 											register={register}
+											maxLength={10}
 											errors={errors}
 										/>
-									</div>
-									<div className="flex gap-4">
-										<div className="w-full min-w-[250px]">
-											<InputField
-												placeholder="Nhập email"
-												label={'Email'}
-												name={'email'}
-												register={register}
-												validate={{required: 'Bắt buộc chọn'}}
-												disabled
-												errors={errors}
-											/>
-										</div>
 										<DatePickerField
 											placeholder="Nhập ngày sinh"
 											label={'Ngày sinh'}
@@ -186,10 +181,10 @@ export default function ProfileManagerPage() {
 									>
 										{'Lưu thông tin'}
 									</Button>
-								</CardBody>
+								</div>
 							</form>
 						</FormProvider>
-					</Card>
+					</div>
 				</div>
 			</div>
 		</div>

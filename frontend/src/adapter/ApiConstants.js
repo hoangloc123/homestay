@@ -5,7 +5,9 @@ const ApiConstants = {
     USERS: 'users',
     AUTH: 'auth',
     PAYMENT: 'payment',
+    TICKET: 'tickets',
     REQUESTS: 'requests',
+    REVIEW: 'tickets/review',
 
 }
 

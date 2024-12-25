@@ -67,26 +67,29 @@ export default function AdminRoomList() {
 	}
 	return (
 		<div className="h-full rounded bg-white px-4 py-3 shadow-md">
-			{auth.roles[0] === ROLES.HOST && (
-				<div className="mb-3 flex items-center justify-between">
-					<div className="mt-2 flex w-full items-center justify-end">
-						<Button
-							onClick={AddRoom}
-							size="sm"
-							color="primary"
-						>
-							Tạo phòng mới
-						</Button>
+			<div className="flex flex-row items-center justify-between gap-4">
+				<Input
+					type="text"
+					onChange={e => setKeyword(e.target.value)}
+					placeholder="Tìm kiếm biển số"
+					className="w-[400px] rounded-lg bg-gray-100 outline-none"
+					startContent={<i className="fas fa-search mr-2 text-gray-500"></i>}
+				/>
+				{auth.roles[0] === ROLES.HOST && (
+					<div className="mb-3 flex items-center justify-between">
+						<div className="mt-2 flex w-full items-center justify-end">
+							<Button
+								onClick={AddRoom}
+								size="sm"
+								color="primary"
+							>
+								Tạo phòng mới
+							</Button>
+						</div>
 					</div>
-				</div>
-			)}
-			<Input
-				type="text"
-				onChange={e => setKeyword(e.target.value)}
-				placeholder="Tìm kiếm biển số"
-				className="w-full rounded-lg bg-gray-100 outline-none"
-				startContent={<i className="fas fa-search mr-2 text-gray-500"></i>}
-			/>
+				)}
+			</div>
+
 			<div className="mt-4">
 				<CustomTable
 					columns={columns}

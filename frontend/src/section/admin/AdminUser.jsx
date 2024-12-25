@@ -171,70 +171,57 @@ export default function AdminUser({isAdmin}) {
 	}
 	return (
 		<div className="rounded bg-white px-4 py-3">
-			<div className="mb-3 flex items-center justify-between">
-				<div className="flex">
-					{auth?.roles[0] === ROLES.ADMIN ? (
-						<>
-							<Tabs
-								variant="light"
-								color="primary"
-								aria-label="Tabs colors"
-								radius="lg"
-								selectedKey={activeTab}
-								onSelectionChange={setActiveTab}
-							>
-								<Tab
-									key=""
-									title="Tất cả"
-								/>
-								<Tab
-									key={ROLES.USER}
-									title="Khách hàng"
-								/>
-								<Tab
-									key={ROLES.HOST}
-									title="Chủ nhà xe"
-								/>
-								<Tab
-									key={ROLES.EMPLOYEE}
-									title="Nhân viên"
-								/>
-							</Tabs>
-						</>
-					) : (
-						<Tabs
-							variant="light"
-							color="primary"
-							aria-label="Tabs colors"
-							radius="lg"
-							selectedKey={activeTab}
-							onSelectionChange={setActiveTab}
+			<div className="flex flex-row items-center justify-between gap-4">
+				<Input
+					type="text"
+					placeholder="Tìm kiếm tên, số điện thoại"
+					className="w-[400px] rounded-lg bg-gray-100 outline-none"
+					onChange={e => setKeyword(e.target.value)}
+					startContent={<i className="fas fa-search mr-2 text-gray-500"></i>}
+				/>
+				<div className="mb-3 flex items-center justify-between rounded-xl border">
+					<div className="flex">
+						{auth?.roles[0] === ROLES.ADMIN && (
+							<>
+								<Tabs
+									variant="light"
+									color="primary"
+									aria-label="Tabs colors"
+									radius="lg"
+									selectedKey={activeTab}
+									onSelectionChange={setActiveTab}
+								>
+									<Tab
+										key=""
+										title="Tất cả"
+									/>
+									<Tab
+										key={ROLES.USER}
+										title="Khách hàng"
+									/>
+									<Tab
+										key={ROLES.HOST}
+										title="Chủ nhà xe"
+									/>
+									<Tab
+										key={ROLES.EMPLOYEE}
+										title="Nhân viên"
+									/>
+								</Tabs>
+							</>
+						)}
+					</div>
+					{auth.roles?.[0] === ROLES.HOST && (
+						<Button
+							onClick={addEmployee}
+							className="rounded-lg bg-blue-500 px-4 py-2 text-white"
+							size="sm"
 						>
-							<Tab
-								key={ROLES.EMPLOYEE}
-								title="Nhân viên"
-							/>
-						</Tabs>
+							+ Thêm nhân viên
+						</Button>
 					)}
 				</div>
-				{auth.roles?.[0] === ROLES.HOST && (
-					<Button
-						onClick={addEmployee}
-						className="rounded-lg bg-blue-500 px-4 py-2 text-white"
-						size="sm"
-					>
-						+ Thêm nhân viên
-					</Button>
-				)}
 			</div>
-
-			<Input
-				type="text"
-				placeholder="Tìm kiếm tên, số điện thoại"
-				className="w-full rounded-lg bg-gray-100 outline-none"
-				onChange={e => setKeyword(e.target.value)}
-				startContent={<i className="fas fa-search mr-2 text-gray-500"></i>}
-			/>
 			<div className="mt-4">
 				<CustomTable
 					columns={columns}

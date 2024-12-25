@@ -5,6 +5,8 @@ export function CustomTable({columns, data, page = 1, total = 1, limit = 10, set
 	const totalPage = Math.ceil(total / limit)
 	return (
 		<Table
+			isStriped
+			aria-label="Example static collection table"
 			bottomContent={
 				<div className="flex w-full justify-center">
 					{isShowPagination && (
@@ -20,7 +22,6 @@ export function CustomTable({columns, data, page = 1, total = 1, limit = 10, set
 					)}
 				</div>
 			}
-			aria-label="Custom Table Component"
 		>
 			<TableHeader>
 				{columns.map(column => (

@@ -1,16 +1,17 @@
 import {Button} from '@chakra-ui/react'
 import {CustomTable} from '@components/custom-table/CustomTable'
-import {Chip, Input, Tab, Tabs} from '@nextui-org/react'
-import TicketModal from '@pages/ticket/TicketModal'
-import {ROLES, TICKET_STATUS} from '@utils/constants'
+import ConfirmModal from '@components/modal/ConfirmModal'
+import Sidebar from '@components/sidebar/SideBar'
+import {Chip} from '@nextui-org/react'
+import {TICKET_STATUS} from '@utils/constants'
 import {convertStringToNumber, getDate} from '@utils/Utils'
 import React, {useEffect, useState} from 'react'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
+import TicketModal from './TicketModal'
 
-export default function AdminBookingListSection() {
-	const [activeTab, setActiveTab] = useState()
+export default function MyTicketPage() {
 	const [loading, setLoading] = useState(true)
 	const [data, setData] = useState([])
 	const {auth} = useAuth()
@@ -19,8 +20,7 @@ export default function AdminBookingListSection() {
 		setLoading(true)
 		factories
 			.getListTicket({
-				status: activeTab,
-				id: auth.roles[0] === ROLES.HOST ? auth._id : null,
+				id: auth._id,
 			})
 			.then(data => {
 				setData(data)
@@ -31,7 +31,7 @@ export default function AdminBookingListSection() {
 	useEffect(() => {
 		if (!auth?._id) return
 		loadList()
-	}, [auth, activeTab])
+	}, [auth])
 
 	const columns = [
 		{
@@ -99,7 +99,6 @@ export default function AdminBookingListSection() {
 			),
 		},
 	]
-
 	function openDetail(row) {
 		onOpen({
 			view: (
@@ -108,54 +107,50 @@ export default function AdminBookingListSection() {
 					onReload={loadList}
 				/>
 			),
-			title: 'Chi tiết',
+			title: row.accommodation.name,
 			size: 'xl',
 		})
 	}
-	return (
-		<div className="h-full rounded bg-white px-4 py-3 shadow-md">
-			<div className="mb-3 flex items-center justify-between gap-4">
-				<Input
-					type="text"
-					placeholder="Tìm kiếm tên, số điện thoại"
-					className="w-[400px] rounded-lg bg-gray-100 outline-none"
-					startContent={<i className="fas fa-search mr-2 text-gray-500"></i>}
+	function openConfirm(row) {
+		onOpen({
+			view: (
+				<ConfirmModal
+					content="Xác nhận huỷ vé đã đặt?"
+					onSubmit={() => onCancelTicket(row._id)}
 				/>
-				<div className="flex">
-					<Tabs
-						variant="light"
-						color="primary"
-						aria-label="Tabs colors"
-						radius="lg"
-						selectedKey={activeTab}
-						onSelectionChange={setActiveTab}
-					>
-						<Tab
-							key="1"
-							title="Đã đặt"
-						/>
-						<Tab
-							key="2"
-							title="Đã huỷ"
-						/>
-						<Tab
-							key="3"
-							title="Đã hoàn thành"
-						/>
-						<Tab
-							key="43"
-							title="Đã đánh giá"
-						/>
-					</Tabs>
-				</div>
-			</div>
+			),
+			title: 'Xác nhận huỷ đặt phòng',
+			size: 'xl',
+		})
+	}
 
-			<div className="mt-4">
-				<CustomTable
-					columns={columns}
-					data={data}
-					isLoading={loading}
-				/>
+	function onCancelTicket(id) {
+		factories
+			.cancelTicket(id)
+			.then(() => {
+				ToastInfo('Huỷ đặt phòng thành công')
+			})
+			.catch(e => {
+				ToastNotiError(e.response.data.message)
+			})
+			.finally(() => {
+				loadList()
+			})
+	}
+
+	return (
+		<div className="mx-auto my-20 flex justify-center">
+			<div className="flex w-full max-w-[80%] gap-4 rounded-lg border bg-white p-4 shadow-lg">
+				<Sidebar active="1" />
+				<div className="flex w-full">
+					<div className="w-full gap-4">
+						<CustomTable
+							columns={columns}
+							data={data ?? []}
+							isLoading={loading}
+						/>
+					</div>
+				</div>
 			</div>
 		</div>
 	)

@@ -6,6 +6,7 @@ import {useModalCommon} from '../../context/ModalContext'
 import AdminAccommodationList from '../../section/admin/AdminAccommodationList'
 import AdminBookingListSection from '../../section/admin/AdminBookingListSection'
 import AdminRequestHost from '../../section/admin/AdminRequestHost'
+import AdminReviewList from '../../section/admin/AdminReviewList'
 import AdminRoomList from '../../section/admin/AdminRoomList'
 import AdminSideBar from '../../section/admin/AdminSideBar'
 import AdminUser from '../../section/admin/AdminUser'
@@ -57,6 +58,8 @@ export default function AdminPage() {
 				return <AdminRequestHost />
 			case 'booking':
 				return <AdminBookingListSection />
+			case 'review':
+				return <AdminReviewList />
 			default:
 				return 'Not Found'
 		}

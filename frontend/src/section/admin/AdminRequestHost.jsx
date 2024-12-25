@@ -38,7 +38,7 @@ export default function AdminRequestHost() {
 		{
 			id: 'time',
 			label: 'Thời Gian',
-			renderCell: row => <span>{getDate(row.targetId?.createdAt, 3)}</span>,
+			renderCell: row => <span>{getDate(row.targetId?.createdAt, 2)}</span>,
 		},
 		{
 			id: 'Status',

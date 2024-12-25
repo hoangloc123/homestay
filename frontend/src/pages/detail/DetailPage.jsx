@@ -137,7 +137,7 @@ export default function DetailPage() {
 					className={cn('h-20 min-w-32 flex-grow rounded-none border-none', activeSection === infoRef)}
 					onClick={() => handlePressScroll(infoRef)}
 				>
-					Phòng và giá vé
+					Phòng và giá phòng
 				</Button>
 				<Button
 					variant="ghost"

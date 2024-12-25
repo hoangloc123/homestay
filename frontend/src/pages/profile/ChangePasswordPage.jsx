@@ -1,4 +1,4 @@
-import {Button, Card, CardBody, Input} from '@nextui-org/react'
+import {Button, Input} from '@nextui-org/react'
 import React, {useState} from 'react'
 import Sidebar from '../../components/sidebar/SideBar'
 import {useAuth} from '../../context/AuthContext'
@@ -55,111 +55,101 @@ export default function ChangePasswordPage() {
 	}
 	return (
 		<div className="mx-auto my-20 flex justify-center">
-			<div className="flex w-full max-w-[60%] gap-6">
-				<div className="w-fit">
-					<Sidebar active="1" />
-				</div>
+			<div className="flex w-full max-w-[60%] gap-4 rounded-lg border bg-white p-4 shadow-lg">
+				<Sidebar active="1" />
 				<div className="flex w-full flex-grow">
-					<Card className="w-full">
-						<CardBody className="w-full gap-4 py-10">
-							<div className="flex flex-row items-center justify-center">
-								<h5 className="mt-5 text-2xl font-bold">Đổi mật khẩu</h5>
-							</div>
-							<div className="flex w-full items-center justify-center">
-								<form onSubmit={handleSave}>
-									<Input
-										id="password"
-										label="Mật khẩu"
-										placeholder="Nhập mật khẩu"
-										className="mt-5"
-										endContent={
-											<button
-												className="focus:outline-none"
-												type="button"
-												aria-label="toggle password visibility"
-												onClick={toggleVisibility}
-											>
-												{isVisible ? (
-													<i
-														class="fa fa-eye-slash"
-														aria-hidden="true"
-													></i>
-												) : (
-													<i
-														class="fa fa-eye"
-														aria-hidden="true"
-													></i>
-												)}
-											</button>
-										}
-										type={isVisible ? 'text' : 'password'}
-									/>
-									<Input
-										id="newPassword"
-										label="Mật khẩu"
-										placeholder="Nhập mật khẩu"
-										className="mt-5"
-										endContent={
-											<button
-												className="focus:outline-none"
-												type="button"
-												aria-label="toggle password visibility"
-												onClick={toggleVisibility1}
-											>
-												{isVisible1 ? (
-													<i
-														class="fa fa-eye-slash"
-														aria-hidden="true"
-													></i>
-												) : (
-													<i
-														class="fa fa-eye"
-														aria-hidden="true"
-													></i>
-												)}
-											</button>
-										}
-										type={isVisible1 ? 'text' : 'password'}
-									/>
-									<Input
-										id="confirmPassword2"
-										label="Nhập lại mật khẩu"
-										placeholder="Nhập lại mật khẩu"
-										className="mt-5"
-										endContent={
-											<button
-												className="focus:outline-none"
-												type="button"
-												aria-label="toggle password visibility"
-												onClick={toggleVisibility2}
-											>
-												{isVisible2 ? (
-													<i
-														class="fa fa-eye-slash"
-														aria-hidden="true"
-													></i>
-												) : (
-													<i
-														class="fa fa-eye"
-														aria-hidden="true"
-													></i>
-												)}
-											</button>
-										}
-										type={isVisible2 ? 'text' : 'password'}
-									/>
-									<Button
-										isLoading={loading}
-										color="primary"
-										className="mt-5 w-full"
-										onClick={handleSave}
+					<div className="flex w-full items-center justify-center">
+						<form onSubmit={handleSave}>
+							<Input
+								id="password"
+								label="Mật khẩu"
+								placeholder="Nhập mật khẩu"
+								endContent={
+									<button
+										className="focus:outline-none"
+										type="button"
+										aria-label="toggle password visibility"
+										onClick={toggleVisibility}
 									>
-										Đổi mật khẩu
-									</Button>
-								</form>
-							</div>
-						</CardBody>
-					</Card>
+										{isVisible ? (
+											<i
+												class="fa fa-eye-slash"
+												aria-hidden="true"
+											></i>
+										) : (
+											<i
+												class="fa fa-eye"
+												aria-hidden="true"
+											></i>
+										)}
+									</button>
+								}
+								type={isVisible ? 'text' : 'password'}
+							/>
+							<Input
+								id="newPassword"
+								label="Mật khẩu"
+								placeholder="Nhập mật khẩu"
+								className="mt-5"
+								endContent={
+									<button
+										className="focus:outline-none"
+										type="button"
+										aria-label="toggle password visibility"
+										onClick={toggleVisibility1}
+									>
+										{isVisible1 ? (
+											<i
+												class="fa fa-eye-slash"
+												aria-hidden="true"
+											></i>
+										) : (
+											<i
+												class="fa fa-eye"
+												aria-hidden="true"
+											></i>
+										)}
+									</button>
+								}
+								type={isVisible1 ? 'text' : 'password'}
+							/>
+							<Input
+								id="confirmPassword2"
+								label="Nhập lại mật khẩu"
+								placeholder="Nhập lại mật khẩu"
+								className="mt-5"
+								endContent={
+									<button
+										className="focus:outline-none"
+										type="button"
+										aria-label="toggle password visibility"
+										onClick={toggleVisibility2}
+									>
+										{isVisible2 ? (
+											<i
+												class="fa fa-eye-slash"
+												aria-hidden="true"
+											></i>
+										) : (
+											<i
+												class="fa fa-eye"
+												aria-hidden="true"
+											></i>
+										)}
+									</button>
+								}
+								type={isVisible2 ? 'text' : 'password'}
+							/>
+							<Button
+								isLoading={loading}
+								color="primary"
+								className="mt-5 w-full"
+								onClick={handleSave}
+							>
+								Đổi mật khẩu
+							</Button>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>

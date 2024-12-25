@@ -13,13 +13,13 @@ import { getStorage } from 'firebase/storage';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
-    apiKey: "AIzaSyDvPZ-ME9NtX5STf9re9HV9cybfSYrpFp4",
-    authDomain: "hint-20c72.firebaseapp.com",
-    projectId: "hint-20c72",
-    storageBucket: "hint-20c72.appspot.com",
-    messagingSenderId: "492885275134",
-    appId: "1:492885275134:web:373b00370c9754af1410af",
-    measurementId: "G-ZQG00BZJSW"
+    apiKey: "AIzaSyC2CrhhDkmucwgpw4LnWXHf9jgKyRcpCkc",
+    authDomain: "co-velo.firebaseapp.com",
+    projectId: "co-velo",
+    storageBucket: "co-velo.appspot.com",
+    messagingSenderId: "37346108711",
+    appId: "1:37346108711:web:f491a03d5dfd1073ae7502",
+    measurementId: "G-2JDTZ2S9CP"
 };
 
 // Initialize Firebase

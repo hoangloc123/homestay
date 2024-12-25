@@ -9,11 +9,43 @@ export const factories = {
             params: params,
         });
     },
+    updatePinReview: (id, value) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKET + '/update-show/' + id,
+            method: 'PATCH',
+            data: {
+                isShow: value,
+            },
+        });
+    },
+    getReviews: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKET + '/reviews',
+            method: 'GET',
+            params,
+        });
+    },
+    createReview: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.REVIEW + '/' + data.id,
+            method: 'POST',
+            data: data,
+        });
+    },
     updatePayment: (data) => {
         return ApiOperation.request({
             url: ApiConstants.PAYMENT,
             method: 'PUT',
             data,
+        });
+    },
+    cancelTicket: (id) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKET + '/' + id,
+            method: 'PUT',
+            data: {
+                status: 2
+            }
         });
     },
     createPayment: (data) => {
@@ -34,6 +66,13 @@ export const factories = {
         return ApiOperation.request({
             url: ApiConstants.PAYMENT + '/user/' + id,
             method: 'GET',
+        });
+    },
+    getListTicket: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKET,
+            method: 'GET',
+            params: params
         });
     },
     getAdminListRoom: (params) => {

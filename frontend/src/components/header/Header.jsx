@@ -29,8 +29,8 @@ import RegisterModal from './Register'
 
 const initToday = new Date()
 const defaultRange = {
-	start: parseDate(getDate(initToday, 3)),
-	end: parseDate(getDate(initToday.setDate(initToday.getDate() + 7), 3)),
+	start: parseDate(getDate(initToday, 1)),
+	end: parseDate(getDate(initToday.setDate(initToday.getDate() + 7), 1)),
 }
 
 function Header({showText, showSearch = false}) {

@@ -6,8 +6,8 @@ import {getLocalTimeZone, today} from '@internationalized/date'
 import {Button, Image} from '@nextui-org/react'
 import {RouterPath} from '@router/RouterPath'
 import {PROVINCES, TYPE_HOST} from '@utils/constants'
-import {convertStringToNumber, differenceInTime, ToastInfo, ToastNotiError} from '@utils/Utils'
-import React, {useEffect, useState} from 'react'
+import {convertStringToNumber, differenceInTime, getDate, ToastInfo, ToastNotiError} from '@utils/Utils'
+import React, {useEffect, useMemo, useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
@@ -20,7 +20,6 @@ export default function ConfirmPage() {
 	const router = useRouter()
 	const params = router.getAll()
 	const data = JSON.parse(decodeURIComponent(params.item))
-	console.log('🚀 ~ ConfirmPage ~ data:', data)
 	const {onOpen} = useModalCommon()
 
 	function handleSave(values) {
@@ -33,9 +32,10 @@ export default function ConfirmPage() {
 			return
 		}
 		setLoading(true)
-		const newFromDate = new Date(values.fromDate)
-		const newToDate = new Date(values.toDate)
-		const days = Math.ceil(Math.abs(newToDate - newFromDate) / (1000 * 60 * 60 * 24))
+		const newFromDate = getDate(values.fromDate, 8)
+		const newToDate = getDate(values.toDate, 8)
+		const days = differenceInTime(values.toDate, values.fromDate)
+
 		const newTicket = {
 			userId: auth._id,
 			accommodationId: data._id,
@@ -51,7 +51,7 @@ export default function ConfirmPage() {
 			.createTicket(newTicket)
 			.then(() => {
 				setLoading(false)
-				ToastInfo('Đặt vé thành công')
+				ToastInfo('Đặt phòng thành công')
 				const encodedItem = encodeURIComponent(JSON.stringify(data))
 				router.push({
 					pathname: RouterPath.CREATED_SUCCESS,
@@ -84,6 +84,14 @@ export default function ConfirmPage() {
 		})
 	}
 
+	useEffect(() => {
+		setValue('fromDate', today(getLocalTimeZone()))
+		setValue('toDate', today(getLocalTimeZone()))
+	}, [])
+
+	const differenceTime = useMemo(() => {
+		return differenceInTime(methods.watch('fromDate'), methods.watch('toDate'))
+	}, [methods.watch('fromDate '), methods.watch('toDate')])
 	return (
 		<div className="mx-auto mb-20 mt-16 flex max-w-full justify-center gap-4 px-5 lg:max-w-[70%] lg:px-0 2xl:max-w-[60%]">
 			<FormProvider {...methods}>
@@ -115,6 +123,7 @@ export default function ConfirmPage() {
 												isRequired
 												granularity="day"
 												minValue={today(getLocalTimeZone())}
+												// defaultValue={today(getLocalTimeZone())}
 												validate={{required: 'Bắt buộc chọn'}}
 											/>
 										</span>
@@ -122,6 +131,7 @@ export default function ConfirmPage() {
 											<DatePickerField
 												label="Ngày trả phòng"
 												name="toDate"
+												// defaultValue={today(getLocalTimeZone())}
 												isRequired
 												granularity="day"
 												minValue={methods.watch('fromDate') ?? today(getLocalTimeZone())}
@@ -173,9 +183,7 @@ export default function ConfirmPage() {
 														<div className="flex flex-col items-end justify-end gap-2">
 															<p className="text-sm text-gray-500">{convertStringToNumber(roomT.pricePerNight * room.number)}</p>
 															<p className="text-sm text-gray-500">x{room.number}</p>
-															<p className="text-sm text-gray-500">
-																{differenceInTime(methods.watch('fromDate'), methods.watch('toDate'))} ngày
-															</p>
+															<p className="text-sm text-gray-500">{differenceTime} ngày</p>
 														</div>
 													</div>
 												</div>
@@ -188,7 +196,9 @@ export default function ConfirmPage() {
 								<div className="mb-4 flex items-center justify-between">
 									<span className="text-lg font-semibold">Tổng chi phí:</span>
 									<div className="text-2xl font-bold text-gray-900">
-										{convertStringToNumber(data.roomsSelected.reduce((total, number) => total + number.price * number.number, 0))}
+										{convertStringToNumber(
+											data.roomsSelected.reduce((room, number) => room + number.price * number.number * differenceTime, 0),
+										)}
 									</div>
 								</div>
 							</div>
