@@ -22,7 +22,7 @@ export const AMENITIES_ROOM = [
 		title: 'Đồ ăn & thức uống',
 		icon: () => (
 			<i
-				class="fa fa-leaf"
+				className="fa fa-leaf"
 				aria-hidden="true"
 			></i>
 		),

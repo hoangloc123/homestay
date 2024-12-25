@@ -1,9 +1,10 @@
 import {Button} from '@chakra-ui/react'
 import {CustomTable} from '@components/custom-table/CustomTable'
+import ConfirmModal from '@components/modal/ConfirmModal'
 import {Chip, Input, Tab, Tabs} from '@nextui-org/react'
 import TicketModal from '@pages/ticket/TicketModal'
 import {ROLES, TICKET_STATUS} from '@utils/constants'
-import {convertStringToNumber, getDate} from '@utils/Utils'
+import {convertStringToNumber, getDate, ToastInfo, ToastNotiError} from '@utils/Utils'
 import React, {useEffect, useState} from 'react'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
@@ -32,6 +33,32 @@ export default function AdminBookingListSection() {
 		if (!auth?._id) return
 		loadList()
 	}, [auth, activeTab])
+
+	function openConfirm(row) {
+		onOpen({
+			view: (
+				<ConfirmModal
+					content="Xác nhận huỷ phòng đã đặt?"
+					onSubmit={() => onCancelTicket(row._id)}
+				/>
+			),
+			title: 'Xác nhận huỷ đặt phòng',
+			size: 'xl',
+		})
+	}
+	function onCancelTicket(id) {
+		factories
+			.cancelTicket(id)
+			.then(() => {
+				ToastInfo('Huỷ đặt phòng thành công')
+			})
+			.catch(e => {
+				ToastNotiError(e.response.data.message)
+			})
+			.finally(() => {
+				loadList()
+			})
+	}
 
 	const columns = [
 		{
@@ -82,7 +109,7 @@ export default function AdminBookingListSection() {
 		},
 		{
 			id: 'Status2',
-			label: 'Trạng Thái',
+			label: 'Tác vụ',
 			renderCell: row => (
 				<div className="flex gap-2">
 					<Button

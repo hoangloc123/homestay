@@ -58,7 +58,7 @@ router.post('/create_payment_url', async function (req, res) {
     //  tạo ra một payment để ghi lại thông tin dữ liệu trong hệ thông mongodb
     const payment = new Payment({
         userId,
-        txnRef: orderId,
+        txnRef: "I" + orderId,
         amount,
         description,
         status: 0,
@@ -137,17 +137,17 @@ router.put('/', async function (req, res) {
         });
     }
 
-    const admin = await User.findOne({ email: process.env.ADMIN_EMAIL });
-    const newPaymentAdmin = new Payment({
-        txnRef: 'I' + txnRef,
-        amount: payment.amount,
-        userId: admin._id,
-        status: 1,
-        description: user.fullName + ' thanh toán nạp tiền vào ví',
-    });
-    await newPaymentAdmin.save();
-    admin.balance += payment.amount;
-    await admin.save()
+    // const admin = await User.findOne({ email: process.env.ADMIN_EMAIL });
+    // const newPaymentAdmin = new Payment({
+    //     txnRef: 'I' + txnRef,
+    //     amount: payment.amount,
+    //     userId: admin._id,
+    //     status: 1,
+    //     description: user.fullName + ' thanh toán nạp tiền vào ví',
+    // });
+    // await newPaymentAdmin.save();
+    // admin.balance += payment.amount;
+    // await admin.save()
 
     const session = await mongoose.startSession();
     try {

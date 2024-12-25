@@ -86,6 +86,14 @@ export const sidebarItems = [
         roles: ['admin', 'host'],
     },
     {
+        id: 'payments',
+        icon: 'fas fa-dollar-sign ',
+        label: 'Giao dịch',
+        title: 'Giao dịch',
+        active: true,
+        roles: [ROLES.ADMIN, ROLES.HOST],
+    },
+    {
         id: 'users',
         icon: 'fa-users',
         label: 'Tài khoản',

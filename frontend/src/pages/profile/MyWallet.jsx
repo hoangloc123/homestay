@@ -28,9 +28,14 @@ const columns = [
 		id: 'amount',
 		label: 'Số tiền',
 		renderCell: row => (
-			<div className="w-20">
-				<span className="">{convertStringToNumber(row.amount)}</span>
-			</div>
+			<Chip
+				color={row.txnRef.includes('I') ? 'success' : 'danger'}
+				className="w-44 text-white"
+			>
+				<span className="">{row.txnRef.includes('I') && '+' + convertStringToNumber(row.amount)}</span>
+				<span className="">{row.txnRef.includes('O') && '-' + convertStringToNumber(row.amount)}</span>
+				<span className="">{!row.txnRef.includes('O') && !row.txnRef.includes('I') && convertStringToNumber(row.amount)}</span>
+			</Chip>
 		),
 	},
 	{

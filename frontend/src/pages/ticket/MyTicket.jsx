@@ -53,7 +53,7 @@ export default function MyTicketPage() {
 			id: 'amount',
 			label: 'Số tiền',
 			renderCell: row => (
-				<div className="w-20">
+				<div className="">
 					<span className="">{convertStringToNumber(row?.totalPrice)}</span>
 				</div>
 			),
@@ -115,7 +115,7 @@ export default function MyTicketPage() {
 		onOpen({
 			view: (
 				<ConfirmModal
-					content="Xác nhận huỷ vé đã đặt?"
+					content="Xác nhận huỷ phòng đã đặt?"
 					onSubmit={() => onCancelTicket(row._id)}
 				/>
 			),

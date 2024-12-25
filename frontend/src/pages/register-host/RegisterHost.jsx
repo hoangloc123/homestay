@@ -52,7 +52,7 @@ export default function RegisterHost() {
 		}
 		const metaData = {
 			email: values.email,
-			password: 'Host@123456',
+			password: '123465789',
 			fullName: values.fullName,
 			phone: values.phone,
 			branchName: values.name,

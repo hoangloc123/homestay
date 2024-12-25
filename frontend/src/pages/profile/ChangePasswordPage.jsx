@@ -73,12 +73,12 @@ export default function ChangePasswordPage() {
 									>
 										{isVisible ? (
 											<i
-												class="fa fa-eye-slash"
+												className="fa fa-eye-slash"
 												aria-hidden="true"
 											></i>
 										) : (
 											<i
-												class="fa fa-eye"
+												className="fa fa-eye"
 												aria-hidden="true"
 											></i>
 										)}
@@ -100,12 +100,12 @@ export default function ChangePasswordPage() {
 									>
 										{isVisible1 ? (
 											<i
-												class="fa fa-eye-slash"
+												className="fa fa-eye-slash"
 												aria-hidden="true"
 											></i>
 										) : (
 											<i
-												class="fa fa-eye"
+												className="fa fa-eye"
 												aria-hidden="true"
 											></i>
 										)}
@@ -127,12 +127,12 @@ export default function ChangePasswordPage() {
 									>
 										{isVisible2 ? (
 											<i
-												class="fa fa-eye-slash"
+												className="fa fa-eye-slash"
 												aria-hidden="true"
 											></i>
 										) : (
 											<i
-												class="fa fa-eye"
+												className="fa fa-eye"
 												aria-hidden="true"
 											></i>
 										)}

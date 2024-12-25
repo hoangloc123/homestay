@@ -114,7 +114,7 @@ export default function ProfileManagerPage() {
 										/>
 										<div className="absolute bottom-1 right-1">
 											<i
-												class="fa fa-camera"
+												className="fa fa-camera"
 												aria-hidden="true"
 											></i>
 										</div>

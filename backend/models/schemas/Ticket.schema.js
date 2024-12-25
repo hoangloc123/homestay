@@ -6,6 +6,11 @@ const RoomBookingSchema = new mongoose.Schema({
 });
 
 const TicketSchema = new mongoose.Schema({
+    hostId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

@@ -115,7 +115,7 @@ const Dashboard = () => {
 						<h2 className="text-lg font-semibold">Số Lượt Đặt Phòng thành công</h2>
 						<p className="text-2xl">
 							<i
-								class="fa fa-check-circle mr-2 text-blue-500"
+								className="fa fa-check-circle mr-2 text-blue-500"
 								aria-hidden="true"
 							></i>
 							300 / 80%

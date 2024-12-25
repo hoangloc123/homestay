@@ -3,7 +3,6 @@ import express from "express";
 import moment from "moment";
 import Accommodation from "../models/schemas/Accommodation.schema.js";
 import Payment from "../models/schemas/payment.schema.js";
-import Review from "../models/schemas/Review.schema.js";
 import Room from "../models/schemas/Room.schema.js";
 import Ticket from "../models/schemas/Ticket.schema.js";
 import User from "../models/schemas/user.schema.js";
@@ -34,7 +33,7 @@ router.post("/", async (req, res) => {
             accommodationId,
         ).populate({
             path: "rooms",
-            select: "name capacity quantity pricePerNight amenities",
+            select: "name ownerId capacity quantity pricePerNight amenities",
         });
         if (!accommodation) {
             return res.status(404).json({ message: "Không tồn tại chỗ nghỉ" });
@@ -106,7 +105,7 @@ router.post("/", async (req, res) => {
         const date = new Date()
         let orderId = moment(date).format('DDHHmmss');
         const newPayment = new Payment({
-            txnRef: orderId,
+            txnRef: "O" + orderId,
             amount: totalPrice,
             userId,
             status: 1,
@@ -127,6 +126,7 @@ router.post("/", async (req, res) => {
         await admin.save()
 
         const newTicket = new Ticket({
+            hostId: accommodation.ownerId,
             userId,
             accommodation: accommodationId,
             rooms: rooms,
@@ -193,54 +193,12 @@ router.patch("/:ticketId", async (req, res) => {
     }
 });
 
-router.post("/:id/review", async (req, res) => {
-    const { id } = req.params; // Ticket ID from route
-    const { rating, comment } = req.body; // Rating and comment from body
-
-    try {
-        if (typeof rating !== "number" || rating < 0 || rating > 5) {
-            return res
-                .status(400)
-                .json({ message: "Rating must be a number between 0 and 5." });
-        }
-
-        const ticket = await Ticket.findById(id);
-        if (!ticket) {
-            return res.status(404).json({ message: "Ticket not found." });
-        }
-
-        const accommodation = await Accommodation.findById(ticket.accommodation);
-        if (!accommodation) {
-            return res.status(404).json({ message: "Accommodation not found." });
-        }
-
-        const review = await Review.create({
-            ticket: id,
-            accommodation: ticket.accommodation,
-            creatorId: ticket.userId,
-            rating,
-            comment,
-        });
-
-        const oldRating = accommodation.rating;
-        const oldRatingCount = accommodation.ratingCount;
-        const newRatingCount = oldRatingCount + 1;
-        accommodation.rating =
-            (oldRating * oldRatingCount + rating) / newRatingCount;
-        accommodation.ratingCount = newRatingCount;
-
-        await accommodation.save();
-
-        res.status(201).json({ review });
-    } catch (error) {
-        console.error("Error creating review:", error);
-        res.status(500).json({ message: "Internal server error." });
-    }
-});
 router.get('/reviews', async (req, res) => {
     try {
         const { userId, isShow } = req.query;
-        let query = {}
+        let query = {
+            star: { $gt: 0 },
+        }
         if (userId) {
             query.userId = userId;
         }
@@ -314,8 +272,8 @@ router.get("/", async (req, res) => {
 
 router.put('/:id', async (req, res) => {
     try {
-        const { id, status } = req.params;
-
+        const { id } = req.params;
+        const { status } = req.body;
         if (!status) {
             return res
                 .status(400)
@@ -342,12 +300,11 @@ router.put('/:id', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'Tài khoản không tồn tại' });
         }
-        user.balance += ticket.price;
+        user.balance += ticket.totalPrice;
         await user.save();
-        let orderId = moment(date).format('DDHHmmss');
-        console.log('checkTicket.totalPrice', checkTicket.totalPrice)
+        let orderId = moment(now).format('DDHHmmss');
         const newPayment = new Payment({
-            txnRef: orderId,
+            txnRef: 'I' + orderId,
             amount: checkTicket.totalPrice,
             userId: checkTicket.userId,
             status: 1,
@@ -366,7 +323,6 @@ router.put('/:id', async (req, res) => {
         await newPaymentAdmin.save();
         admin.balance = admin.balance - checkTicket.totalPrice;
         await admin.save()
-
 
         res.status(200).json(ticket);
     } catch (error) {

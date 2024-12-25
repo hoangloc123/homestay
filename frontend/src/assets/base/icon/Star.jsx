@@ -4,11 +4,11 @@ export default function StarIcon() {
 	return (
 		<i
 			aria-label="icon: star"
-			class="anticon anticon-sta r"
+			className="anticon anticon-sta r"
 		>
 			<svg
 				viewBox="64 64 896 896"
-				class=""
+				className=""
 				data-icon="star"
 				width="1em"
 				height="1em"
