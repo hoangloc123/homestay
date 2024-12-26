@@ -191,7 +191,7 @@ export default function TicketModal({id, onReload}) {
 									className="border-none bg-transparent shadow-none hover:border-none hover:bg-transparent"
 									isDisabled={!isOwner}
 								/>
-								{isOwner && item.status === 1 && (
+								{isOwner && !item.star && (
 									<div className="flex w-full justify-end">
 										<Button
 											type="submit"
