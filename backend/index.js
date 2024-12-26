@@ -35,7 +35,7 @@ app.use("/accommodations", accommodationRoutes);
 app.use("/tickets", ticketRoutes);
 app.use("/users", userRoutes);
 app.use("/requests", requestRoute);
-app.use("/statistics", statisticRoute);
+app.use("/statics", statisticRoute);
 app.use("/payment", paymentRoute);
 
 app.use(cookieParser());
