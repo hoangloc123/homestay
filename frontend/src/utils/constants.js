@@ -29,22 +29,27 @@ export const PROVINCES = [
     {
         id: '21',
         name: 'Đà Nẵng',
+        src: 'https://cf.bstatic.com/xdata/images/city/600x600/688844.jpg?k=02892d4252c5e4272ca29db5faf12104004f81d13ff9db724371de0c526e1e15&o=',
     },
     {
         id: '1',
         name: 'Hà Nội',
+        src: 'https://cf.bstatic.com/xdata/images/city/600x600/981517.jpg?k=2268f51ad34ab94115ea9e42155bc593aa8d48ffaa6fc58432a8760467dc4ea6&o=',
     },
     {
         id: '2',
         name: 'Vũng Tàu',
+        src: 'https://bariavungtautourism.com.vn/wp-content/uploads/2023/12/kinh-nghiem-du-lich-vung-tau-1.jpg',
     },
     {
         id: '23',
         name: 'Hải Phòng',
+        src: 'https://media.vneconomy.vn/w800/images/upload/2023/07/20/30.jpg',
     },
     {
         id: '25',
         name: 'TP. Hồ Chí Minh',
+        src: 'https://cf.bstatic.com/xdata/images/city/600x600/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o=',
     },
 ]
 

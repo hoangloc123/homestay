@@ -3,7 +3,8 @@ import GoogleMapLink from '@components/map/GoogleMapLink'
 import MapView from '@components/map/MapView'
 import {Button, Image} from '@nextui-org/react'
 import {RouterPath} from '@router/RouterPath'
-import {cn, convertStringToNumber} from '@utils/Utils'
+import {TYPE_HOST} from '@utils/constants'
+import {cn, convertStringToNumber, getDate} from '@utils/Utils'
 import 'leaflet/dist/leaflet.css'
 import {useEffect, useRef, useState} from 'react'
 import {useParams} from 'react-router-dom'
@@ -115,7 +116,7 @@ export default function DetailPage() {
 					<PolicyRender />
 					{data?.rooms[0]?.amenities && <Amenity selectedIds={data?.rooms[0]?.amenities} />}
 					<NoteRender note={data?.noteAccommodation} />
-					<CommentList />
+					<CommentList data={data.tickets} />
 				</>
 			)}
 		</div>
@@ -464,67 +465,54 @@ export default function DetailPage() {
 			<div className="mb-4 flex w-full flex-row rounded-lg bg-white p-4 shadow">
 				<div className="flex w-1/4 items-start">
 					<img
-						src={review.avatar}
+						src={review?.userId?.profilePictureUrl}
 						alt="User avatar"
 						className="mr-4 h-12 w-12 rounded-full"
 					/>
 					<div>
 						<div className="mb-1 flex items-center">
-							<h3 className="mr-2 font-bold">{review.name}</h3>
-							<span className="text-sm text-gray-500">{review.country}</span>
+							<h3 className="mr-2 font-bold">{review.userId?.fullName}</h3>
 						</div>
-						<div className="mb-1 text-sm text-gray-500">{review.stayDetails}</div>
-						<div className="mb-1 text-sm text-gray-500">{review.stayDuration}</div>
-						<div className="text-sm text-gray-500">{review.stayType}</div>
+						<div className="mb-1 text-sm text-gray-500">{review?.stayDetails}</div>
+						<div className="mb-1 text-sm text-gray-500">{review?.stayDuration}</div>
+						<div className="text-sm text-gray-500">{TYPE_HOST.find(x => x.id === review?.accommodation?.type)?.name}</div>
 					</div>
 				</div>
 				<div className="mt- flex-1">
 					<div className="flex items-center justify-between">
-						<div className="text-sm text-gray-500">{review.reviewDate}</div>
-						<div className="rounded bg-blue-600 px-2 py-1 text-sm font-bold text-white">{review.rating}</div>
+						<div className="text-sm text-gray-500">{getDate(review?.fromDate)}</div>
+						<div className="rounded px-2 py-1 text-sm font-bold text-white">
+							<div className="ml-2 flex items-center">
+								{[...Array(review.star)].map((_, i) => (
+									<i
+										key={i}
+										className={`fa fa-star text-yellow-500`}
+									></i>
+								))}
+							</div>
+						</div>
 					</div>
-					<h4 className="mt-2 font-bold">{review.title}</h4>
-					<div className="mt-2 flex flex-col">
-						<p className="flex items-center text-green-600">
-							<i className="fas fa-smile mr-2"></i>
-							{review.pros}
-						</p>
-						{review.cons && (
-							<p className="text-red-600 mt-2 flex items-center">
-								<i className="fas fa-frown mr-2"></i>
-								{review.cons}
-							</p>
-						)}
-					</div>
-					{/* {review.response && (
-            <div className="bg-gray-100 p-2 rounded mt-4">
-              <p className="flex items-center text-gray-700"><i className="fas fa-comment-dots mr-2"></i>Phản hồi của chỗ nghỉ:</p>
-              <p className="text-gray-700 mt-1">{review.response}</p>
-            </div>
-          )} */}
-					{/* <div className="flex items-center mt-4 text-sm text-gray-500">
-            <span>{review.helpfulCount} người thấy đánh giá này có ích.</span>
-            <button className="ml-4 text-blue-600 flex items-center"><i className="fas fa-thumbs-up mr-1"></i>Hữu ích</button>
-            <button className="ml-4 text-blue-600 flex items-center"><i className="fas fa-thumbs-down mr-1"></i>Không hữu ích</button>
-          </div> */}
+					<h4 className="mt-2 font-bold">{review.review}</h4>
 				</div>
 			</div>
 		)
 	}
 
-	function CommentList() {
+	function CommentList({data}) {
 		return (
 			<div
 				ref={commentsRef}
 				className="mx-auto mt-20 w-full"
 			>
 				<h1 className="mb-4 text-3xl font-bold">Đánh giá của khách</h1>
-				{reviews.map(review => (
-					<Review
-						key={review.id}
-						review={review}
-					/>
-				))}
+				{data?.length === 0 && <h1 className="mb-4 text-center text-3xl font-bold">Chưa có đánh giá nào</h1>}
+				{data?.length > 0 &&
+					data?.map(review => (
+						<Review
+							key={review.id}
+							review={review}
+						/>
+					))}
 			</div>
 		)
 	}
