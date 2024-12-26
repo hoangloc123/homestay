@@ -250,10 +250,13 @@ router.get("/detail/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const { id, status } = req.query;
+        const { id, userId, status } = req.query;
         let query = {}
         if (id) {
-            query.userId = id
+            query.hostId = id
+        }
+        if (userId) {
+            query.userId = userId
         }
         if (status) {
             query.status = status
@@ -279,14 +282,14 @@ router.put('/:id', async (req, res) => {
                 .status(400)
                 .json({ message: 'Status is required' });
         }
-        const checkTicket = await Ticket.findById(id).populate('accommodation');
+        const checkTicket = await Ticket.findById(id).populate('accommodation').populate('hostId');
         const now = new Date();
         const departureTime = new Date(checkTicket.fromDate);
         const twelveHours = 24 * 60 * 60 * 1000; // 12h
         if (now.getTime() - departureTime.getTime() > twelveHours) {
             return res
                 .status(400)
-                .json({ message: 'Không thể huỷ vé lúc này.' });
+                .json({ message: 'Không thể huỷ đặt phòng lúc này.' });
         }
         const ticket = await Ticket.findByIdAndUpdate(
             id,
@@ -300,29 +303,62 @@ router.put('/:id', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'Tài khoản không tồn tại' });
         }
-        user.balance += ticket.totalPrice;
-        await user.save();
+        const totalPrice = ticket.totalPrice
         let orderId = moment(now).format('DDHHmmss');
-        const newPayment = new Payment({
-            txnRef: 'I' + orderId,
-            amount: checkTicket.totalPrice,
-            userId: checkTicket.userId,
-            status: 1,
-            description: 'Hoàn tiền huỷ đặt phòng ' + checkTicket.accommodation.name,
-        });
-        await newPayment.save();
+        if (status === 2) {
 
-        const admin = await User.findOne({ email: process.env.ADMIN_EMAIL });
-        const newPaymentAdmin = new Payment({
-            txnRef: 'O' + orderId,
-            amount: checkTicket.totalPrice,
-            userId: admin._id,
-            status: 1,
-            description: 'Thanh toán hoàn tiền đặt phòng ' + checkTicket.accommodation.name + ' cho ' + user.name,
-        });
-        await newPaymentAdmin.save();
-        admin.balance = admin.balance - checkTicket.totalPrice;
-        await admin.save()
+            user.balance += totalPrice;
+            await user.save();
+            const newPayment = new Payment({
+                txnRef: 'I' + orderId,
+                amount: totalPrice,
+                userId: checkTicket.userId,
+                status: 1,
+                description: 'Hoàn tiền huỷ đặt phòng ' + checkTicket.accommodation.name,
+            });
+            await newPayment.save();
+
+            const admin = await User.findOne({ email: process.env.ADMIN_EMAIL });
+            const newPaymentAdmin = new Payment({
+                txnRef: 'O' + orderId,
+                amount: totalPrice,
+                userId: admin._id,
+                status: 1,
+                description: 'Thanh toán hoàn tiền đặt phòng ' + checkTicket.accommodation.name + ' cho ' + user.name,
+            });
+            await newPaymentAdmin.save();
+            admin.balance = admin.balance - totalPrice;
+            await admin.save()
+        }
+        if (status === 3) {
+            const admin = await User.findOne({ roles: ['admin'] });
+            const newPaymentAdmin = new Payment({
+                txnRef: "O" + orderId,
+                amount: totalPrice * 0.8,
+                userId: admin._id,
+                status: 1,
+                description: 'Thanh toán tiền cho lượt đặt phòng ' + checkTicket._id,
+            });
+            admin.balance -= totalPrice * 0.8;
+            await admin.save();
+            await newPaymentAdmin.save();
+
+            const newPaymentHostOwner = new Payment({
+                txnRef: "I" + orderId,
+                amount: totalPrice * 0.8,
+                userId: checkTicket.hostId._id,
+                status: 1,
+                description: 'Hệ thống thanh toán cho lượt đặt phòng ' + checkTicket._id,
+            });
+            const owner = await User.findById(checkTicket.hostId._id);
+            if (!owner) {
+                return res.status(404).json({ message: "Không tồn tại chủ chỗ nghỉ" });
+            }
+            owner.balance += totalPrice * 0.8;
+            await owner.save();
+            await newPaymentHostOwner.save();
+
+        }
 
         res.status(200).json(ticket);
     } catch (error) {
@@ -346,8 +382,6 @@ router.post('/review/:ticketId', async (req, res) => {
         }
         ticket.star = star;
         ticket.review = review;
-
-        ticket.status = 4;
         await ticket.save();
 
         res.status(200).json(ticket);

@@ -46,9 +46,34 @@ export default function AdminBookingListSection() {
 			size: 'xl',
 		})
 	}
+	function openConfirm(row) {
+		onOpen({
+			view: (
+				<ConfirmModal
+					content="Xác nhận hoàn thành lượt đặt phòng?"
+					onSubmit={() => onDoneTicket(row._id)}
+				/>
+			),
+			title: 'Bạn xác nhận hoàn thành lượt đặt phòng',
+			size: 'xl',
+		})
+	}
+	function onDoneTicket(id) {
+		factories
+			.changeStatusTicket(id, 3)
+			.then(() => {
+				ToastInfo('Cập nhật thành công')
+			})
+			.catch(e => {
+				ToastNotiError(e.response.data.message)
+			})
+			.finally(() => {
+				loadList()
+			})
+	}
 	function onCancelTicket(id) {
 		factories
-			.cancelTicket(id)
+			.changeStatusTicket(id)
 			.then(() => {
 				ToastInfo('Huỷ đặt phòng thành công')
 			})
@@ -119,8 +144,19 @@ export default function AdminBookingListSection() {
 						onClick={() => openDetail(row)}
 						color={'white'}
 					>
-						Xem thông tin
+						Xem
 					</Button>
+					{row.status === 1 && (
+						<Button
+							onClick={() => openConfirm(row)}
+							size="sm"
+							borderRadius={'full'}
+							bgColor={'green'}
+							color={'white'}
+						>
+							Hoàn thành
+						</Button>
+					)}
 					{row.status === 1 && (
 						<Button
 							onClick={() => openConfirm(row)}
@@ -178,10 +214,6 @@ export default function AdminBookingListSection() {
 						<Tab
 							key="3"
 							title="Đã hoàn thành"
-						/>
-						<Tab
-							key="4"
-							title="Đã đánh giá"
 						/>
 					</Tabs>
 				</div>

@@ -208,9 +208,4 @@ export const TICKET_STATUS = [
         label: 'Đã hoàn thành',
         color: 'success',
     },
-    {
-        value: 4,
-        label: 'Đã đánh giá',
-        color: 'secondary',
-    },
 ];

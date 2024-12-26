@@ -20,7 +20,7 @@ export default function MyTicketPage() {
 		setLoading(true)
 		factories
 			.getListTicket({
-				id: auth._id,
+				userId: auth._id,
 			})
 			.then(data => {
 				setData(data)
@@ -126,7 +126,7 @@ export default function MyTicketPage() {
 
 	function onCancelTicket(id) {
 		factories
-			.cancelTicket(id)
+			.changeStatusTicket(id)
 			.then(() => {
 				ToastInfo('Huỷ đặt phòng thành công')
 			})

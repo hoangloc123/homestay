@@ -73,12 +73,12 @@ export const factories = {
             data,
         });
     },
-    cancelTicket: (id) => {
+    changeStatusTicket: (id, status = 2) => {
         return ApiOperation.request({
             url: ApiConstants.TICKET + '/' + id,
             method: 'PUT',
             data: {
-                status: 2
+                status
             }
         });
     },
