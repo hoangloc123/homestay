@@ -8,7 +8,7 @@ const ApiConstants = {
     TICKET: 'tickets',
     REQUESTS: 'requests',
     REVIEW: 'tickets/review',
-
+    STATICS: 'statics',
 }
 
 export default ApiConstants

@@ -77,6 +77,11 @@ const LoginModal = () => {
 					label="Mật khẩu"
 					placeholder="Nhập mật khẩu"
 					className="mt-5"
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							handleLoginEmail(document.getElementById('email').value, document.getElementById('password').value)
+						}
+					}}
 					endContent={
 						<button
 							className="focus:outline-none"

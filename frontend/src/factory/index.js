@@ -9,6 +9,34 @@ export const factories = {
             params: params,
         });
     },
+    getStaticsMonth: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.STATICS + '/booking-summary',
+            method: 'GET',
+            params: data,
+        });
+    },
+    getStaticsYearRevenue: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.STATICS + '/year/revenue',
+            method: 'GET',
+            params,
+        });
+    },
+    getStaticsYearTicket: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.STATICS + '/year/ticket',
+            method: 'GET',
+            params
+        });
+    },
+    getStaticsYearTopHost: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.STATICS + '/top-host-owners',
+            method: 'GET',
+            params
+        });
+    },
     updatePinReview: (id, value) => {
         return ApiOperation.request({
             url: ApiConstants.TICKET + '/update-show/' + id,
