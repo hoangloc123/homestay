@@ -110,14 +110,15 @@ router.get('/user/:id', async function (req, res) {
 // // xác nhận trạng thái hoàn thành giao dịch
 router.put('/', async function (req, res) {
     const { userId, txnRef } = req.body;
-    const payment = await Payment.findOne({ txnRef: txnRef });
+    const Code = 'I' + txnRef
+    const payment = await Payment.findOne({ txnRef: Code });
     if (!payment) {
         return res.status(404).json({
             status: 404,
             message: 'Giao dịch không tồn tại',
         });
     }
-    if (payment.txnRef !== txnRef) {
+    if (payment.txnRef !== Code) {
         return res.status(400).json({
             status: 400,
             message: 'Sai mã giao dịch',
