@@ -70,7 +70,7 @@ router.patch("/:requestId", async (req, res) => {
         await request.save();
 
         res.status(200).json({
-            message: isApprove ? "Request approved" : "Request rejected",
+            message: isApprove ? "Chấp nhận thành công" : "Đã từ chối yêu cầu",
             request,
         });
     } catch (error) {
