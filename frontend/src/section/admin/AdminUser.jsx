@@ -201,7 +201,7 @@ export default function AdminUser({isAdmin}) {
 									/>
 									<Tab
 										key={ROLES.HOST}
-										title="Chủ nhà xe"
+										title="Chủ chỗ nghỉ"
 									/>
 									<Tab
 										key={ROLES.EMPLOYEE}

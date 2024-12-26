@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const AccommodationSchema = new mongoose.Schema({
     ownerId: { type: String, required: true },
     name: { type: String, required: true },
-    avatar: { type: String, required: true },
+    avatar: { type: String, required: false },
     city: { type: String, required: true },
     address: { type: String, required: true },
     pricePerNight: { type: Number },

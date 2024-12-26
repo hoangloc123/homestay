@@ -16,23 +16,29 @@ export const factories = {
             params: data,
         });
     },
+    getTopRouter: () => {
+        return ApiOperation.request({
+            url: ApiConstants.STATICS + '/trending-destination',
+            method: 'GET',
+        });
+    },
     getStaticsYearRevenue: (params) => {
         return ApiOperation.request({
-            url: ApiConstants.STATICS + '/year/revenue',
+            url: ApiConstants.STATICS + '/monthly-revenue',
             method: 'GET',
             params,
         });
     },
     getStaticsYearTicket: (params) => {
         return ApiOperation.request({
-            url: ApiConstants.STATICS + '/year/ticket',
+            url: ApiConstants.STATICS + '/monthly-booking',
             method: 'GET',
             params
         });
     },
     getStaticsYearTopHost: (params) => {
         return ApiOperation.request({
-            url: ApiConstants.STATICS + '/top-host-owners',
+            url: ApiConstants.STATICS + '/top-accommodations',
             method: 'GET',
             params
         });

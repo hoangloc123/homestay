@@ -8,9 +8,7 @@ import Ticket from "../models/schemas/Ticket.schema.js";
 function genMonthlyAggregatePipeline(startOfMonth, endOfMonth, ownerId) {
     const queryConditions = {
         fromDate: { $gte: startOfMonth, $lte: endOfMonth },
-        isConfirmed: true,
-        isPaid: true,
-        isCanceled: false,
+        status: { $ne: 2 },
     };
 
     const aggregatePipeline = [
@@ -90,7 +88,7 @@ router.get("/monthly-revenue", async (req, res) => {
             const aggregatePipeline = genMonthlyAggregatePipeline(
                 startOfMonth,
                 endOfMonth,
-                ownerId,
+                ownerId
             );
 
             const tickets = await Ticket.aggregate(aggregatePipeline);
@@ -227,6 +225,55 @@ router.get("/tickets", async (req, res) => {
         });
     } catch (error) {
         console.error("Error retrieving ticket:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.get("/top-accommodations", async (req, res) => {
+    try {
+        const topAccommodations = await Ticket.aggregate([
+            {
+                $match: { status: { $ne: 2 } } // Exclude canceled tickets
+            },
+            {
+                $group: {
+                    _id: "$accommodation",
+                    totalRevenue: { $sum: "$totalPrice" }
+                }
+            },
+            {
+                $sort: { totalRevenue: -1 }
+            },
+            {
+                $limit: 5
+            },
+            {
+                $lookup: {
+                    from: "accommodations", // Assuming the hosts are stored in the 'users' collection
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "accommodationDetails"
+                }
+            },
+            {
+                $unwind: "$accommodationDetails"
+            },
+            {
+                $project: {
+                    _id: 0,
+                    accommodationId: "$_id",
+                    totalRevenue: 1,
+                    name: "$accommodationDetails.name",
+                    city: "$accommodationDetails.city",
+                    address: "$accommodationDetails.address",
+                    avatar: "$accommodationDetails.avatar",
+                }
+            }
+        ]);
+
+        res.status(200).json({ topAccommodations });
+    } catch (error) {
+        console.error("Error fetching top accommodations:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });

@@ -225,7 +225,7 @@ export const searchCar = [
         originalPrice: '400.000đ',
         discount: 'Giảm 20%',
         feature: 'F1',
-        policy: `Chính sách nhà xe
+        policy: `Chính sách
 
 Yêu cầu khi lên xe
 
@@ -273,7 +273,7 @@ Nhà xe không cung cấp hoá đơn GTGT
 
 Gửi xe đạp/xe máy
 
-Quý khách vui lòng liên hệ tổng đài VeXeRe để được hỗ trợ bảng giá cước gửi xe và xác nhận còn chỗ trống để gửi kèm xe (trong trường hợp nhà xe không còn hầm trống sẽ không hỗ trợ nhận gửi kèm xe đạp/xe máy)`,
+Quý khách vui lòng liên hệ tổng đài VeXeRe để được hỗ trợ bảng giá cước gửi xe và xác nhận còn chỗ trống để gửi kèm xe (trong trường hợp chỗ nghỉ không còn hầm trống sẽ không hỗ trợ nhận gửi kèm xe đạp/xe máy)`,
     },
     {
         branchName: 'Khách sạn NightTown',
