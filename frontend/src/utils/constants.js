@@ -51,6 +51,11 @@ export const PROVINCES = [
         name: 'TP. Hồ Chí Minh',
         src: 'https://cf.bstatic.com/xdata/images/city/600x600/688893.jpg?k=d32ef7ff94e5d02b90908214fb2476185b62339549a1bd7544612bdac51fda31&o=',
     },
+    {
+        id: '28',
+        name: 'Đà Lạt',
+        src: 'https://cdn3.ivivu.com/2023/10/du-lich-Da-Lat-ivivu1.jpg',
+    },
 ]
 
 export const AMENITIES = [
