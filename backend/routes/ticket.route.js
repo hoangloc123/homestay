@@ -250,7 +250,7 @@ router.get("/detail/:id", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const { id, userId, status } = req.query;
+        const { id, userId, status, keyword } = req.query;
         let query = {}
         if (id) {
             query.hostId = id
@@ -261,12 +261,24 @@ router.get("/", async (req, res) => {
         if (status) {
             query.status = status
         }
-        const tickets = await Ticket.find(query).populate('userId').populate('accommodation');
-        if (!tickets) {
+        const tickets = await Ticket.find(query).populate({
+            path: 'userId',
+            match: keyword
+                ? {
+                    $or: [
+                        { email: { $regex: keyword, $options: "i" } },
+                        { phone: { $regex: keyword, $options: "i" } }
+                    ]
+                }
+                : {}
+        }).populate('accommodation');
+        const filteredTickets = tickets.filter(ticket => ticket.userId !== null);
+
+        if (!filteredTickets) {
             return res.status(404).json({ message: "No ticket found" });
         }
 
-        res.status(200).json(tickets);
+        res.status(200).json(filteredTickets);
     } catch (error) {
         console.error("Error retrieving ticket:", error);
         res.status(500).json({ message: "Internal server error" });

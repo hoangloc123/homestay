@@ -12,6 +12,7 @@ import {factories} from '../../factory'
 
 export default function AdminBookingListSection() {
 	const [activeTab, setActiveTab] = useState(1)
+	const [keyword, setKeyword] = useState()
 	const [loading, setLoading] = useState(true)
 	const [data, setData] = useState([])
 	const {auth} = useAuth()
@@ -21,6 +22,7 @@ export default function AdminBookingListSection() {
 		factories
 			.getListTicket({
 				status: activeTab,
+				keyword: keyword,
 				id: auth.roles[0] === ROLES.HOST ? auth._id : null,
 			})
 			.then(data => {
@@ -32,7 +34,7 @@ export default function AdminBookingListSection() {
 	useEffect(() => {
 		if (!auth?._id) return
 		loadList()
-	}, [auth, activeTab])
+	}, [auth, activeTab, keyword])
 
 	function openConfirm(row) {
 		onOpen({
@@ -90,6 +92,11 @@ export default function AdminBookingListSection() {
 			id: 'username',
 			label: 'Tên khách hàng',
 			renderCell: row => <div className="flex-grow">{row?.userId?.fullName}</div>,
+		},
+		{
+			id: 'email',
+			label: 'email',
+			renderCell: row => <div className="flex-grow">{row?.userId?.email}</div>,
 		},
 		{
 			id: 'phone',
@@ -190,7 +197,8 @@ export default function AdminBookingListSection() {
 			<div className="mb-3 flex items-center justify-between gap-4">
 				<Input
 					type="text"
-					placeholder="Tìm kiếm tên, số điện thoại"
+					onChange={e => setKeyword(e.target.value)}
+					placeholder="Tìm kiếm email, số điện thoại"
 					className="w-[400px] rounded-lg bg-gray-100 outline-none"
 					startContent={<i className="fas fa-search mr-2 text-gray-500"></i>}
 				/>

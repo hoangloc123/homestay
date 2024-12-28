@@ -94,7 +94,7 @@ router.get('/user/:id', async function (req, res) {
             message: 'Tài khoản không tồn tại',
         });
     }
-    const payments = await Payment.find({ userId: id });
+    const payments = await Payment.find({ userId: id }).sort({ createAt: -1 });
     const balance = user.balance;
     return res.status(200).json({
         status: 200,
