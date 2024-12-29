@@ -78,6 +78,7 @@ export const AMENITIES = [
         title: 'Lễ tân 24 giờ',
     },
     { id: '9.1', title: 'Wi-fi miễn phí' },
+    { id: 'FPET', title: 'Cho phép mang theo thú cưng' },
 ]
 
 export const ROLES = Object.freeze({

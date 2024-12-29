@@ -158,10 +158,10 @@ router.get("/", async (req, res) => {
 
         const accommodations = await Accommodation.find({
             city: city.toString(),
-            ...(isWithPetBool && { "policy.allowPetPolicy": true }),
             ...(amenitiesArray.length > 0 && {
                 amenities: { $all: amenitiesArray },
             }),
+            ...(isWithPetBool && { amenities: { $in: ['FPET'] } }),
             ...(type?.length > 0 && {
                 type: { $in: typeFilter }
             }),
@@ -209,10 +209,6 @@ router.get("/", async (req, res) => {
                     };
                 })(),
             })
-            .populate(
-                "policy",
-                "checkIn checkOut cancellationPolicy additionalPolicy allowPetPolicy paymentMethod -_id",
-            );
 
         let filteredAccommodations = [];
 
@@ -270,7 +266,7 @@ router.get("/", async (req, res) => {
         );
 
         res.status(200).json({
-            accommodations: paginatedAccommodations,
+            accommodations: paginatedAccommodations.filter((acc) => acc.rooms.length > 0),
             pagination: {
                 total: total,
                 pages: Math.ceil(total / limitNumber),
