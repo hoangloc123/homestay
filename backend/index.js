@@ -7,6 +7,7 @@ import { checkFirestoreConnection } from "./firebase/firestore/test.firestore.js
 import accommodationRoutes from "./routes/accommodation.route.js";
 import authRoutes from "./routes/authentication.route.js";
 import paymentRoute from "./routes/payment.route.js";
+import recommendedRoute from "./routes/recommended.route.js";
 import requestRoute from "./routes/request.route.js";
 import statisticRoute from "./routes/statistic.route.js";
 import ticketRoutes from "./routes/ticket.route.js";
@@ -37,6 +38,7 @@ app.use("/users", userRoutes);
 app.use("/requests", requestRoute);
 app.use("/statics", statisticRoute);
 app.use("/payment", paymentRoute);
+app.use("/recommend", recommendedRoute);
 
 app.use(cookieParser());
 

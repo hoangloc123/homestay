@@ -9,6 +9,13 @@ export const factories = {
             params: params,
         });
     },
+    getRecommend: (data) => {
+        return ApiOperation.request({
+            url: ApiConstants.RECOMMEND,
+            method: 'GET',
+            params: data,
+        });
+    },
     getStaticsMonth: (data) => {
         return ApiOperation.request({
             url: ApiConstants.STATICS + '/booking-summary',

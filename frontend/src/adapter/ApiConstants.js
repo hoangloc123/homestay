@@ -9,6 +9,7 @@ const ApiConstants = {
     REQUESTS: 'requests',
     REVIEW: 'tickets/review',
     STATICS: 'statics',
+    RECOMMEND: 'recommend',
 }
 
 export default ApiConstants

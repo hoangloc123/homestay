@@ -40,10 +40,10 @@ router.post("/", async (req, res) => {
         } = req.body;
 
         // Validate required fields
-        if (!ownerId || !name || !city || !address || !description) {
+        if (!ownerId || !name || !city) {
             return res
                 .status(400)
-                .json({ message: "Some required fields are missing" });
+                .json({ message: "Nhập thêm tên và thành phố" });
         }
 
         const newAccommodation = new Accommodation({

@@ -45,16 +45,19 @@ export default function CreateAccommodationModal({onReload}) {
 			...values,
 			ownerId: auth._id,
 			pricePerNight: Number(values.pricePerNight),
-			amenity: amenities,
+			amenities: amenities,
 			paymentMethods: paymentMethods,
 		}
-		const newUrls = []
-		for (const image of values?.hostImage) {
-			if (!image.url) continue
-			const newUrl = await uploadFirebase(image.file)
-			newUrls.push(newUrl)
+		if (values?.hostImage?.length > 0) {
+			const newUrls = []
+			for (const image of values?.hostImage) {
+				if (!image.url) continue
+				const newUrl = await uploadFirebase(image.file)
+				newUrls.push(newUrl)
+			}
+			data.images = newUrls
 		}
-		data.images = newUrls
+
 		factories
 			.createNewAccommodation(data)
 			.then(() => {

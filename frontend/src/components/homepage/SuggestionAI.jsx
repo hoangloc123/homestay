@@ -1,7 +1,23 @@
 import {RouterPath} from '@router/RouterPath'
+import {useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
+import {useAuth} from '../../context/AuthContext'
+import {factories} from '../../factory'
 
 function SuggestionAI() {
+	const [sugesstion, setRouter] = useState([])
+	const {auth} = useAuth()
+	useEffect(() => {
+		if (!auth) return
+		factories
+			.getRecommend({
+				id: auth._id,
+			})
+			.then(data => {
+				setRouter(data.recommendations)
+			})
+	}, [auth])
+	if (!auth) return <></>
 	return (
 		<div>
 			<section className="container mx-auto py-16">
