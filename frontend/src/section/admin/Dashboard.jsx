@@ -75,7 +75,7 @@ const Dashboard = () => {
 	function loadListMonth() {
 		if (!auth) return
 		const params = {
-			...(auth.roles[0] === ROLES.ADMIN ? {} : {branchId: auth._id}),
+			...(auth.roles[0] === ROLES.ADMIN ? {} : {ownerId: auth._id}),
 		}
 		factories.getStaticsMonth(params).then(res => {
 			setDataMonth(res)
@@ -181,7 +181,7 @@ const Dashboard = () => {
 	function loadListRevenueYear() {
 		if (!auth) return
 		const params = {
-			...(auth.roles[0] === ROLES.ADMIN ? {} : {branchId: auth._id}),
+			...(auth.roles[0] === ROLES.ADMIN ? {} : {ownerId: auth._id}),
 		}
 		factories.getStaticsYearRevenue(params).then(res => {
 			// Dữ liệu doanh thu theo tháng
@@ -204,7 +204,7 @@ const Dashboard = () => {
 	function loadListRevenueTicket() {
 		if (!auth) return
 		const params = {
-			...(auth.roles[0] === ROLES.ADMIN ? {} : {branchId: auth._id}),
+			...(auth.roles[0] === ROLES.ADMIN ? {} : {ownerId: auth._id}),
 		}
 		factories.getStaticsYearTicket(params).then(res => {
 			const bookingData = {

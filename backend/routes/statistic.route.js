@@ -39,12 +39,14 @@ const router = express.Router();
 
 router.get("/booking-summary", async (req, res) => {
     try {
+        const { ownerId } = req.query;
         const thisMonth = moment().month();
         const startOfMonth = moment().month(thisMonth).startOf("month").format("YYYY-MM-DD");
         const endOfMonth = moment().month(thisMonth).endOf("month").format("YYYY-MM-DD");
 
         const tickets = await Ticket.find({
             fromDate: { $gte: startOfMonth, $lte: endOfMonth },
+            ...(ownerId && { hostId: ownerId }),
         });
 
         const totalBooking = tickets.length;
