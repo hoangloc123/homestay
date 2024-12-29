@@ -3,7 +3,7 @@ import GoogleMapLink from '@components/map/GoogleMapLink'
 import MapView from '@components/map/MapView'
 import {Button, Image} from '@nextui-org/react'
 import {RouterPath} from '@router/RouterPath'
-import {TYPE_HOST} from '@utils/constants'
+import {AMENITIES, TYPE_HOST} from '@utils/constants'
 import {cn, convertStringToNumber, getDate} from '@utils/Utils'
 import 'leaflet/dist/leaflet.css'
 import {useEffect, useRef, useState} from 'react'
@@ -13,7 +13,7 @@ import Loading from '../../components/loading/Loading'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
-import {AMENITIES_ROOM, amenitiesSearchConst} from '../../utils/constData'
+import {AMENITIES_ROOM} from '../../utils/constData'
 
 const reviews = [
 	{
@@ -113,9 +113,9 @@ export default function DetailPage() {
 				<>
 					<Overview />
 					<InfoPrice />
-					<PolicyRender />
-					{data?.rooms[0]?.amenities && <Amenity selectedIds={data?.rooms[0]?.amenities} />}
-					<NoteRender note={data?.noteAccommodation} />
+					{/* <PolicyRender /> */}
+					{/* <Amenity selectedIds={data?.amenities} /> */}
+					{data?.noteAccommodation && <NoteRender note={data?.noteAccommodation} />}
 					<CommentList data={data.tickets} />
 				</>
 			)}
@@ -147,13 +147,13 @@ export default function DetailPage() {
 				>
 					Tiện nghi
 				</Button>
-				<Button
+				{/* <Button
 					variant="ghost"
 					className={cn('h-20 min-w-32 flex-grow rounded-none border-none', activeSection === policyRef)}
 					onClick={() => handlePressScroll(policyRef)}
 				>
 					Chính sách
-				</Button>
+				</Button> */}
 				<Button
 					variant="ghost"
 					className={cn('h-20 min-w-32 flex-grow rounded-none border-none', activeSection === noteRef)}
@@ -269,14 +269,18 @@ export default function DetailPage() {
 					<div className="flex-grow">
 						<h2 className="mb-2 text-xl font-bold">Các tiện nghi</h2>
 						<div className="flex flex-wrap gap-3">
-							{amenitiesSearchConst.map(amenity => {
+							{data.amenities.map(amenity => {
+								const item = AMENITIES.find(item => {
+									return item.id === amenity
+								})
+								if (!item) return
 								return (
 									<div
-										key={amenity.id}
+										key={item.id}
 										className="min-w-[150px] rounded-lg border px-6 py-2 shadow-md"
 									>
 										<div className="flex items-center gap-2">
-											<p className={cn('text-center text-lg font-bold')}>{amenity.title}</p>
+											<p className="text-center text-lg font-bold">{item.title}</p>
 										</div>
 									</div>
 								)

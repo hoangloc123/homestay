@@ -38,7 +38,6 @@ function Header({showText, showSearch = false}) {
 
 	const {auth, logout} = useAuth()
 	const [destination, setDestination] = useState('21')
-	console.log('🚀 ~ Header ~ destination:', destination)
 	const [roomCount, setRoomCount] = useState(1)
 	const [personCount, setPersonCount] = useState(2)
 	const [havePet, setHavePet] = useState(false)
