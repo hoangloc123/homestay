@@ -10,42 +10,12 @@ import {useEffect, useRef, useState} from 'react'
 import {useParams} from 'react-router-dom'
 import ImageGallery from '../../components/galery/Galery'
 import Loading from '../../components/loading/Loading'
+import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
 import {AMENITIES_ROOM} from '../../utils/constData'
 
-const reviews = [
-	{
-		id: 1,
-		name: 'My',
-		country: 'Việt Nam',
-		avatar: 'https://placehold.co/50x50',
-		stayDetails: 'Căn Hộ 1 Phòng Ngủ Có Ban Công',
-		stayDuration: '4 đêm · tháng 8/2024',
-		stayType: 'Cặp đôi',
-		reviewDate: 'Ngày đánh giá: ngày 27 tháng 8 năm 2024',
-		title: 'Rẻ bất ngờ',
-		rating: 9.0,
-		pros: 'Giá rẻ bất ngờ nên mình phải hỏi đi hỏi lại, tiện ích đầy đủ nhưng hơi ngại vì mình phải đổi căn giữa chừng 1 tẹo. Đặt studio 1 phòng ngủ mà bên home toàn đưa căn 2 phòng ngủ nên bị dư ko làm gì luôn. Có karaoke miễn phí và bơi thoải mái, giải trí nữa nên cũng thích, gần trung tâm',
-		cons: 'Dụng cụ bếp mình thấy còn hơi chưa sạch sẽ và đầy đủ tiện nghi lắm thôi, còn lại quá okeee',
-		response: 'cảm ơn quý khách rất nhiều.hẹn gặp lại quý khách lần sau ạk',
-		helpfulCount: 1,
-	},
-	{
-		id: 2,
-		name: 'Ngọc',
-		country: 'Việt Nam',
-		avatar: 'https://placehold.co/50x50',
-		stayDetails: 'Căn Hộ 3 Phòng Ngủ Nhìn Ra Biển',
-		stayDuration: '1 đêm · tháng 10/2024',
-		reviewDate: 'Ngày đánh giá: ngày 9 tháng 10 năm 2024',
-		title: 'ok',
-		rating: 10,
-		pros: 'ok',
-		helpfulCount: 0,
-	},
-]
 export default function DetailPage() {
 	const router = useRouter()
 	const {id} = useParams()
@@ -62,7 +32,7 @@ export default function DetailPage() {
 	const [numbers, setNumbers] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [data, setData] = useState([])
-
+	const {auth} = useAuth()
 	useEffect(() => {
 		if (!id) return
 		factories
@@ -326,7 +296,7 @@ export default function DetailPage() {
 								<th className="border p-2">Số lượng khách</th>
 								<th className="border p-2">Giá phòng</th>
 								<th className="border p-2">Các tiện nghi</th>
-								<th className="border p-2">Chọn số lượng</th>
+								{auth && <th className="border p-2">Chọn số lượng</th>}
 							</tr>
 						</thead>
 						<tbody>
@@ -369,7 +339,7 @@ export default function DetailPage() {
 										<div className="min-w-[120px] font-bold text-green-600">{convertStringToNumber(room?.pricePerNight)}</div>
 									</td>
 									<td className="border p-2">
-										<ul className="max-w-[240px] text-sm">
+										<ul className="max-w-[340px] text-sm">
 											{AMENITIES_ROOM.map(amenity => {
 												const hasSelectedChild = amenity.items.some(item => room.amenities.includes(item.id))
 												if (room.amenities.includes(amenity.id) || hasSelectedChild) {
@@ -403,62 +373,66 @@ export default function DetailPage() {
 											})}
 										</ul>
 									</td>
-									<td className="border p-2 text-center">
-										<div className="flex min-w-[120px] items-center justify-center gap-5">
-											<NumberInput
-												className="max-w-[80px]"
-												defaultValue={0}
-												min={0}
-												max={100}
-												value={numbers.find(number => number.roomId === room._id)?.number ?? 0}
-												onChange={value =>
-													setNumbers(prev => {
-														const index = prev.findIndex(number => number.roomId === room._id)
-														if (index !== -1) {
-															return prev.map(number => (number.roomId === room._id ? {...number, number: value} : number))
-														} else {
-															return [...prev, {roomId: room._id, number: value, price: room.pricePerNight}]
-														}
-													})
-												}
-												clampValueOnBlur={false}
-											>
-												<NumberInputField />
-												<NumberInputStepper>
-													<NumberIncrementStepper />
-													<NumberDecrementStepper />
-												</NumberInputStepper>
-											</NumberInput>
-										</div>
-									</td>
+									{auth && (
+										<td className="border p-2 text-center">
+											<div className="flex min-w-[120px] items-center justify-center gap-5">
+												<NumberInput
+													className="max-w-[80px]"
+													defaultValue={0}
+													min={0}
+													max={100}
+													value={numbers.find(number => number.roomId === room._id)?.number ?? 0}
+													onChange={value =>
+														setNumbers(prev => {
+															const index = prev.findIndex(number => number.roomId === room._id)
+															if (index !== -1) {
+																return prev.map(number => (number.roomId === room._id ? {...number, number: value} : number))
+															} else {
+																return [...prev, {roomId: room._id, number: value, price: room.pricePerNight}]
+															}
+														})
+													}
+													clampValueOnBlur={false}
+												>
+													<NumberInputField />
+													<NumberInputStepper>
+														<NumberIncrementStepper />
+														<NumberDecrementStepper />
+													</NumberInputStepper>
+												</NumberInput>
+											</div>
+										</td>
+									)}
 								</tr>
 							))}
 						</tbody>
 					</table>
-					<div className="flex flex-col border-b border-r">
-						<div className="flex h-[42px] min-w-64 items-center justify-center border border-r bg-blue-100 text-center font-bold 2xl:h-[42px]">
-							Thanh toán
-						</div>
-						<div className="sticky right-0 top-0 p-2">
-							<div className="mx-auto max-w-xs rounded-lg bg-blue-50 p-4 shadow-md">
-								<div className="mb-2 text-xl text-content-primary">Tổng tiền</div>
-								<div className="text-right text-2xl font-bold text-gray-900">
-									{convertStringToNumber(numbers.reduce((total, number) => total + number.price * number.number, 0))}
+					{auth && (
+						<div className="flex flex-col border-b border-r">
+							<div className="flex h-[42px] min-w-64 items-center justify-center border border-r bg-blue-100 text-center font-bold 2xl:h-[42px]">
+								Thanh toán
+							</div>
+							<div className="sticky right-0 top-0 p-2">
+								<div className="mx-auto max-w-xs rounded-lg bg-blue-50 p-4 shadow-md">
+									<div className="mb-2 text-xl text-content-primary">Tổng tiền</div>
+									<div className="text-right text-2xl font-bold text-gray-900">
+										{convertStringToNumber(numbers.reduce((total, number) => total + number.price * number.number, 0))}
+									</div>
+									<div className="my-2 flex justify-end">
+										<Button
+											color="primary"
+											variant="shadow"
+											className="rounded-md"
+											onClick={() => handleConfirm(numbers)}
+										>
+											Đặt phòng
+										</Button>
+									</div>
+									<div className="mt-4 text-sm text-gray-700">Bạn sẽ được chuyển sang bước kế tiếp</div>
 								</div>
-								<div className="my-2 flex justify-end">
-									<Button
-										color="primary"
-										variant="shadow"
-										className="rounded-md"
-										onClick={() => handleConfirm(numbers)}
-									>
-										Đặt phòng
-									</Button>
-								</div>
-								<div className="mt-4 text-sm text-gray-700">Bạn sẽ được chuyển sang bước kế tiếp</div>
 							</div>
 						</div>
-					</div>
+					)}
 				</div>
 			</div>
 		)

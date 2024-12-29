@@ -3,7 +3,7 @@ import React from 'react'
 import {useFormContext} from 'react-hook-form'
 
 const SelectField = ({name, options, label, isRequired, placeholder = '', className = '', validate = {}}) => {
-	const {register, formState} = useFormContext()
+	const {register, formState, watch} = useFormContext()
 	const error = formState.errors?.[name]?.message
 	return (
 		<div className="flex w-full flex-col">
@@ -13,6 +13,7 @@ const SelectField = ({name, options, label, isRequired, placeholder = '', classN
 				isRequired={isRequired}
 				className={`w-full bg-transparent ${className}`}
 				color={error ? 'danger' : 'default'}
+				value={watch[name]}
 				errorMessage={error}
 				{...register(name, validate)}
 			>

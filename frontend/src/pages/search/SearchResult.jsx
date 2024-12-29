@@ -205,15 +205,14 @@ function CardSearch({item}) {
 								</div>
 								{item?.rooms?.[0] && (
 									<div className="flex h-full items-center gap-4">
-										{/* <hr className="w-1 flex-1 flex-grow bg-gray-200" /> */}
-										<div className="ml-4 flex flex-grow">
+										<div className="ml-4 flex flex-grow justify-between">
 											<div className="flex flex-col justify-center text-sm">
 												<div className="mt-2 flex">
 													<div className="font-bold">{item?.rooms?.[0].name}</div>
 												</div>
 												<div
 													className="overflow-hidden text-justify font-medium"
-													style={{maxHeight: '100px', minWidth: '620px'}}
+													style={{maxHeight: '100px', minWidth: '220px'}}
 												>
 													<div className="overflow-hidden overflow-ellipsis whitespace-normal">
 														<div dangerouslySetInnerHTML={{__html: item?.rooms?.[0].description}} />

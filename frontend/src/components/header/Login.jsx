@@ -51,6 +51,17 @@ const LoginModal = () => {
 	}
 
 	const handleLoginEmail = (email, password) => {
+		const validateEmail = email => {
+			const re =
+				/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+			return re.test(String(email).toLowerCase())
+		}
+		if (!validateEmail(email) || !email.endsWith('@gmail.com')) {
+			ToastNotiError('Vui lòng nhập email đúng định dạng')
+			setIsLoading(false)
+			return
+		}
+
 		setIsLoading(true)
 		factories
 			.getLoginEmail(email, password)

@@ -44,7 +44,7 @@ export default function CreateRoomModal({onReload, item}) {
 	function loadList() {
 		setIsReady(false)
 		const params = {
-			ownerId: auth._id,
+			...(auth.roles[0] !== 'admin' && {ownerId: auth._id}),
 			limit: 1000,
 		}
 		factories

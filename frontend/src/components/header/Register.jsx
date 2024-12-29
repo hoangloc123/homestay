@@ -29,6 +29,16 @@ const RegisterModal = ({addEmployee, bossId, onReload}) => {
 		const email = document.getElementById('email').value
 		const password = document.getElementById('password').value
 		const confirmPassword = document.getElementById('confirmPassword').value
+		const validateEmail = email => {
+			const re =
+				/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+			return re.test(String(email).toLowerCase())
+		}
+		if (!validateEmail(email) || !email.endsWith('@gmail.com')) {
+			ToastNotiError('Vui lòng nhập email đúng định dạng')
+			setLoading(false)
+			return
+		}
 		if (!password || !confirmPassword || !email) {
 			ToastNotiError('Vui lòng nhập thông tin')
 			setLoading(false)
