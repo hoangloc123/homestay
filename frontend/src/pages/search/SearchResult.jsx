@@ -5,7 +5,6 @@ import {convertStringToNumber} from '@utils/Utils'
 import {Flex} from '@chakra-ui/react'
 import {useEffect, useMemo, useState} from 'react'
 import Loading from '../../components/loading/Loading'
-import PaginationCustom from '../../components/pagination'
 import {factories} from '../../factory'
 import useRouter from '../../hook/use-router'
 import {AMENITIES, TYPE_HOST} from '../../utils/constants'
@@ -47,7 +46,7 @@ export default function SearchResult() {
 			pricePerNight: pricePerNight,
 			amenities: amenities,
 			page: newPage,
-			limit: 10,
+			limit: 100,
 		}
 		factories
 			.getAccommodations(newData)
@@ -115,10 +114,10 @@ export default function SearchResult() {
 							item={x}
 						/>
 					))}
-					<PaginationCustom
+					{/* <PaginationCustom
 						total={data?.pagination?.total}
 						onChange={setPage}
-					/>
+					/> */}
 				</div>
 			) : (
 				<Loading />
@@ -129,7 +128,9 @@ export default function SearchResult() {
 
 function CardSearch({item}) {
 	const router = useRouter()
-	const isHomestay = item.type <= 3
+	console.log('🚀 ~ CardSearch ~ item.type:', item.type)
+	const isHomestay = Number(item.type) <= 3
+	console.log('🚀 ~ CardSearch ~ isHomestay:', isHomestay)
 	return (
 		<div className="flex w-full flex-col rounded-lg border bg-white p-4 hover:shadow-xl">
 			<div className="flex w-full">
@@ -179,34 +180,55 @@ function CardSearch({item}) {
 					<div className="mt-2">
 						{isHomestay ? (
 							<div className="flex items-center justify-between">
-								<p className="w-fit py-0 text-[10px]">1 đêm</p>
+								<div className="flex flex-col justify-center text-sm">
+									<div
+										className="overflow-hidden text-justify font-medium"
+										style={{maxHeight: '100px', minWidth: '620px'}}
+									>
+										<div className="overflow-hidden overflow-ellipsis whitespace-normal">
+											<div dangerouslySetInnerHTML={{__html: item?.description}} />
+										</div>
+									</div>
+								</div>
+								<div className="flex flex-col justify-end">
+									<p className="text-end font-bold">
+										{convertStringToNumber(isHomestay ? item?.pricePerNight : item?.rooms?.[0].pricePerNight)}
+									</p>
+									<p className="text-end text-[9px]">{'Đã bao gồm thuế và phí'}</p>
+								</div>
 							</div>
 						) : (
 							<>
 								<div className="flex items-center justify-between">
 									<p className="mt-1 w-fit rounded-lg border p-2 py-0 text-sm">Phòng được đề xuất cho bạn</p>
-									<p className="w-fit py-0 text-[10px]">1 đêm, {item?.rooms?.[0].capacity} người</p>
+									<p className="w-fit py-0 text-[10px]">1 đêm, {item?.rooms?.[0]?.capacity} người</p>
 								</div>
-								<div className="flex h-full items-center gap-4">
-									<hr className="w-1 flex-1 flex-grow bg-gray-200" />
-									<div className="flex-grow] flex">
-										<div className="flex flex-col justify-center text-sm">
-											<div className="mt-2 flex">
-												<div className="font-bold">{item?.rooms?.[0].name}</div>
+								{item?.rooms?.[0] && (
+									<div className="flex h-full items-center gap-4">
+										{/* <hr className="w-1 flex-1 flex-grow bg-gray-200" /> */}
+										<div className="ml-4 flex flex-grow">
+											<div className="flex flex-col justify-center text-sm">
+												<div className="mt-2 flex">
+													<div className="font-bold">{item?.rooms?.[0].name}</div>
+												</div>
+												<div
+													className="overflow-hidden text-justify font-medium"
+													style={{maxHeight: '100px', minWidth: '620px'}}
+												>
+													<div className="overflow-hidden overflow-ellipsis whitespace-normal">
+														<div dangerouslySetInnerHTML={{__html: item?.rooms?.[0].description}} />
+													</div>
+												</div>
 											</div>
-											<div
-												className="text-justify font-medium"
-												dangerouslySetInnerHTML={{__html: item?.rooms?.[0].description}}
-											/>
-										</div>
-										<div className="item-end flex min-w-[140px] flex-col justify-end">
-											<p className="text-end font-bold">
-												{convertStringToNumber(isHomestay ? item?.pricePerNight : item?.rooms?.[0].pricePerNight)}
-											</p>
-											<p className="text-end text-[9px]">{'Đã bao gồm thuế và phí'}</p>
+											<div className="item-end flex min-w-[140px] flex-col justify-end">
+												<p className="text-end font-bold">
+													{convertStringToNumber(isHomestay ? item?.pricePerNight : item?.rooms?.[0].pricePerNight)}
+												</p>
+												<p className="text-end text-[9px]">{'Đã bao gồm thuế và phí'}</p>
+											</div>
 										</div>
 									</div>
-								</div>
+								)}
 							</>
 						)}
 					</div>

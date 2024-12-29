@@ -7,8 +7,8 @@ export default function SearchPage() {
 		window.scrollTo(0, 0)
 	}, [])
 	return (
-		<div className="mx-auto max-w-full px-5 pb-24 pt-10 lg:max-w-[80%] lg:px-0 2xl:max-w-[60%]">
-			<div className="flex flex-row">
+		<div className="mx-auto max-w-full px-5 pb-24 pt-10 lg:px-0 xl:max-w-[80%] 2xl:max-w-[70%]">
+			<div className="flex flex-row gap-4">
 				<div className="w-1/4">
 					<SideBarSearch />
 				</div>

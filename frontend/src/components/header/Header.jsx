@@ -17,7 +17,7 @@ import {
 	Switch,
 } from '@nextui-org/react'
 import {cn, getDate} from '@utils/Utils'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
@@ -38,6 +38,7 @@ function Header({showText, showSearch = false}) {
 
 	const {auth, logout} = useAuth()
 	const [destination, setDestination] = useState('21')
+	console.log('🚀 ~ Header ~ destination:', destination)
 	const [roomCount, setRoomCount] = useState(1)
 	const [personCount, setPersonCount] = useState(2)
 	const [havePet, setHavePet] = useState(false)
@@ -45,7 +46,13 @@ function Header({showText, showSearch = false}) {
 	const [dateRange, setDateRange] = useState(defaultRange)
 
 	const router = useRouter()
+	const {city} = router.getAll()
 
+	useEffect(() => {
+		if (city) {
+			setDestination(city)
+		}
+	}, [city])
 	function handleSearch() {
 		const newParams = {
 			city: destination,
@@ -209,7 +216,7 @@ function Header({showText, showSearch = false}) {
 									variant="flat"
 									radius="sm"
 									aria-label={'city'}
-									defaultSelectedKeys={['21']}
+									selectedKeys={[destination]}
 									onChange={e => setDestination(e.target.value)}
 									placeholder="Bạn muốn đến đâu?"
 									startContent={<i className="fas fa-bed text-gray-500"></i>}

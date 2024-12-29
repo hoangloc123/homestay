@@ -193,10 +193,10 @@ router.get("/", async (req, res) => {
                             return {};
                         }
                         const capacityMatch = { capacity: { $gte: capacityNumber } };
-                        const amenitiesMatch =
-                            amenitiesArray.length > 0
-                                ? { amenities: { $all: amenitiesArray } }
-                                : {};
+                        // const amenitiesMatch =
+                        //     amenitiesArray.length > 0
+                        //         ? { amenities: { $all: amenitiesArray } }
+                        //         : {};
 
                         const priceMatch = {
                             pricePerNight: {
@@ -205,7 +205,7 @@ router.get("/", async (req, res) => {
                             },
                         };
 
-                        return { ...amenitiesMatch, ...capacityMatch, ...priceMatch };
+                        return { ...capacityMatch, ...priceMatch };
                     };
                 })(),
             })

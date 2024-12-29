@@ -17,7 +17,7 @@ function SuggestionAI() {
 				setRouter(data.recommendations)
 			})
 	}, [auth])
-	if (!auth) return <></>
+	if (!auth) return <div className="mt-10"></div>
 	return (
 		<div>
 			<section className="container mx-auto py-16">

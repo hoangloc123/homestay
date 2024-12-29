@@ -13,6 +13,13 @@ export default function SideBarSearch() {
 	const [typeAccommodation, setTypeAccommodation] = useState([])
 	const router = useRouter()
 
+	const {type} = router.getAll()
+	useEffect(() => {
+		if (type) {
+			const numberArray = type?.split(',').map(item => parseInt(item, 10))
+			setTypeAccommodation(numberArray)
+		}
+	}, [type])
 	useEffect(() => {
 		const newParams = {
 			sort: typeSort,
