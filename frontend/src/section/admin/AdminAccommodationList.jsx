@@ -1,6 +1,7 @@
 import {CustomTable} from '@components/custom-table/CustomTable'
 import {Button, Input} from '@nextui-org/react'
 import {PROVINCES, ROLES, TYPE_HOST} from '@utils/constants'
+import {getBranchId} from '@utils/Utils'
 import React, {useEffect, useState} from 'react'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
@@ -90,7 +91,7 @@ export default function AdminAccommodationList() {
 	function loadList() {
 		setLoading(true)
 		const params = {
-			...(auth.roles[0] === ROLES.HOST ? {ownerId: auth._id} : {}),
+			...(getBranchId(auth) && {ownerId: getBranchId(auth)}),
 			page: pagination?.current,
 			...(keyword ? {keyword} : {}),
 		}

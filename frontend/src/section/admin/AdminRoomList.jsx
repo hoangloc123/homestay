@@ -1,7 +1,7 @@
 import {CustomTable} from '@components/custom-table/CustomTable'
 import {Button, Input} from '@nextui-org/react'
 import {ROLES} from '@utils/constants'
-import {convertStringToNumber} from '@utils/Utils'
+import {convertStringToNumber, getBranchId} from '@utils/Utils'
 import React, {useEffect, useState} from 'react'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
@@ -53,7 +53,7 @@ export default function AdminRoomList() {
 		setLoading(true)
 		const params = {
 			page: pagination?.current,
-			...(auth.roles[0] === ROLES.HOST ? {ownerId: auth._id} : {}),
+			...(getBranchId(auth) && {ownerId: getBranchId(auth)}),
 			...(keyword ? {keyword} : {}),
 		}
 		factories

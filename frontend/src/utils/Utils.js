@@ -12,6 +12,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { twMerge } from 'tailwind-merge';
 import { v4 } from 'uuid';
 import { storage } from '../config/firebaseConfig';
+import { ROLES } from './constants';
 
 export const convertStringToNumber = (value, delimiter = '.') => {
     if (value || value === 0) {
@@ -258,4 +259,14 @@ export function differenceTimeDate(startTime, endTime) {
     const diffInMilliseconds = Math.abs(end - start);
     // Chuyển đổi sang ngày
     return diffInMilliseconds / (1000 * 60 * 60 * 24) + 1;
+}
+
+export function getBranchId(auth) {
+    if (auth.roles[0] === ROLES.HOST) {
+        return auth._id;
+    }
+    if (auth.roles[0] === ROLES.EMPLOYEE) {
+        return auth.bossId;
+    }
+    return null;
 }

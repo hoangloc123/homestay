@@ -116,14 +116,14 @@ export const sidebarItems = [
         icon: 'fa-hotel',
         title: 'Danh sách cơ sở cho thuê',
         label: 'Chỗ nghỉ',
-        roles: ['admin', 'host'],
+        roles: ['admin', 'host', 'employee'],
     },
     {
         id: 'room',
         icon: 'fa-bed',
         title: 'Danh sách phòng thuê',
         label: 'Phòng thuê',
-        roles: ['admin', 'host'],
+        roles: ['admin', 'host', 'employee'],
     },
     {
         id: 'booking',

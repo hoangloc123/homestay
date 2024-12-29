@@ -4,7 +4,7 @@ import ConfirmModal from '@components/modal/ConfirmModal'
 import {Chip, Input, Tab, Tabs} from '@nextui-org/react'
 import TicketModal from '@pages/ticket/TicketModal'
 import {ROLES, TICKET_STATUS} from '@utils/constants'
-import {convertStringToNumber, getDate, ToastInfo, ToastNotiError} from '@utils/Utils'
+import {convertStringToNumber, getBranchId, getDate, ToastInfo, ToastNotiError} from '@utils/Utils'
 import React, {useEffect, useState} from 'react'
 import {useAuth} from '../../context/AuthContext'
 import {useModalCommon} from '../../context/ModalContext'
@@ -30,7 +30,7 @@ export default function AdminBookingListSection() {
 			.getListTicket({
 				status: activeTab,
 				keyword: keyword,
-				...(branchId && {id: branchId}),
+				...(getBranchId(auth) && {id: getBranchId(auth)}),
 			})
 			.then(data => {
 				setData(data)
