@@ -73,7 +73,53 @@ router.post("/", async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+router.put("/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
 
+        const allowedFields = [
+            "name",
+            "avatar",
+            "city",
+            "address",
+            "pricePerNight",
+            "amenities",
+            "lat",
+            "lng",
+            "images",
+            "activities",
+            "description",
+            "noteAccommodation",
+            "options",
+            "outstanding",
+            "type",
+        ];
+
+        const fieldsToUpdate = Object.keys(updateData).filter((key) =>
+            allowedFields.includes(key),
+        );
+
+        if (fieldsToUpdate.length === 0) {
+            return res.status(400).json({ message: "No valid fields to update." });
+        }
+
+        const updatedAccommodation = await Accommodation.findByIdAndUpdate(
+            id,
+            { $set: updateData },
+            { new: true },
+        );
+
+        if (!updatedAccommodation) {
+            return res.status(404).json({ message: "Accommodation not found." });
+        }
+
+        res.status(200).json(updatedAccommodation);
+    } catch (error) {
+        console.error("Error updating accommodation:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+});
 router.get("/", async (req, res) => {
     try {
         const {
@@ -530,6 +576,49 @@ router.post("/:id/rooms", async (req, res) => {
     } catch (error) {
         console.error("Error creating rooms:", error);
         res.status(500).json({ message: "Internal server error" });
+    }
+});
+router.put("/:id/rooms", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        const allowedFields = [
+            "name",
+            "capacity",
+            "pricePerNight",
+            "amenities",
+            "quantity",
+            "images",
+            "description",
+        ];
+
+        const fieldsToUpdate = Object.keys(updateData).filter((key) =>
+            allowedFields.includes(key),
+        );
+
+        if (fieldsToUpdate.length === 0) {
+            return res.status(400).json({ message: "No valid fields to update." });
+        }
+
+        const accommodation = await Accommodation.findById(updateData.accommodationId);
+        if (!accommodation) {
+            return res.status(404).json({ message: "Chỗ nghỉ không tồn tại" });
+        }
+
+        const updatedRoom = await Room.findByIdAndUpdate(
+            id,
+            { $set: updateData },
+            { new: true },
+        );
+        if (!updatedRoom) {
+            return res.status(404).json({ message: "Không tồn tại phòng." });
+        }
+
+        res.status(200).json(updatedRoom);
+    } catch (error) {
+        console.error("Error updating room:", error);
+        res.status(500).json({ message: "Internal server error." });
     }
 });
 

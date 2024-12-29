@@ -46,37 +46,41 @@ export default function AdminAccommodationList() {
 			label: 'Địa chỉ',
 			renderCell: row => <div className="">{row?.address}</div>,
 		},
-		// {
-		// 	id: 'action',
-		// 	label: 'Tác vụ',
-		// 	headCell: () => <span className="w-full text-center">Tác vụ</span>,
-		// 	renderCell: row => (
-		// 		<div className="w-48">
-		// 			<Button
-		// 				variant="solid"
-		// 				size="sm"
-		// 				color="primary"
-		// 				onClick={() => editPolicy(row)}
-		// 			>
-		// 				Chính sách
-		// 			</Button>
-		// 			{/* <Button
-		// 				onClick={() => handleDisable(row)}
-		// 				variant="ghost"
-		// 				size="sm"
-		// 				className="h-8 max-w-8 border-none"
-		// 			>
-		// 				{row?.status ? <i className="fas fa-pause text-sm text-red"></i> : <i className="fas fa-play text-sm text-blue-500"></i>}
-		// 			</Button> */}
-		// 		</div>
-		// 	),
-		// },
+		{
+			id: 'action',
+			label: 'Tác vụ',
+			headCell: () => <span className="w-full text-center">Tác vụ</span>,
+			renderCell: row => (
+				<div className="w-48">
+					<Button
+						variant="ghost"
+						size="sm"
+						className="h-8 w-2 max-w-2 border-none"
+						onClick={() => editAcmd(row)}
+					>
+						<i className="fas fa-pen text-sm text-gray-400"></i>
+					</Button>
+				</div>
+			),
+		},
 	]
 
 	function createAcmd() {
 		onOpen({
 			view: <CreateAccommodationModal onReload={loadList} />,
 			title: 'Tạo chỗ nghỉ mới',
+			size: '2xl',
+		})
+	}
+	function editAcmd(row) {
+		onOpen({
+			view: (
+				<CreateAccommodationModal
+					onReload={loadList}
+					item={row}
+				/>
+			),
+			title: 'Cập nhật chỗ nghỉ',
 			size: '2xl',
 		})
 	}

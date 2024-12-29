@@ -11,7 +11,7 @@ import {useAuth} from '../../../context/AuthContext'
 import {useModalCommon} from '../../../context/ModalContext'
 import {factories} from '../../../factory'
 
-export default function CreateRoomModal({onReload}) {
+export default function CreateRoomModal({onReload, item}) {
 	const [isLoading, setIsLoading] = useState(false)
 	const [isReady, setIsReady] = useState(false)
 	const [amenities, setAmenities] = useState([])
@@ -22,10 +22,23 @@ export default function CreateRoomModal({onReload}) {
 	const {watch, setValue} = methods
 
 	useEffect(() => {
-		// setValue('quantity', 20)
-		// setValue('capacity', 2)
-		// setValue('pricePerNight', 150000)
-		// setValue('name', 'Phòng Giường Đôi Lớn')
+		if (!item) return
+		setValue('accommodationId', item.accommodationId)
+		setValue('capacity', item.capacity)
+		setValue('pricePerNight', item.pricePerNight)
+		setValue('quantity', item.quantity)
+		setValue('description', item.description)
+		setValue('name', item.name)
+		if (item?.images?.length > 0) {
+			const newList = item?.images?.map(image => ({
+				url: image,
+				file: null,
+			}))
+			setValue('hostImage', newList)
+		}
+		setAmenities(item?.amenities || [])
+	}, [item])
+	useEffect(() => {
 		loadList()
 	}, [auth])
 	function loadList() {
@@ -59,27 +72,47 @@ export default function CreateRoomModal({onReload}) {
 		if (values?.hostImage?.length > 0) {
 			const newUrls = []
 			for (const image of values?.hostImage) {
-				if (!image.url) continue
+				if (image.url && !image.file) {
+					newUrls.push(image.url)
+					continue
+				}
+				if (!image.file) continue
 				const newUrl = await uploadFirebase(image.file)
 				newUrls.push(newUrl)
 			}
 			data.images = newUrls
 		}
-
-		factories
-			.createNewRoom(data)
-			.then(() => {
-				ToastInfo('Tạo mới phòng thành công')
-				onClose()
-				onReload()
-				setIsLoading(false)
-			})
-			.catch(err => {
-				if (err.response?.data?.message) {
-					ToastNotiError(err.response?.data?.message)
-				}
-				setIsLoading(false)
-			})
+		if (item?._id) {
+			factories
+				.updateRoom(data, item._id)
+				.then(() => {
+					ToastInfo('Cập nhật phòng thành công')
+					onClose()
+					onReload()
+					setIsLoading(false)
+				})
+				.catch(err => {
+					if (err.response?.data?.message) {
+						ToastNotiError(err.response?.data?.message)
+					}
+					setIsLoading(false)
+				})
+		} else {
+			factories
+				.createNewRoom(data)
+				.then(() => {
+					ToastInfo('Tạo mới phòng thành công')
+					onClose()
+					onReload()
+					setIsLoading(false)
+				})
+				.catch(err => {
+					if (err.response?.data?.message) {
+						ToastNotiError(err.response?.data?.message)
+					}
+					setIsLoading(false)
+				})
+		}
 	}
 
 	function handleChooseAmenity(id) {
@@ -165,6 +198,7 @@ export default function CreateRoomModal({onReload}) {
 						<InputQuillForm
 							placeholder="Mô tả"
 							label="Mô tả"
+							defaultValue={item?.description || null}
 							name={'description'}
 						/>
 					</div>
@@ -173,7 +207,7 @@ export default function CreateRoomModal({onReload}) {
 						type="submit"
 						color="primary"
 					>
-						Tạo mới chỗ nghỉ
+						{item?._id ? 'Sửa phòng' : 'Tạo phòng'}
 					</Button>
 				</form>
 			</FormProvider>

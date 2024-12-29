@@ -136,10 +136,24 @@ export const factories = {
             data: data,
         });
     },
+    updateAccommodation: (data, id) => {
+        return ApiOperation.request({
+            url: ApiConstants.ACCOMMODATIONS + '/' + id,
+            method: 'PUT',
+            data: data,
+        });
+    },
     createNewRoom: (data) => {
         return ApiOperation.request({
             url: ApiConstants.ACCOMMODATIONS + '/' + data.id + '/rooms',
             method: 'POST',
+            data: data,
+        });
+    },
+    updateRoom: (data, id) => {
+        return ApiOperation.request({
+            url: ApiConstants.ACCOMMODATIONS + '/' + id + '/rooms',
+            method: 'PUT',
             data: data,
         });
     },

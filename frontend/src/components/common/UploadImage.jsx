@@ -2,7 +2,7 @@ import React from 'react'
 import {useFormContext} from 'react-hook-form'
 
 export default function UploadImages({label, name}) {
-	const {register, setValue, watch} = useFormContext()
+	const {setValue, watch} = useFormContext()
 	const images = watch(name) || []
 	const handleAddImage = () => {
 		setValue(name, [...images, {file: null, url: null}])
@@ -26,7 +26,7 @@ export default function UploadImages({label, name}) {
 							onChange={e => handleChangeImage(index, e.target.files[0])}
 							className="block max-w-[500px] appearance-none rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500"
 						/>
-						{image.file && (
+						{image.url && (
 							<div className="flex w-full flex-grow justify-end">
 								<img
 									src={image.url}
@@ -34,6 +34,20 @@ export default function UploadImages({label, name}) {
 									className="h-24 rounded-lg"
 								/>
 							</div>
+						)}
+						{image.url && (
+							<button
+								onClick={() => {
+									const newImages = [...images]
+									newImages.splice(index, 1)
+									setValue(name, newImages)
+								}}
+								variant="ghost"
+								type="button"
+								className="p-1"
+							>
+								<i className="fas fa-trash-alt text-sm text-red"></i>
+							</button>
 						)}
 					</div>
 				))}

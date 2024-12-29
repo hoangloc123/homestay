@@ -3,15 +3,15 @@ import InputQuillForm from '@components/common/InputQuillForm'
 import SelectField from '@components/common/SelectField'
 import UploadImages from '@components/common/UploadImage'
 import {Button, Checkbox} from '@nextui-org/react'
-import {AMENITIES, PAYMENT_METHODS, PROVINCES, TYPE_HOST} from '@utils/constants'
+import {AMENITIES, PROVINCES, TYPE_HOST} from '@utils/constants'
 import {ToastInfo, ToastNotiError, uploadFirebase} from '@utils/Utils'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {FormProvider, useForm} from 'react-hook-form'
 import {useAuth} from '../../../context/AuthContext'
 import {useModalCommon} from '../../../context/ModalContext'
 import {factories} from '../../../factory'
 
-export default function CreateAccommodationModal({onReload}) {
+export default function CreateAccommodationModal({onReload, item}) {
 	const [isLoading, setIsLoading] = useState(false)
 	const [amenities, setAmenities] = useState([])
 	const [paymentMethods, setPaymentMethods] = useState([])
@@ -20,26 +20,32 @@ export default function CreateAccommodationModal({onReload}) {
 	const methods = useForm()
 	const {watch, setValue} = methods
 
-	// useEffect(() => {
-	// 	setValue('price', 0)
-	// 	setValue('ownerId', '1')
-	// 	setValue('name', '1')
-	// 	setValue('city', '1')
-	// 	setValue('avatar', '1')
-	// 	setValue('address', '1')
-	// 	setValue('pricePerNight', '1')
-	// 	setValue('amenities', '1')
-	// 	setValue('lat', '1')
-	// 	setValue('lng', '1')
-	// 	setValue('images', '1')
-	// 	setValue('description', '1')
-	// 	setValue('noteAccommodation', '1')
-	// 	setValue('type', '1')
-	// 	setValue('outstanding', '1')
-	// 	setValue('options', '1')
-	// 	setValue('activities', '1')
-	// }, [])
+	useEffect(() => {
+		if (!item) return
+		setAmenities(item.amenities)
+		setValue('price', item.price)
+		setValue('name', item.name)
+		setValue('city', item.city)
+		setValue('address', item.address)
+		setValue('pricePerNight', item.pricePerNight)
+		setValue('lat', item.lat)
+		setValue('lng', item.lng)
+		setValue('description', item.description)
+		setValue('noteAccommodation', item.noteAccommodation)
+		setValue('type', item.type)
+		setValue('outstanding', item.outstanding)
+		setValue('options', item.options)
+		setValue('activities', item.activities)
+		if (item?.images?.length > 0) {
+			const newList = item?.images?.map(image => ({
+				url: image,
+				file: null,
+			}))
+			setValue('hostImage', newList)
+		}
+	}, [item])
 	async function handleSave(values) {
+		console.log('🚀 ~ handleSave ~ values:', values)
 		setIsLoading(true)
 		let data = {
 			...values,
@@ -51,27 +57,47 @@ export default function CreateAccommodationModal({onReload}) {
 		if (values?.hostImage?.length > 0) {
 			const newUrls = []
 			for (const image of values?.hostImage) {
-				if (!image.url) continue
+				if (image.url && !image.file) {
+					newUrls.push(image.url)
+					continue
+				}
+				if (!image.file) continue
 				const newUrl = await uploadFirebase(image.file)
 				newUrls.push(newUrl)
 			}
 			data.images = newUrls
 		}
-
-		factories
-			.createNewAccommodation(data)
-			.then(() => {
-				ToastInfo('Tạo mới chỗ nghỉ thành công')
-				onClose()
-				onReload()
-				setIsLoading(false)
-			})
-			.catch(err => {
-				if (err.response?.data?.message) {
-					ToastNotiError(err.response?.data?.message)
-				}
-				setIsLoading(false)
-			})
+		if (item?._id) {
+			factories
+				.updateAccommodation(data, item._id)
+				.then(() => {
+					ToastInfo('Cập nhật chỗ nghỉ thành công')
+					onClose()
+					onReload()
+					setIsLoading(false)
+				})
+				.catch(err => {
+					if (err.response?.data?.message) {
+						ToastNotiError(err.response?.data?.message)
+					}
+					setIsLoading(false)
+				})
+		} else {
+			factories
+				.createNewAccommodation(data)
+				.then(() => {
+					ToastInfo('Tạo mới chỗ nghỉ thành công')
+					onClose()
+					onReload()
+					setIsLoading(false)
+				})
+				.catch(err => {
+					if (err.response?.data?.message) {
+						ToastNotiError(err.response?.data?.message)
+					}
+					setIsLoading(false)
+				})
+		}
 	}
 
 	function handleChooseAmenity(id) {
@@ -170,44 +196,34 @@ export default function CreateAccommodationModal({onReload}) {
 								))}
 							</div>
 						</div>
-						<div className="rounded-lg bg-neutral-100 p-4">
-							<p className="mb-2 text-sm">Phương thức thanh toán</p>
-							<div className="flex flex-wrap gap-4">
-								{PAYMENT_METHODS.map(x => (
-									<div className="flex flex-row gap-1">
-										<Checkbox
-											key={x.id}
-											isSelected={paymentMethods.includes(x.id)}
-											onValueChange={() => handleChoosePayment(x.id)}
-										/>
-										<p className="text-sm text-neutral-700">{x.label}</p>
-									</div>
-								))}
-							</div>
-						</div>
 						<InputQuillForm
 							placeholder="Miêu tả"
 							label="Miêu tả"
+							defaultValue={item?.description}
 							name={'description'}
 						/>
 						<InputQuillForm
 							placeholder="Điểm nổi bật"
 							label="Điểm nổi bật"
 							name={'outstanding'}
+							defaultValue={item?.outstanding}
 						/>
 						<InputQuillForm
 							placeholder="Lựa chọn"
 							label="Lựa chọn"
+							defaultValue={item?.options}
 							name={'options'}
 						/>
 						<InputQuillForm
 							placeholder="Hoạt động"
 							label="Hoạt động"
+							defaultValue={item?.activities}
 							name={'activities'}
 						/>
 						<InputQuillForm
 							placeholder="Ghi chú quy định"
-							label="Quy định"
+							label="Ghi chú"
+							defaultValue={item?.noteAccommodation}
 							name={'noteAccommodation'}
 						/>
 					</div>
@@ -215,7 +231,7 @@ export default function CreateAccommodationModal({onReload}) {
 						isLoading={isLoading}
 						type="submit"
 					>
-						Tạo mới chỗ nghỉ
+						{item?._id ? 'Cập nhật' : 'Tạo mới'}
 					</Button>
 				</form>
 			</FormProvider>
