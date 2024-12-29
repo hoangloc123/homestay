@@ -19,11 +19,18 @@ export default function AdminBookingListSection() {
 	const {onOpen} = useModalCommon()
 	function loadList() {
 		setLoading(true)
+		let branchId = null
+		if (auth.roles[0] === ROLES.HOST) {
+			branchId = auth._id
+		}
+		if (auth.roles[0] === ROLES.EMPLOYEE) {
+			branchId = auth.bossId
+		}
 		factories
 			.getListTicket({
 				status: activeTab,
 				keyword: keyword,
-				id: auth.roles[0] === ROLES.HOST ? auth._id : null,
+				...(branchId && {id: branchId}),
 			})
 			.then(data => {
 				setData(data)
