@@ -408,6 +408,36 @@ router.get("/:id", async (req, res) => {
     }
 });
 
+router.get("/review-count/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const accommodation = await Accommodation.findById(id)
+        const tickets = await Ticket.find({ accommodation: id, star: { $gt: 0 } })
+
+        if (!accommodation) {
+            return res.status(404).json({ message: "Accommodation not found" });
+        }
+
+        const totalReviews = tickets.length;
+        const averageRating = totalReviews > 0
+            ? tickets.reduce((sum, ticket) => sum + ticket.star, 0) / totalReviews
+            : 0;
+
+        res.status(200).json({
+            // ...accommodation.toObject(),
+            // tickets,
+            reviewSummary: {
+                totalReviews,
+                averageRating
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching accommodation details:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 router.put("/:id", async (req, res) => {
     try {
         const { id } = req.params;

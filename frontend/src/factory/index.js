@@ -16,6 +16,12 @@ export const factories = {
             params: data,
         });
     },
+    getReview: (id) => {
+        return ApiOperation.request({
+            url: ApiConstants.REVIEWCOUNT + '/' + id,
+            method: 'GET',
+        });
+    },
     getStaticsMonth: (data) => {
         return ApiOperation.request({
             url: ApiConstants.STATICS + '/booking-summary',

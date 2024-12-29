@@ -56,7 +56,7 @@ export default function SearchResult() {
 
 	return (
 		<div className="flex w-full flex-col gap-2">
-			<p className="text-2xl font-bold">Tìm thấy: {data?.pagination?.total ?? 0} chỗ nghỉ</p>
+			<p className="text-2xl font-bold">Tìm thấy: {data?.accommodations?.length ?? 0} chỗ nghỉ</p>
 			<div className="mb-2 flex flex-wrap gap-2">
 				{sort && (
 					<Chip
@@ -127,10 +127,23 @@ export default function SearchResult() {
 }
 
 function CardSearch({item}) {
+	console.log('🚀 ~ CardSearch ~ item:', item)
 	const router = useRouter()
-	console.log('🚀 ~ CardSearch ~ item.type:', item.type)
 	const isHomestay = Number(item.type) <= 3
-	console.log('🚀 ~ CardSearch ~ isHomestay:', isHomestay)
+
+	const [reviews, setReview] = useState()
+
+	useEffect(() => {
+		if (item?._id) {
+			loadReview(item?._id)
+		}
+	}, [item?._id])
+	function loadReview(id) {
+		factories.getReview(id).then(data => {
+			setReview(data?.reviewSummary)
+		})
+	}
+
 	return (
 		<div className="flex w-full flex-col rounded-lg border bg-white p-4 hover:shadow-xl">
 			<div className="flex w-full">
@@ -159,16 +172,22 @@ function CardSearch({item}) {
 							</div>
 						</div>
 						<div className="flex items-center justify-center gap-2">
-							{item?.rating ? (
+							{reviews?.totalReviews > 0 ? (
 								<>
 									<div className="flex flex-col items-end">
 										<p className="text-[14px] font-bold">
-											{item?.rating >= 4.5 ? 'Rất tốt' : item?.rating >= 4 ? 'Tốt' : item?.rating >= 3 ? 'Bình thường' : 'Kém'}
+											{reviews?.averageRating >= 4.5
+												? 'Rất tốt'
+												: reviews?.averageRating >= 4
+													? 'Tốt'
+													: reviews?.averageRating >= 3
+														? 'Bình thường'
+														: 'Kém'}
 										</p>
-										<p className="text-[12px] text-gray-600">{item?.ratingCount ?? 0} đánh giá</p>
+										<p className="text-[12px] text-gray-600">{reviews?.totalReviews ?? 0} đánh giá</p>
 									</div>
 									<div className="flex items-center text-sm text-gray-500">
-										<span className="rounded-md bg-blue-700 px-1 py-1 text-white">{item?.rating ?? 0}</span>
+										<span className="rounded-md bg-blue-700 px-1 py-1 text-white">{reviews?.averageRating ?? 0}</span>
 									</div>
 								</>
 							) : (

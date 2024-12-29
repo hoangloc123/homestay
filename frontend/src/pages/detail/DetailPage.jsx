@@ -152,16 +152,18 @@ export default function DetailPage() {
 					<div className="w-3/4 min-w-[300px]">
 						<h1 className="mb-0 text-3xl font-bold">{data.name}</h1>
 						<h1 className="text-md mb-2 font-bold text-blue-400">{data.address}</h1>
-						<div className="mb-4 grid grid-cols-3 gap-2">
+						<div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
 							{data.images.slice(0, 5).map((image, index) => (
 								<Image
 									key={index}
-									className="aspect-w-6 aspect-h-5 overflow-hidden rounded-md border"
+									className="aspect-video overflow-hidden rounded-md border"
 									src={image}
 									alt={`Resort view ${index + 1}`}
 									style={{
 										height: '100%',
 										width: '100%',
+										minWidth: '250px',
+										minHeight: '190px',
 										objectFit: 'cover',
 									}}
 								/>
@@ -238,7 +240,10 @@ export default function DetailPage() {
 				<div className="flex w-full flex-row justify-between">
 					<div className="flex-grow">
 						<h2 className="mb-2 text-xl font-bold">Các tiện nghi</h2>
-						<div className="flex flex-wrap gap-3">
+						<div
+							ref={amenityRef}
+							className="flex flex-wrap gap-3"
+						>
 							{data.amenities.map(amenity => {
 								const item = AMENITIES.find(item => {
 									return item.id === amenity
@@ -303,9 +308,9 @@ export default function DetailPage() {
 							{data?.rooms.map((room, index) => (
 								<tr
 									key={index}
-									className=""
+									className="border"
 								>
-									<td className="flex flex-shrink flex-grow flex-col justify-start gap-5 border p-4">
+									<td className="flex flex-shrink flex-grow flex-col justify-start gap-5 p-4">
 										<button
 											className="relative"
 											onClick={() => openModalImageGallery(room?.images ?? [])}
@@ -335,7 +340,7 @@ export default function DetailPage() {
 											))}
 										</div>
 									</td>
-									<td className="border p-2 text-center">
+									<td className="p-2 text-center">
 										<div className="min-w-[120px] font-bold text-green-600">{convertStringToNumber(room?.pricePerNight)}</div>
 									</td>
 									<td className="border p-2">
@@ -423,6 +428,7 @@ export default function DetailPage() {
 											color="primary"
 											variant="shadow"
 											className="rounded-md"
+											disabled={numbers.reduce((total, number) => total + number.number, 0) === 0}
 											onClick={() => handleConfirm(numbers)}
 										>
 											Đặt phòng

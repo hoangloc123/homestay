@@ -22,6 +22,9 @@ export default function ConfirmPage() {
 	const data = JSON.parse(decodeURIComponent(params.item))
 	const {onOpen} = useModalCommon()
 
+	useEffect(() => {
+		scrollTo(0, 0)
+	}, [])
 	function handleSave(values) {
 		if (!values.fromDate) {
 			ToastNotiError('Vui lòng chọn ngày nhận phòng')

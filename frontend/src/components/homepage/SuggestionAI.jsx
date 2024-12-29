@@ -30,7 +30,8 @@ function SuggestionAI() {
 						list.map(item => (
 							<CardDestination
 								name="Da Nang Resort"
-								src={item?.images?.[0]}
+								room={item?.name}
+								src={item?.accommodationId?.images?.[0] || images?.[0]}
 								province={item?.accommodationId?.city}
 								accommodationId={item.accommodationId._id}
 								price={item?.pricePerNight}
@@ -44,7 +45,7 @@ function SuggestionAI() {
 
 export default SuggestionAI
 
-function CardDestination({name, src, price = 8.9, province, accommodationId}) {
+function CardDestination({name, room, src, price = 8.9, province, accommodationId}) {
 	return (
 		<Link
 			to={`${RouterPath.DETAIL}/${accommodationId}`}
@@ -56,7 +57,8 @@ function CardDestination({name, src, price = 8.9, province, accommodationId}) {
 				src={src ? src : 'https://placehold.co/400x300'}
 			/>
 			<div className="p-4">
-				<h3 className="text-lg font-bold">{name}</h3>
+				<h3 className="text-xl font-bold">{room}</h3>
+				<h3 className="text-sm font-bold">{name}</h3>
 				<div className="mt-2 flex items-center justify-between">
 					<p className="font-bold text-gray-600">{PROVINCES.find(i => i.id === province)?.name}</p>
 					<span className="rounded-md bg-blue-600 px-2 py-1 text-sm text-white">{convertStringToNumber(price)}</span>

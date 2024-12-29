@@ -90,7 +90,7 @@ router.get('/', async (req, res) => {
                 const totalSimilarity = (priceSimilarity + citySimilarity + amenitiesSimilarity) / 3;
                 return { room, similarity: totalSimilarity };
             })
-            .filter(({ similarity }) => similarity > 0.5) // Lọc những chuyến có độ tương đồng thấp hơn 0.5
+            .filter(({ similarity }) => similarity > 0.5) // Lọc những lượt có độ tương đồng thấp hơn 0.5
             .sort((a, b) => b.similarity - a.similarity) // Sắp xếp theo độ tương đồng
             .slice(0, 6); // Giới hạn 6 chuyến phù hợp nhất
 

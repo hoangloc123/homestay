@@ -8,6 +8,7 @@ const ApiConstants = {
     TICKET: 'tickets',
     REQUESTS: 'requests',
     REVIEW: 'tickets/review',
+    REVIEWCOUNT: '/accommodations/review-count',
     STATICS: 'statics',
     RECOMMEND: 'recommend',
 }
