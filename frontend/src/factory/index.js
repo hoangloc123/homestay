@@ -72,6 +72,13 @@ export const factories = {
             params,
         });
     },
+    getReviews: (params) => {
+        return ApiOperation.request({
+            url: ApiConstants.TICKET + '/reviews',
+            method: 'GET',
+            params,
+        });
+    },
     createReview: (data) => {
         return ApiOperation.request({
             url: ApiConstants.REVIEW + '/' + data.id,
